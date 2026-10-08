@@ -207,15 +207,24 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     }
   }
 
-  // If compact mode is requested (e.g. in Dashboard or Landing Page cards), render the clean horizontal week strip
+  // If compact mode is requested (e.g. on Landing Page home card), render only one month (the current month)
   if (compact) {
-    const compactTotalDays = 119; // 17 weeks
-    const compactWeeks: { dateStr: string; day: ActivityDay }[][] = [];
-    let curW: { dateStr: string; day: ActivityDay }[] = [];
-    for (let i = compactTotalDays - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
+    const curYear = today.getFullYear();
+    const curMonthIdx = today.getMonth();
+    const curMonthName = monthNames[curMonthIdx];
+    const daysInCurMonth = new Date(curYear, curMonthIdx + 1, 0).getDate();
+    const firstDayOfWeek = new Date(curYear, curMonthIdx, 1).getDay();
+    // Adjust Monday = 0, Sunday = 6
+    const startOffset = (firstDayOfWeek + 6) % 7;
+    const todayStr = today.toISOString().split('T')[0];
+
+    let currentMonthActiveDays = 0;
+    const daysList: { dayNumber: number; dateStr: string; data: ActivityDay }[] = [];
+
+    for (let d = 1; d <= daysInCurMonth; d++) {
+      const mm = String(curMonthIdx + 1).padStart(2, '0');
+      const dd = String(d).padStart(2, '0');
+      const dateStr = `${curYear}-${mm}-${dd}`;
       const dayData = activityHistory[dateStr] || {
         date: dateStr,
         count: 0,
@@ -224,15 +233,14 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
         challengesSolved: [],
         conceptsPracticed: [],
       };
-      curW.push({ dateStr, day: dayData });
-      if (curW.length === 7 || i === 0) {
-        compactWeeks.push(curW);
-        curW = [];
+      if (dayData.count > 0) {
+        currentMonthActiveDays++;
       }
+      daysList.push({ dayNumber: d, dateStr, data: dayData });
     }
 
     return (
-      <div className="relative w-full space-y-3 font-sans">
+      <div className="relative w-full space-y-2.5 font-sans">
         {/* Floating Tooltip */}
         {tooltip.visible && (
           <div
@@ -243,24 +251,51 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           </div>
         )}
 
-        {/* Heatmap Grid */}
-        <div className="overflow-x-auto pb-1 scrollbar-none">
-          <div className="inline-flex gap-1.5 min-w-full justify-between">
-            {compactWeeks.map((week, wIdx) => (
-              <div key={wIdx} className="flex flex-col gap-1.5">
-                {week.map((cell) => (
-                  <div
-                    key={cell.dateStr}
-                    onMouseEnter={(e) => handleMouseEnter(e, cell.day)}
-                    onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
-                    className={`w-3.5 h-3.5 rounded-[3px] transition-all cursor-pointer ${getCellColor(
-                      cell.day.count
-                    )}`}
-                  />
-                ))}
-              </div>
-            ))}
+        {/* Current Month Header */}
+        <div className="flex items-center justify-between pb-1 text-xs font-mono">
+          <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-white">
+            <CalendarIcon className="w-3.5 h-3.5 text-purple-600 dark:text-phantom-cyan" />
+            <span>{curMonthName} {curYear}</span>
           </div>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal-100 dark:bg-phantom-teal/15 text-teal-700 dark:text-phantom-teal font-semibold">
+            {currentMonthActiveDays} active days
+          </span>
+        </div>
+
+        {/* Weekday headers */}
+        <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-mono uppercase text-slate-400 dark:text-white/40 font-semibold select-none">
+          <span>Mo</span>
+          <span>Tu</span>
+          <span>We</span>
+          <span>Th</span>
+          <span>Fr</span>
+          <span>Sa</span>
+          <span>Su</span>
+        </div>
+
+        {/* Current Month Calendar Grid */}
+        <div className="grid grid-cols-7 gap-1 place-items-center">
+          {Array.from({ length: startOffset }).map((_, idx) => (
+            <div key={`offset-${idx}`} className="w-6 h-6 sm:w-7 sm:h-7 rounded-[4px] bg-transparent" />
+          ))}
+
+          {daysList.map(({ dayNumber, dateStr, data }) => {
+            const isToday = dateStr === todayStr;
+            return (
+              <div
+                key={dateStr}
+                onMouseEnter={(e) => handleMouseEnter(e, data)}
+                onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
+                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-[4px] flex items-center justify-center text-[10px] font-mono transition-all cursor-pointer select-none font-medium ${getCellColor(
+                  data.count
+                )} ${
+                  isToday ? 'ring-2 ring-cyan-500 dark:ring-phantom-cyan font-bold' : ''
+                }`}
+              >
+                {dayNumber}
+              </div>
+            );
+          })}
         </div>
 
         {/* Legend */}
@@ -273,7 +308,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
             <div className="w-2.5 h-2.5 rounded-sm bg-[#06b6d4]" />
             <span>More</span>
           </div>
-          <span>Past 4 Months</span>
+          <span className="font-semibold text-slate-700 dark:text-white/70">Current Month</span>
         </div>
       </div>
     );
