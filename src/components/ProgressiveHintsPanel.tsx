@@ -81,7 +81,7 @@ export const ProgressiveHintsPanel: React.FC<ProgressiveHintsPanelProps> = ({
                   className={`p-3.5 rounded-xl border transition-all ${
                     isUnlocked
                       ? 'bg-cyan-50/70 dark:bg-phantom-card/90 border-cyan-200 dark:border-phantom-cyan/30 text-slate-900 dark:text-phantom-white shadow-sm'
-                      : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/5 text-slate-400 dark:text-white/30'
+                      : 'bg-slate-100/70 dark:bg-black/30 border-slate-200 dark:border-white/5 text-slate-700 dark:text-white/40'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -90,7 +90,7 @@ export const ProgressiveHintsPanel: React.FC<ProgressiveHintsPanelProps> = ({
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
                         isUnlocked
                           ? 'bg-cyan-500 dark:bg-phantom-cyan text-white dark:text-black shadow-sm dark:shadow-glow-cyan'
-                          : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40'
+                          : 'bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-white/60'
                       }`}
                     >
                       {h.level}
@@ -100,24 +100,24 @@ export const ProgressiveHintsPanel: React.FC<ProgressiveHintsPanelProps> = ({
                       <div className="flex items-center justify-between mb-1">
                         <span
                           className={`text-xs font-semibold ${
-                            isUnlocked ? 'text-cyan-800 dark:text-phantom-cyan' : 'text-slate-400 dark:text-white/40'
+                            isUnlocked ? 'text-cyan-900 dark:text-phantom-cyan font-bold' : 'text-slate-700 dark:text-white/70'
                           }`}
                         >
                           {h.name}
                         </span>
                         {!isUnlocked && (
-                          <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-white/40 font-mono">
+                          <span className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-white/40 font-mono">
                             <Lock className="w-3 h-3" /> Locked
                           </span>
                         )}
                       </div>
 
                       {isUnlocked ? (
-                        <p className="text-xs text-slate-700 dark:text-white/90 leading-relaxed font-sans">
+                        <p className="text-xs text-slate-800 dark:text-white/90 leading-relaxed font-sans font-medium">
                           {h.text}
                         </p>
                       ) : (
-                        <p className="text-xs text-slate-400 dark:text-white/25 italic">
+                        <p className="text-xs text-slate-600 dark:text-white/60 italic font-medium">
                           Click below to investigate this clue...
                         </p>
                       )}
@@ -148,7 +148,7 @@ export const ProgressiveHintsPanel: React.FC<ProgressiveHintsPanelProps> = ({
               {revealedLevel < 4 && (
                 <button
                   onClick={onRevealSolution}
-                  className="w-full text-center py-1.5 text-xs text-slate-400 dark:text-white/40 hover:text-rose-600 dark:hover:text-phantom-crimson transition-colors"
+                  className="w-full text-center py-1.5 text-xs text-slate-600 dark:text-white/40 hover:text-rose-600 dark:hover:text-phantom-crimson transition-colors font-medium"
                 >
                   Forfeit bonus and reveal verified solution
                 </button>
@@ -188,10 +188,10 @@ export const ProgressiveHintsPanel: React.FC<ProgressiveHintsPanelProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="text-center p-8 bg-slate-50 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/10 space-y-3">
-                <Eye className="w-8 h-8 text-slate-400 dark:text-white/30 mx-auto" />
+              <div className="text-center p-8 bg-slate-100/70 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/10 space-y-3">
+                <Eye className="w-8 h-8 text-slate-500 dark:text-white/40 mx-auto" />
                 <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Solution is Hidden</h4>
-                <p className="text-xs text-slate-500 dark:text-white/50 max-w-xs mx-auto">
+                <p className="text-xs text-slate-600 dark:text-white/60 max-w-xs mx-auto font-medium">
                   Revealing the full solution forfeits the Independent Solver XP bonus for this case. Try using the clues first!
                 </p>
                 <button

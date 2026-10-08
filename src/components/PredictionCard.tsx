@@ -85,7 +85,7 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({
             } else if (isSelected && !opt.isCorrect) {
               btnStyle = 'bg-rose-50 dark:bg-phantom-crimson/20 border-rose-300 dark:border-phantom-crimson/60 text-rose-800 dark:text-phantom-crimson';
             } else {
-              btnStyle = 'bg-slate-100 dark:bg-black/30 border-slate-200 dark:border-white/5 text-slate-400 dark:text-white/30';
+              btnStyle = 'bg-slate-100 dark:bg-black/30 border-slate-200 dark:border-white/5 text-slate-500 dark:text-white/40';
             }
           }
 

@@ -152,8 +152,23 @@ html.light .text-phantom-white {
 
 html.light p.text-white,
 html.light p.text-white\/90,
-html.light p.text-white\/80 {
+html.light p.text-white\/80,
+html.light span.text-white\/90,
+html.light span.text-white\/80,
+html.light div.text-white\/90,
+html.light div.text-white\/80 {
   color: #1e293b !important;
+}
+
+/* Ensure buttons with solid or gradient dark backgrounds retain readable white text */
+html.light button.text-white,
+html.light button .text-white,
+html.light button span.text-white,
+html.light .bg-phantom-purple,
+html.light .bg-purple-600,
+html.light .bg-purple-700,
+html.light .bg-gradient-to-r.text-white {
+  color: #ffffff !important;
 }
 
 html.light .text-white\/70,

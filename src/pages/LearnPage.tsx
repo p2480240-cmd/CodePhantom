@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BookOpen,
   CheckCircle2,
@@ -31,14 +31,32 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   onUpdateProfile,
   onSwitchToHunt,
 }) => {
-  const [selectedLang, setSelectedLang] = useState<Language | 'all'>('all');
+  const [selectedLang, setSelectedLang] = useState<Language | 'all'>(profile.selectedLanguage || 'all');
   const filteredLessons = selectedLang === 'all'
     ? LEARN_LESSONS
     : LEARN_LESSONS.filter((l) => l.language === selectedLang);
 
-  const [selectedLesson, setSelectedLesson] = useState<LearnLesson>(filteredLessons[0] || LEARN_LESSONS[0]);
+  const [selectedLesson, setSelectedLesson] = useState<LearnLesson>(() => {
+    const matching = LEARN_LESSONS.find((l) => l.language === profile.selectedLanguage);
+    return matching || LEARN_LESSONS[0];
+  });
   const [code, setCode] = useState<string>(selectedLesson.brokenCode);
   const [evaluating, setEvaluating] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (profile.selectedLanguage) {
+      setSelectedLang(profile.selectedLanguage);
+      const matching = LEARN_LESSONS.find((l) => l.language === profile.selectedLanguage);
+      if (matching) {
+        setSelectedLesson(matching);
+        setCode(matching.brokenCode);
+        setEvalResult(null);
+        setSelectedPrediction(null);
+        setShowPredictionResult(false);
+        setShowStepHint(false);
+      }
+    }
+  }, [profile.selectedLanguage]);
   const [evalResult, setEvalResult] = useState<{
     success: boolean;
     passedCount: number;

@@ -43,7 +43,7 @@ export const InvestigationReplay: React.FC<InvestigationReplayProps> = ({ events
           <Clock className="w-4 h-4 text-cyan-600 dark:text-phantom-cyan" />
           <span>Investigation Replay Log</span>
         </div>
-        <span className="text-[10px] font-mono text-slate-400 dark:text-white/40">
+        <span className="text-[10px] font-mono text-slate-500 dark:text-white/40">
           {events.length} chronological actions
         </span>
       </div>
@@ -64,7 +64,7 @@ export const InvestigationReplay: React.FC<InvestigationReplayProps> = ({ events
               {getIcon(ev.type)}
               <span>{ev.description}</span>
             </div>
-            <span className="text-slate-400 dark:text-white/40 text-[10px] shrink-0">{ev.timestamp}</span>
+            <span className="text-slate-500 dark:text-white/40 text-[10px] shrink-0 font-medium">{ev.timestamp}</span>
           </div>
         ))}
       </div>

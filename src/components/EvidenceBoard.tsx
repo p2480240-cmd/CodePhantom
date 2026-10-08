@@ -34,17 +34,17 @@ export const EvidenceBoard: React.FC<EvidenceBoardProps> = ({
             className={`p-2 rounded-lg border flex items-center gap-2.5 transition-all ${
               item.completed
                 ? 'bg-teal-50 dark:bg-phantom-teal/10 border-teal-200 dark:border-phantom-teal/40 text-teal-950 dark:text-white'
-                : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/5 text-slate-400 dark:text-white/40'
+                : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/5 text-slate-500 dark:text-white/40'
             }`}
           >
             {item.completed ? (
               <CheckSquare className="w-4 h-4 text-teal-600 dark:text-phantom-teal shrink-0" />
             ) : (
-              <Square className="w-4 h-4 text-slate-300 dark:text-white/20 shrink-0" />
+              <Square className="w-4 h-4 text-slate-400 dark:text-white/20 shrink-0" />
             )}
             <span
               className={`text-[11.5px] leading-tight ${
-                item.completed ? 'text-slate-800 dark:text-white/90 font-medium' : 'line-through text-slate-400 dark:text-white/40 opacity-70'
+                item.completed ? 'text-slate-800 dark:text-white/90 font-medium' : 'line-through text-slate-500 dark:text-white/40 opacity-75'
               }`}
             >
               {item.label}

@@ -125,7 +125,7 @@ export const TestResultsPanel: React.FC<TestResultsPanelProps> = ({
                 <span className="font-bold text-slate-700 dark:text-white/70">Test #{idx + 1}:</span>
                 <span className="text-cyan-700 dark:text-phantom-cyan font-semibold">{res.inputDescription}</span>
               </div>
-              <div className="text-[10px] text-slate-400 dark:text-white/40">
+              <div className="text-[10px] text-slate-500 dark:text-white/40">
                 {res.executionTimeMs !== undefined ? `${res.executionTimeMs}ms` : ''}
               </div>
             </div>
@@ -133,13 +133,13 @@ export const TestResultsPanel: React.FC<TestResultsPanelProps> = ({
             {/* Expected vs Actual breakdown */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200 dark:border-white/5 text-[11.5px]">
               <div>
-                <span className="text-slate-500 dark:text-white/40">Expected: </span>
+                <span className="text-slate-600 dark:text-white/50 font-medium">Expected: </span>
                 <span className="text-teal-700 dark:text-phantom-teal font-semibold">
                   {JSON.stringify(res.expected)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500 dark:text-white/40">Got: </span>
+                <span className="text-slate-600 dark:text-white/50 font-medium">Got: </span>
                 <span
                   className={
                     res.passed
@@ -164,7 +164,7 @@ export const TestResultsPanel: React.FC<TestResultsPanelProps> = ({
       {/* Captured Console Logs if any */}
       {execution.logs && execution.logs.length > 0 && (
         <div className="p-3 bg-slate-50 dark:bg-[#060814] border border-slate-200 dark:border-white/10 rounded-lg text-xs font-mono text-slate-700 dark:text-white/70">
-          <div className="text-[11px] text-slate-400 dark:text-white/40 mb-1 flex items-center gap-1.5">
+          <div className="text-[11px] text-slate-600 dark:text-white/50 mb-1 flex items-center gap-1.5 font-medium">
             <Terminal className="w-3 h-3 text-cyan-600 dark:text-phantom-cyan" />
             <span>Captured Standard Output:</span>
           </div>
