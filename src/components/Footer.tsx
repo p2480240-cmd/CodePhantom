@@ -37,14 +37,6 @@ export const Footer: React.FC = () => {
           <div>
             © {new Date().getFullYear()} CodePhantom. Built for Hackathon Excellence. All bugs leave a shadow.
           </div>
-          <div className="flex items-center gap-2 font-mono">
-            <span className="px-2 py-0.5 rounded bg-teal-50 dark:bg-phantom-teal/10 border border-teal-200 dark:border-phantom-teal/30 text-teal-700 dark:text-phantom-teal">
-              Repo Size: &lt; 2 MB (Limit: 10 MB)
-            </span>
-            <span className="px-2 py-0.5 rounded bg-purple-50 dark:bg-phantom-purple/10 border border-purple-200 dark:border-phantom-purple/30 text-purple-700 dark:text-phantom-violet">
-              Branch: main (1)
-            </span>
-          </div>
         </div>
       </div>
     </footer>
