@@ -41,11 +41,31 @@ export function App() {
     const updated = { ...profile, selectedLanguage: lang };
     StorageService.saveProfile(updated);
     setProfile(updated);
+
+    if (activeChallengeId) {
+      const cur = ChallengeService.getChallengeById(activeChallengeId);
+      if (cur) {
+        const adapted = ChallengeService.getChallengeForLanguage(cur, lang);
+        setActiveChallengeId(adapted.id);
+      }
+    } else {
+      const rec = ChallengeService.getNextRecommendedChallenge(
+        updated.solvedChallengeIds,
+        lang
+      );
+      setActiveChallengeId(rec.id);
+    }
   };
 
   const handleStartHunt = (challengeId?: string) => {
     if (challengeId) {
-      setActiveChallengeId(challengeId);
+      const match = ChallengeService.getChallengeById(challengeId);
+      if (match) {
+        const langMatch = ChallengeService.getChallengeForLanguage(match, profile.selectedLanguage);
+        setActiveChallengeId(langMatch.id);
+      } else {
+        setActiveChallengeId(challengeId);
+      }
     } else {
       const rec = ChallengeService.getNextRecommendedChallenge(
         profile.solvedChallengeIds,

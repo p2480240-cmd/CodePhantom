@@ -1,9 +1,14 @@
 import { Challenge, Language, Difficulty } from '../types';
 
 export const CURATED_CHALLENGES: Challenge[] = [
-  // 1. Calculate Average (The Hero Mockup Challenge) - Python
+  // =========================================================================
+  // SECTOR 1: THE NEON OUTSKIRTS
+  // =========================================================================
+
+  // 1A. Calculate Average - PYTHON
   {
     id: 'calculate_average',
+    slug: 'calculate_average',
     title: 'The Glitched Scorekeeper',
     storyContext:
       'The neon arcade terminal in Sector 7 is giving players corrupted averages! The high scores keep halving unexpectedly.',
@@ -23,19 +28,19 @@ export const CURATED_CHALLENGES: Challenge[] = [
     entryFunction: 'calculate_average',
     testCases: [
       {
-        id: 'tc_1',
+        id: 'tc_ca_py_1',
         inputDescription: 'calculate_average([10, 20, 30])',
         inputs: [[10, 20, 30]],
         expectedOutput: 20.0,
       },
       {
-        id: 'tc_2',
+        id: 'tc_ca_py_2',
         inputDescription: 'calculate_average([5, 15])',
         inputs: [[5, 15]],
         expectedOutput: 10.0,
       },
       {
-        id: 'tc_3',
+        id: 'tc_ca_py_3',
         inputDescription: 'calculate_average([100])',
         inputs: [[100]],
         expectedOutput: 100.0,
@@ -62,9 +67,140 @@ export const CURATED_CHALLENGES: Challenge[] = [
     zone: 'The Neon Outskirts',
   },
 
-  // 2. The Lost Robot - JavaScript
+  // 1B. Calculate Average - JAVASCRIPT
+  {
+    id: 'calculate_average_js',
+    slug: 'calculate_average',
+    title: 'The Glitched Scorekeeper',
+    storyContext:
+      'The neon arcade terminal in Sector 7 is giving players corrupted averages! The high scores keep halving unexpectedly.',
+    language: 'javascript',
+    difficulty: 'easy',
+    concept: 'Operator Precedence & Loop Variables',
+    brokenCode: `function calculateAverage(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let total = 0;
+    for (let i = 0; i < numbers.length; i++) {
+        total += numbers[i];
+    }
+    // The phantom corrupted the division line
+    return total / (numbers.length * 2);
+}`,
+    expectedBehavior: 'Returns the exact arithmetic mean (sum / count) for an array of numbers.',
+    actualBehavior: 'Returns half of the actual average because of accidental multiplication by 2.',
+    entryFunction: 'calculateAverage',
+    testCases: [
+      {
+        id: 'tc_ca_js_1',
+        inputDescription: 'calculateAverage([10, 20, 30])',
+        inputs: [[10, 20, 30]],
+        expectedOutput: 20.0,
+      },
+      {
+        id: 'tc_ca_js_2',
+        inputDescription: 'calculateAverage([5, 15])',
+        inputs: [[5, 15]],
+        expectedOutput: 10.0,
+      },
+      {
+        id: 'tc_ca_js_3',
+        inputDescription: 'calculateAverage([100])',
+        inputs: [[100]],
+        expectedOutput: 100.0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look closely at the return statement on the final line.',
+      hint2_clue: 'The average is sum divided by count: sum / numbers.length. Notice what extra factor is in the denominator.',
+      hint3_narrow: 'Remove the "* 2" multiplier from the denominator so it divides simply by numbers.length.',
+      solution: `function calculateAverage(numbers) {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let total = 0;
+    for (let i = 0; i < numbers.length; i++) {
+        total += numbers[i];
+    }
+    return total / numbers.length;
+}`,
+      solutionExplanation: 'Dividing total by numbers.length without multiplying by 2 yields the correct arithmetic average.',
+    },
+    explanationOfBug: 'An erroneous multiplier `* 2` in the divisor caused the result to be halved on every calculation.',
+    explanationOfCorrection: 'Removing the factor of 2 restores the true mathematical definition of an arithmetic average.',
+    estimatedMinutes: 3,
+    xpReward: 100,
+    source: 'curated-fallback',
+    zone: 'The Neon Outskirts',
+  },
+
+  // 2A. The Lost Robot - PYTHON
+  {
+    id: 'the_lost_robot_py',
+    slug: 'the_lost_robot',
+    title: 'The Lost Robot',
+    storyContext:
+      'A patrol droid in the Cybernetic Core is wandering off the grid because its route boundary check is leaking.',
+    language: 'python',
+    difficulty: 'easy',
+    concept: 'Array Indexing & Boundary Errors',
+    brokenCode: `def get_next_waypoints(waypoints):
+    active_path = []
+    # The phantom loop runs one extra iteration past the list length!
+    for i in range(len(waypoints) + 1):
+        if i < len(waypoints):
+            active_path.append(waypoints[i])
+        else:
+            # Bug: adds None into the active path
+            active_path.append("CORRUPTED")
+    return len(active_path)`,
+    expectedBehavior: 'Returns exactly the count of valid waypoints without appending out-of-bounds corruption.',
+    actualBehavior: 'Loops past len(waypoints) and appends a corrupted node, returning length + 1.',
+    entryFunction: 'get_next_waypoints',
+    testCases: [
+      {
+        id: 'tc_rb_py_1',
+        inputDescription: 'get_next_waypoints(["Alpha", "Bravo", "Charlie"])',
+        inputs: [["Alpha", "Bravo", "Charlie"]],
+        expectedOutput: 3,
+      },
+      {
+        id: 'tc_rb_py_2',
+        inputDescription: 'get_next_waypoints(["Base"])',
+        inputs: [["Base"]],
+        expectedOutput: 1,
+      },
+      {
+        id: 'tc_rb_py_3',
+        inputDescription: 'get_next_waypoints([])',
+        inputs: [[]],
+        expectedOutput: 0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the range in the for loop: range(len(waypoints) + 1).',
+      hint2_clue: 'In Python, range(N) iterates from 0 up to N-1. If you specify len(waypoints) + 1, it runs an extra step.',
+      hint3_narrow: 'Change "range(len(waypoints) + 1)" to "range(len(waypoints))" and remove the corrupted branch.',
+      solution: `def get_next_waypoints(waypoints):
+    active_path = []
+    for i in range(len(waypoints)):
+        active_path.append(waypoints[i])
+    return len(active_path)`,
+      solutionExplanation: 'Iterating strictly within range(len(waypoints)) processes only valid waypoints.',
+    },
+    explanationOfBug: 'A boundary off-by-one error using `len(waypoints) + 1` caused an extra corrupted entry to be appended.',
+    explanationOfCorrection: 'Iterating up to `len(waypoints)` preserves exact waypoint count.',
+    estimatedMinutes: 4,
+    xpReward: 120,
+    source: 'curated-fallback',
+    zone: 'The Neon Outskirts',
+  },
+
+  // 2B. The Lost Robot - JAVASCRIPT
   {
     id: 'the_lost_robot',
+    slug: 'the_lost_robot',
     title: 'The Lost Robot',
     storyContext:
       'A patrol droid in the Cybernetic Core is wandering off the grid because its route boundary check is leaking.',
@@ -82,23 +218,23 @@ export const CURATED_CHALLENGES: Challenge[] = [
     return activePath.length;
 }`,
     expectedBehavior: 'Returns exactly the count of valid waypoints without checking undefined out-of-bounds indices.',
-    actualBehavior: 'Loops up to i <= waypoints.length, triggering an out-of-bounds check and potential undefined faults.',
+    actualBehavior: 'Loops up to i <= waypoints.length, triggering an out-of-bounds check.',
     entryFunction: 'getNextWaypoints',
     testCases: [
       {
-        id: 'tc_rb_1',
+        id: 'tc_rb_js_1',
         inputDescription: 'getNextWaypoints(["Alpha", "Bravo", "Charlie"])',
         inputs: [["Alpha", "Bravo", "Charlie"]],
         expectedOutput: 3,
       },
       {
-        id: 'tc_rb_2',
+        id: 'tc_rb_js_2',
         inputDescription: 'getNextWaypoints(["Base"])',
         inputs: [["Base"]],
         expectedOutput: 1,
       },
       {
-        id: 'tc_rb_3',
+        id: 'tc_rb_js_3',
         inputDescription: 'getNextWaypoints([])',
         inputs: [[]],
         expectedOutput: 0,
@@ -119,7 +255,7 @@ export const CURATED_CHALLENGES: Challenge[] = [
 }`,
       solutionExplanation: 'Using strict inequality (i < waypoints.length) prevents off-by-one errors.',
     },
-    explanationOfBug: 'A classic off-by-one error using `<=` instead of `<` caused the loop to attempt accessing the index equal to array length.',
+    explanationOfBug: 'A classic off-by-one error using `<=` instead of `<` caused the loop to attempt accessing out-of-bounds indices.',
     explanationOfCorrection: 'Switching to `< waypoints.length` ensures only existing indices are visited.',
     estimatedMinutes: 4,
     xpReward: 120,
@@ -127,9 +263,14 @@ export const CURATED_CHALLENGES: Challenge[] = [
     zone: 'The Neon Outskirts',
   },
 
-  // 3. The Phantom Vault - Python
+  // =========================================================================
+  // SECTOR 2: THE PHANTOM VAULT
+  // =========================================================================
+
+  // 3A. The Phantom Vault - PYTHON
   {
     id: 'phantom_vault',
+    slug: 'phantom_vault',
     title: 'The Phantom Vault',
     storyContext:
       'The security gatekeeper in the Dark Core is granting access to unauthorized intruders due to inverted boolean logic!',
@@ -148,25 +289,25 @@ export const CURATED_CHALLENGES: Challenge[] = [
     entryFunction: 'verify_vault_access',
     testCases: [
       {
-        id: 'tc_pv_1',
+        id: 'tc_pv_py_1',
         inputDescription: 'verify_vault_access("Admin", True, False)',
         inputs: ['Admin', true, false],
         expectedOutput: true,
       },
       {
-        id: 'tc_pv_2',
+        id: 'tc_pv_py_2',
         inputDescription: 'verify_vault_access("Guest", False, False)',
         inputs: ['Guest', false, false],
         expectedOutput: false,
       },
       {
-        id: 'tc_pv_3',
+        id: 'tc_pv_py_3',
         inputDescription: 'verify_vault_access("Guest", False, True)',
         inputs: ['Guest', false, true],
         expectedOutput: true,
       },
       {
-        id: 'tc_pv_4',
+        id: 'tc_pv_py_4',
         inputDescription: 'verify_vault_access("Admin", False, False)',
         inputs: ['Admin', false, false],
         expectedOutput: false,
@@ -192,9 +333,142 @@ export const CURATED_CHALLENGES: Challenge[] = [
     zone: 'The Phantom Vault',
   },
 
-  // 4. Space Station Emergency - JavaScript
+  // 3B. The Phantom Vault - JAVASCRIPT
+  {
+    id: 'phantom_vault_js',
+    slug: 'phantom_vault',
+    title: 'The Phantom Vault',
+    storyContext:
+      'The security gatekeeper in the Dark Core is granting access to unauthorized intruders due to inverted boolean logic!',
+    language: 'javascript',
+    difficulty: 'medium',
+    concept: 'Boolean Logic & Compound Conditions',
+    brokenCode: `function verifyVaultAccess(userRole, hasKeycard, emergencyOverride) {
+    if (emergencyOverride) {
+        return true;
+    }
+    // Phantom logic flaw: grants access if keycard is false!
+    if (userRole === "Admin" || !hasKeycard) {
+        return true;
+    }
+    return false;
+}`,
+    expectedBehavior: 'Admins require a keycard unless emergency override is active; non-admins are denied.',
+    actualBehavior: 'Grants access to anyone who does NOT possess a keycard!',
+    entryFunction: 'verifyVaultAccess',
+    testCases: [
+      {
+        id: 'tc_pv_js_1',
+        inputDescription: 'verifyVaultAccess("Admin", true, false)',
+        inputs: ['Admin', true, false],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_js_2',
+        inputDescription: 'verifyVaultAccess("Guest", false, false)',
+        inputs: ['Guest', false, false],
+        expectedOutput: false,
+      },
+      {
+        id: 'tc_pv_js_3',
+        inputDescription: 'verifyVaultAccess("Guest", false, true)',
+        inputs: ['Guest', false, true],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_js_4',
+        inputDescription: 'verifyVaultAccess("Admin", false, false)',
+        inputs: ['Admin', false, false],
+        expectedOutput: false,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Inspect the condition `userRole === "Admin" || !hasKeycard`.',
+      hint2_clue: 'Why would someone get access when they DO NOT have a keycard (`!hasKeycard`)?',
+      hint3_narrow: 'Change the condition to `userRole === "Admin" && hasKeycard`.',
+      solution: `function verifyVaultAccess(userRole, hasKeycard, emergencyOverride) {
+    if (emergencyOverride) {
+        return true;
+    }
+    if (userRole === "Admin" && hasKeycard) {
+        return true;
+    }
+    return false;
+}`,
+      solutionExplanation: 'Using `&& hasKeycard` verifies both administrative credentials and physical access token.',
+    },
+    explanationOfBug: 'Using `|| !hasKeycard` mistakenly admitted any user without a keycard.',
+    explanationOfCorrection: 'Replaced with `&& hasKeycard` to require both Admin role and a valid keycard.',
+    estimatedMinutes: 5,
+    xpReward: 160,
+    source: 'curated-fallback',
+    zone: 'The Phantom Vault',
+  },
+
+  // =========================================================================
+  // SECTOR 3: CYBERNETIC CORE
+  // =========================================================================
+
+  // 4A. Space Station Emergency - PYTHON
+  {
+    id: 'space_station_emergency_py',
+    slug: 'space_station_emergency',
+    title: 'Space Station Emergency',
+    storyContext:
+      'Orbital Sensor Station Kepler is reporting dangerous oxygen pressure spikes due to an accumulator reset mistake in telemetry batching.',
+    language: 'python',
+    difficulty: 'medium',
+    concept: 'Accumulator Scope & State Mutation',
+    brokenCode: `def calculate_oxygen_levels(readings):
+    result = []
+    current_oxygen = 100
+    for diff in readings:
+        # Phantom error: resetting oxygen to 100 on every reading instead of compounding!
+        current_oxygen = 100 - diff
+        result.append(current_oxygen)
+    return result`,
+    expectedBehavior: 'Oxygen levels should compound over time (previous level minus current consumption reading).',
+    actualBehavior: 'Resets to 100 - diff on every reading instead of subtracting from the running level.',
+    entryFunction: 'calculate_oxygen_levels',
+    testCases: [
+      {
+        id: 'tc_ss_py_1',
+        inputDescription: 'calculate_oxygen_levels([10, 5, 15])',
+        inputs: [[10, 5, 15]],
+        expectedOutput: [90, 85, 70],
+      },
+      {
+        id: 'tc_ss_py_2',
+        inputDescription: 'calculate_oxygen_levels([20, 30])',
+        inputs: [[20, 30]],
+        expectedOutput: [80, 50],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at how `current_oxygen` is recalculated inside the loop.',
+      hint2_clue: 'You want consumption to subtract from the CURRENT remaining oxygen, not always from 100.',
+      hint3_narrow: 'Change `current_oxygen = 100 - diff` to `current_oxygen = current_oxygen - diff`.',
+      solution: `def calculate_oxygen_levels(readings):
+    result = []
+    current_oxygen = 100
+    for diff in readings:
+        current_oxygen = current_oxygen - diff
+        result.append(current_oxygen)
+    return result`,
+      solutionExplanation: 'Subtracting diff from current_oxygen maintains correct state across sensor readings.',
+    },
+    explanationOfBug: 'Subtracting from static 100 caused oxygen levels to reset on every reading.',
+    explanationOfCorrection: 'Subtracting from the accumulated `current_oxygen` variable computes remaining oxygen accurately.',
+    estimatedMinutes: 6,
+    xpReward: 180,
+    source: 'curated-fallback',
+    zone: 'Cybernetic Core',
+  },
+
+  // 4B. Space Station Emergency - JAVASCRIPT
   {
     id: 'space_station_emergency',
+    slug: 'space_station_emergency',
     title: 'Space Station Emergency',
     storyContext:
       'Orbital Sensor Station Kepler is reporting dangerous oxygen pressure spikes due to an accumulator reset mistake in telemetry batching.',
@@ -214,17 +488,17 @@ export const CURATED_CHALLENGES: Challenge[] = [
     return result;
 }`,
     expectedBehavior: 'Oxygen levels should compound over time (previous level minus current consumption reading).',
-    actualBehavior: 'Re-declares currentOxygen with `let` inside the loop, shadowing outer state and resetting base to 100 every iteration.',
+    actualBehavior: 'Re-declares currentOxygen with let inside loop, shadowing outer state and resetting base to 100.',
     entryFunction: 'calculateOxygenLevels',
     testCases: [
       {
-        id: 'tc_ss_1',
+        id: 'tc_ss_js_1',
         inputDescription: 'calculateOxygenLevels([10, 5, 15])',
         inputs: [[10, 5, 15]],
         expectedOutput: [90, 85, 70],
       },
       {
-        id: 'tc_ss_2',
+        id: 'tc_ss_js_2',
         inputDescription: 'calculateOxygenLevels([20, 30])',
         inputs: [[20, 30]],
         expectedOutput: [80, 50],
@@ -255,9 +529,14 @@ export const CURATED_CHALLENGES: Challenge[] = [
     zone: 'Cybernetic Core',
   },
 
-  // 5. The Time Machine - Python
+  // =========================================================================
+  // SECTOR 4: TEMPORAL NEXUS
+  // =========================================================================
+
+  // 5A. The Time Machine - PYTHON
   {
     id: 'the_time_machine',
+    slug: 'the_time_machine',
     title: 'The Time Machine',
     storyContext:
       'The Chrono-Displacement Engine fails to calculate temporal jump offsets because of an off-by-one slice.',
@@ -277,19 +556,19 @@ export const CURATED_CHALLENGES: Challenge[] = [
     entryFunction: 'compute_temporal_drift',
     testCases: [
       {
-        id: 'tc_tm_1',
+        id: 'tc_tm_py_1',
         inputDescription: 'compute_temporal_drift([100, 150, 220, 310])',
         inputs: [[100, 150, 220, 310]],
         expectedOutput: 210,
       },
       {
-        id: 'tc_tm_2',
+        id: 'tc_tm_py_2',
         inputDescription: 'compute_temporal_drift([50, 120])',
         inputs: [[50, 120]],
         expectedOutput: 70,
       },
       {
-        id: 'tc_tm_3',
+        id: 'tc_tm_py_3',
         inputDescription: 'compute_temporal_drift([99])',
         inputs: [[99]],
         expectedOutput: 0,
@@ -315,9 +594,138 @@ export const CURATED_CHALLENGES: Challenge[] = [
     zone: 'Temporal Nexus',
   },
 
-  // 6. The Final Signal - JavaScript
+  // 5B. The Time Machine - JAVASCRIPT
+  {
+    id: 'the_time_machine_js',
+    slug: 'the_time_machine',
+    title: 'The Time Machine',
+    storyContext:
+      'The Chrono-Displacement Engine fails to calculate temporal jump offsets because of an off-by-one slice.',
+    language: 'javascript',
+    difficulty: 'hard',
+    concept: 'Slice Boundaries & Reversal Logic',
+    brokenCode: `function computeTemporalDrift(timestamps) {
+    if (timestamps.length < 2) {
+        return 0;
+    }
+    // Phantom altered the slice indices!
+    let firstStamp = timestamps[1];
+    let lastStamp = timestamps[timestamps.length - 1];
+    return lastStamp - firstStamp;
+}`,
+    expectedBehavior: 'Calculates the drift between the very first timestamp (index 0) and the final timestamp.',
+    actualBehavior: 'Reads timestamps[1] instead of timestamps[0], ignoring the true starting anchor.',
+    entryFunction: 'computeTemporalDrift',
+    testCases: [
+      {
+        id: 'tc_tm_js_1',
+        inputDescription: 'computeTemporalDrift([100, 150, 220, 310])',
+        inputs: [[100, 150, 220, 310]],
+        expectedOutput: 210,
+      },
+      {
+        id: 'tc_tm_js_2',
+        inputDescription: 'computeTemporalDrift([50, 120])',
+        inputs: [[50, 120]],
+        expectedOutput: 70,
+      },
+      {
+        id: 'tc_tm_js_3',
+        inputDescription: 'computeTemporalDrift([99])',
+        inputs: [[99]],
+        expectedOutput: 0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the index used to fetch `firstStamp`.',
+      hint2_clue: 'In zero-indexed languages, the very first element is at index 0, not 1.',
+      hint3_narrow: 'Change `timestamps[1]` to `timestamps[0]`.',
+      solution: `function computeTemporalDrift(timestamps) {
+    if (timestamps.length < 2) {
+        return 0;
+    }
+    let firstStamp = timestamps[0];
+    let lastStamp = timestamps[timestamps.length - 1];
+    return lastStamp - firstStamp;
+}`,
+      solutionExplanation: 'Using `timestamps[0]` accurately references the starting timestamp.',
+    },
+    explanationOfBug: 'Index 1 was used instead of 0, dropping the initial measurement.',
+    explanationOfCorrection: 'Accessing index 0 measures total duration correctly from start to finish.',
+    estimatedMinutes: 5,
+    xpReward: 200,
+    source: 'curated-fallback',
+    zone: 'Temporal Nexus',
+  },
+
+  // =========================================================================
+  // SECTOR 5: DEEP SHADOW MATRIX
+  // =========================================================================
+
+  // 6A. The Final Signal - PYTHON
+  {
+    id: 'the_final_signal_py',
+    slug: 'the_final_signal',
+    title: 'The Final Signal',
+    storyContext:
+      'The central beacon signal decoder in the Deep Shadow Matrix is corrupting transmission packets containing duplicate noise markers.',
+    language: 'python',
+    difficulty: 'hard',
+    concept: 'Deduplication & Truthy Evaluation',
+    brokenCode: `def decode_signal_packets(packets):
+    clean_packets = []
+    for item in packets:
+        # Phantom bug: filtering out valid 0 packets because of truthiness check
+        if item and item not in clean_packets:
+            clean_packets.append(item)
+    return clean_packets`,
+    expectedBehavior: 'Deduplicates numbers and strings in packets, preserving 0 as a valid numeric packet.',
+    actualBehavior: 'Drops `0` because `if item` evaluates `0` as falsy in Python!',
+    entryFunction: 'decode_signal_packets',
+    testCases: [
+      {
+        id: 'tc_fs_py_1',
+        inputDescription: 'decode_signal_packets([0, 1, 2, 0, 3, 1])',
+        inputs: [[0, 1, 2, 0, 3, 1]],
+        expectedOutput: [0, 1, 2, 3],
+      },
+      {
+        id: 'tc_fs_py_2',
+        inputDescription: 'decode_signal_packets([5, 5, 5])',
+        inputs: [[5, 5, 5]],
+        expectedOutput: [5],
+      },
+      {
+        id: 'tc_fs_py_3',
+        inputDescription: 'decode_signal_packets([0, 0])',
+        inputs: [[0, 0]],
+        expectedOutput: [0],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look closely at `if item and ...`. What happens when item is the number 0?',
+      hint2_clue: 'In Python, the number 0 is falsy, so `if 0` is False even though 0 is a valid packet value.',
+      hint3_narrow: 'Check `item is not None` instead of relying on `if item`.',
+      solution: `def decode_signal_packets(packets):
+    clean_packets = []
+    for item in packets:
+        if item is not None and item not in clean_packets:
+            clean_packets.append(item)
+    return clean_packets`,
+      solutionExplanation: 'Explicit None checking ensures valid 0 integers are preserved.',
+    },
+    explanationOfBug: 'Truthy condition evaluated the number 0 as falsy, discarding valid packet data.',
+    explanationOfCorrection: 'Checking `item is not None` safely permits 0 values.',
+    estimatedMinutes: 8,
+    xpReward: 250,
+    source: 'curated-fallback',
+    zone: 'Deep Shadow Matrix',
+  },
+
+  // 6B. The Final Signal - JAVASCRIPT
   {
     id: 'the_final_signal',
+    slug: 'the_final_signal',
     title: 'The Final Signal',
     storyContext:
       'The central beacon signal decoder in the Deep Shadow Matrix is corrupting transmission packets containing duplicate noise markers.',
@@ -340,19 +748,19 @@ export const CURATED_CHALLENGES: Challenge[] = [
     entryFunction: 'decodeSignalPackets',
     testCases: [
       {
-        id: 'tc_fs_1',
+        id: 'tc_fs_js_1',
         inputDescription: 'decodeSignalPackets([0, 1, 2, 0, 3, 1])',
         inputs: [[0, 1, 2, 0, 3, 1]],
         expectedOutput: [0, 1, 2, 3],
       },
       {
-        id: 'tc_fs_2',
+        id: 'tc_fs_js_2',
         inputDescription: 'decodeSignalPackets([5, 5, 5])',
         inputs: [[5, 5, 5]],
         expectedOutput: [5],
       },
       {
-        id: 'tc_fs_3',
+        id: 'tc_fs_js_3',
         inputDescription: 'decodeSignalPackets([0, 0])',
         inputs: [[0, 0]],
         expectedOutput: [0],
@@ -400,18 +808,34 @@ export class ChallengeService {
     return CURATED_CHALLENGES.filter((c) => c.difficulty === difficulty);
   }
 
+  /**
+   * Finds the counterpart challenge in the desired language for the same story/slug.
+   * If not found, falls back to the first challenge in that language.
+   */
+  static getChallengeForLanguage(currentChallenge: Challenge, targetLang: Language): Challenge {
+    if (currentChallenge.language === targetLang) {
+      return currentChallenge;
+    }
+    if (currentChallenge.slug) {
+      const match = CURATED_CHALLENGES.find(
+        (c) => c.slug === currentChallenge.slug && c.language === targetLang
+      );
+      if (match) return match;
+    }
+    const fallback = CURATED_CHALLENGES.find((c) => c.language === targetLang);
+    return fallback || currentChallenge;
+  }
+
   static getNextRecommendedChallenge(solvedIds: string[], preferredLang: Language): Challenge {
+    const langChallenges = CURATED_CHALLENGES.filter((c) => c.language === preferredLang);
+    
     // Find first unsolved challenge matching preferred language
-    const unsolved = CURATED_CHALLENGES.filter(
-      (c) => !solvedIds.includes(c.id) && c.language === preferredLang
-    );
+    const unsolved = langChallenges.filter((c) => !solvedIds.includes(c.id));
     if (unsolved.length > 0) return unsolved[0];
 
-    // Otherwise any unsolved challenge
-    const anyUnsolved = CURATED_CHALLENGES.filter((c) => !solvedIds.includes(c.id));
-    if (anyUnsolved.length > 0) return anyUnsolved[0];
+    // If all solved in this language, return first in this language
+    if (langChallenges.length > 0) return langChallenges[0];
 
-    // Default to the first challenge
     return CURATED_CHALLENGES[0];
   }
 }

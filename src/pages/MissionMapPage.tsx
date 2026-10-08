@@ -30,7 +30,7 @@ export const MissionMapPage: React.FC<MissionMapPageProps> = ({
       desc: 'Introductory anomalies and glitched street terminals.',
       minLevel: 1,
       color: 'from-phantom-purple to-phantom-violet',
-      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'The Neon Outskirts'),
+      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'The Neon Outskirts' && c.language === profile.selectedLanguage),
     },
     {
       id: 'z2',
@@ -38,7 +38,7 @@ export const MissionMapPage: React.FC<MissionMapPageProps> = ({
       desc: 'Inverted boolean locks guarding sensitive digital treasuries.',
       minLevel: 2,
       color: 'from-phantom-violet to-phantom-cyan',
-      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'The Phantom Vault'),
+      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'The Phantom Vault' && c.language === profile.selectedLanguage),
     },
     {
       id: 'z3',
@@ -46,7 +46,7 @@ export const MissionMapPage: React.FC<MissionMapPageProps> = ({
       desc: 'Orbital sensor drift and state-mutation telemetry hazards.',
       minLevel: 3,
       color: 'from-phantom-cyan to-phantom-teal',
-      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'Cybernetic Core'),
+      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'Cybernetic Core' && c.language === profile.selectedLanguage),
     },
     {
       id: 'z4',
@@ -54,7 +54,7 @@ export const MissionMapPage: React.FC<MissionMapPageProps> = ({
       desc: 'Chronological off-by-one errors warping timestamp records.',
       minLevel: 4,
       color: 'from-phantom-teal to-phantom-amber',
-      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'Temporal Nexus'),
+      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'Temporal Nexus' && c.language === profile.selectedLanguage),
     },
     {
       id: 'z5',
@@ -62,7 +62,7 @@ export const MissionMapPage: React.FC<MissionMapPageProps> = ({
       desc: 'High-order edge cases and packet deduplication corruption.',
       minLevel: 5,
       color: 'from-phantom-amber to-phantom-crimson',
-      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'Deep Shadow Matrix'),
+      cases: CURATED_CHALLENGES.filter((c) => c.zone === 'Deep Shadow Matrix' && c.language === profile.selectedLanguage),
     },
   ];
 

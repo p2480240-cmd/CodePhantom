@@ -40,6 +40,7 @@ export interface Challenge {
   source: ChallengeSource;
   zone?: string;
   entryFunction: string;      // Name of the function to test
+  slug?: string;              // Cross-language identifier (e.g. "the_lost_robot")
 }
 
 export interface TestResult {
@@ -112,6 +113,8 @@ export interface UserProfile {
   completedLessons: string[];
   achievements: Achievement[];
   dailyQuests: DailyQuest[];
+  savedCode?: Record<string, string>; // challengeId -> latest edited code
+  lastActiveChallengeId?: string;
   isGuest: boolean;
   apiKeyConfigured: boolean;
   customApiKey?: string;

@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   USER_PROFILE: 'codephantom_user_profile',
   ACTIVITY_HISTORY: 'codephantom_activity_history',
   CUSTOM_CHALLENGES: 'codephantom_custom_challenges',
+  SAVED_CODE_PREFIX: 'codephantom_code_',
 };
 
 export const INITIAL_ACHIEVEMENTS: Achievement[] = [
@@ -192,7 +193,10 @@ export class StorageService {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (!parsed.solvedChallengeIds) parsed.solvedChallengeIds = [];
+        if (!parsed.savedCode) parsed.savedCode = {};
+        return parsed;
       }
     } catch (e) {
       console.warn('Error reading user profile from localStorage:', e);
@@ -211,11 +215,12 @@ export class StorageService {
       lastActiveDate: getTodayDateString(),
       selectedLanguage: 'python',
       selectedMode: 'hunt',
-      solvedChallengeIds: ['calc_average', 'palindrome_check'],
+      solvedChallengeIds: [],
       revealedHints: {},
       completedLessons: ['lesson_vars', 'lesson_loops'],
       achievements: INITIAL_ACHIEVEMENTS,
       dailyQuests: INITIAL_DAILY_QUESTS,
+      savedCode: {},
       isGuest: true,
       apiKeyConfigured: Boolean(import.meta.env.VITE_GEMINI_API_KEY),
       customApiKey: '',
@@ -231,6 +236,40 @@ export class StorageService {
     } catch (e) {
       console.error('Failed to save profile:', e);
     }
+  }
+
+  static saveUserCode(challengeId: string, code: string): void {
+    try {
+      localStorage.setItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`, code);
+      const profile = StorageService.getProfile();
+      if (!profile.savedCode) profile.savedCode = {};
+      profile.savedCode[challengeId] = code;
+      StorageService.saveProfile(profile);
+    } catch (e) {
+      console.warn('Failed to save user code to storage:', e);
+    }
+  }
+
+  static getUserCode(challengeId: string): string | null {
+    try {
+      const direct = localStorage.getItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`);
+      if (direct) return direct;
+      const profile = StorageService.getProfile();
+      return profile.savedCode?.[challengeId] || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static clearUserCode(challengeId: string): void {
+    try {
+      localStorage.removeItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`);
+      const profile = StorageService.getProfile();
+      if (profile.savedCode && profile.savedCode[challengeId]) {
+        delete profile.savedCode[challengeId];
+        StorageService.saveProfile(profile);
+      }
+    } catch (e) {}
   }
 
   static getActivityHistory(): Record<string, ActivityDay> {
