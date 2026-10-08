@@ -916,6 +916,262 @@ export const CURATED_CHALLENGES: Challenge[] = [
     source: 'curated-fallback',
     zone: 'Cybernetic Core',
   },
+  {
+    id: 'phantom_vault_ts',
+    slug: 'phantom_vault',
+    title: 'The Phantom Vault (TS)',
+    storyContext:
+      'The security gatekeeper in the Dark Core is granting access to unauthorized intruders due to inverted boolean logic!',
+    language: 'typescript',
+    difficulty: 'medium',
+    concept: 'Boolean Logic & Compound Conditions',
+    brokenCode: `function verifyVaultAccess(userRole: string, hasKeycard: boolean, emergencyOverride: boolean): boolean {
+    if (emergencyOverride) {
+        return true;
+    }
+    // Phantom logic flaw: grants access if keycard is false!
+    if (userRole === "Admin" || !hasKeycard) {
+        return true;
+    }
+    return false;
+}`,
+    expectedBehavior: 'Admins require a keycard unless emergency override is active; non-admins are denied.',
+    actualBehavior: 'Grants access to anyone who does NOT possess a keycard!',
+    entryFunction: 'verifyVaultAccess',
+    testCases: [
+      {
+        id: 'tc_pv_ts_1',
+        inputDescription: 'verifyVaultAccess("Admin", true, false)',
+        inputs: ['Admin', true, false],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_ts_2',
+        inputDescription: 'verifyVaultAccess("Guest", false, false)',
+        inputs: ['Guest', false, false],
+        expectedOutput: false,
+      },
+      {
+        id: 'tc_pv_ts_3',
+        inputDescription: 'verifyVaultAccess("Guest", false, true)',
+        inputs: ['Guest', false, true],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_ts_4',
+        inputDescription: 'verifyVaultAccess("Admin", false, false)',
+        inputs: ['Admin', false, false],
+        expectedOutput: false,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Inspect the condition `userRole === "Admin" || !hasKeycard`.',
+      hint2_clue: 'Why would someone get access when they DO NOT have a keycard (`!hasKeycard`)?',
+      hint3_narrow: 'Change the condition to `userRole === "Admin" && hasKeycard`.',
+      solution: `function verifyVaultAccess(userRole: string, hasKeycard: boolean, emergencyOverride: boolean): boolean {
+    if (emergencyOverride) {
+        return true;
+    }
+    if (userRole === "Admin" && hasKeycard) {
+        return true;
+    }
+    return false;
+}`,
+      solutionExplanation: 'Using `&& hasKeycard` verifies both administrative credentials and physical access token.',
+    },
+    explanationOfBug: 'Using `|| !hasKeycard` mistakenly admitted any user without a keycard.',
+    explanationOfCorrection: 'Replaced with `&& hasKeycard` to require both Admin role and a valid keycard.',
+    estimatedMinutes: 5,
+    xpReward: 160,
+    source: 'curated-fallback',
+    zone: 'The Phantom Vault',
+  },
+  {
+    id: 'space_station_emergency_ts',
+    slug: 'space_station_emergency',
+    title: 'Space Station Emergency (TS)',
+    storyContext:
+      'Orbital Sensor Station Kepler is reporting dangerous oxygen pressure spikes due to an accumulator reset mistake in telemetry batching.',
+    language: 'typescript',
+    difficulty: 'medium',
+    concept: 'Accumulator Scope & State Mutation',
+    brokenCode: `function calculateOxygenLevels(readings: number[]): number[] {
+    let result: number[] = [];
+    let currentOxygen = 100;
+    for (let i = 0; i < readings.length; i++) {
+        // Phantom error: shadowing resets current oxygen on every cycle!
+        let currentOxygen = 100 - readings[i];
+        result.push(currentOxygen);
+    }
+    return result;
+}`,
+    expectedBehavior: 'Oxygen levels should compound over time (previous level minus current consumption reading).',
+    actualBehavior: 'Resets to 100 - diff on every reading instead of subtracting from running level.',
+    entryFunction: 'calculateOxygenLevels',
+    testCases: [
+      {
+        id: 'tc_ss_ts_1',
+        inputDescription: 'calculateOxygenLevels([10, 5, 15])',
+        inputs: [[10, 5, 15]],
+        expectedOutput: [90, 85, 70],
+      },
+      {
+        id: 'tc_ss_ts_2',
+        inputDescription: 'calculateOxygenLevels([20, 30])',
+        inputs: [[20, 30]],
+        expectedOutput: [80, 50],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the declaration of `currentOxygen` inside the for-loop.',
+      hint2_clue: 'When you declare `let currentOxygen` inside the loop, you shadow the outer accumulator.',
+      hint3_narrow: 'Remove `let` inside the loop and mutate the accumulator: `currentOxygen = currentOxygen - readings[i];`.',
+      solution: `function calculateOxygenLevels(readings: number[]): number[] {
+    let result: number[] = [];
+    let currentOxygen = 100;
+    for (let i = 0; i < readings.length; i++) {
+        currentOxygen = currentOxygen - readings[i];
+        result.push(currentOxygen);
+    }
+    return result;
+}`,
+      solutionExplanation: 'Updating the outer currentOxygen variable correctly accumulates changes across readings.',
+    },
+    explanationOfBug: 'Variable shadowing caused currentOxygen to reset to 100 every iteration.',
+    explanationOfCorrection: 'Removed `let` inside loop to update the outer accumulator properly.',
+    estimatedMinutes: 6,
+    xpReward: 180,
+    source: 'curated-fallback',
+    zone: 'Cybernetic Core',
+  },
+  {
+    id: 'the_time_machine_ts',
+    slug: 'the_time_machine',
+    title: 'The Time Machine (TS)',
+    storyContext:
+      'The Chrono-Displacement Engine fails to calculate temporal jump offsets because of an off-by-one slice.',
+    language: 'typescript',
+    difficulty: 'hard',
+    concept: 'Slice Boundaries & Reversal Logic',
+    brokenCode: `function computeTemporalDrift(timestamps: number[]): number {
+    if (timestamps.length < 2) {
+        return 0;
+    }
+    // Phantom altered the slice indices!
+    let firstStamp = timestamps[1];
+    let lastStamp = timestamps[timestamps.length - 1];
+    return lastStamp - firstStamp;
+}`,
+    expectedBehavior: 'Calculates the drift between the very first timestamp (index 0) and the final timestamp.',
+    actualBehavior: 'Reads timestamps[1] instead of timestamps[0], ignoring the true starting anchor.',
+    entryFunction: 'computeTemporalDrift',
+    testCases: [
+      {
+        id: 'tc_tm_ts_1',
+        inputDescription: 'computeTemporalDrift([100, 150, 220, 310])',
+        inputs: [[100, 150, 220, 310]],
+        expectedOutput: 210,
+      },
+      {
+        id: 'tc_tm_ts_2',
+        inputDescription: 'computeTemporalDrift([50, 120])',
+        inputs: [[50, 120]],
+        expectedOutput: 70,
+      },
+      {
+        id: 'tc_tm_ts_3',
+        inputDescription: 'computeTemporalDrift([99])',
+        inputs: [[99]],
+        expectedOutput: 0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the index used to fetch `firstStamp`.',
+      hint2_clue: 'In zero-indexed languages, the very first element is at index 0, not 1.',
+      hint3_narrow: 'Change `timestamps[1]` to `timestamps[0]`.',
+      solution: `function computeTemporalDrift(timestamps: number[]): number {
+    if (timestamps.length < 2) {
+        return 0;
+    }
+    let firstStamp = timestamps[0];
+    let lastStamp = timestamps[timestamps.length - 1];
+    return lastStamp - firstStamp;
+}`,
+      solutionExplanation: 'Using `timestamps[0]` accurately references the starting timestamp.',
+    },
+    explanationOfBug: 'Index 1 was used instead of 0, dropping the initial measurement.',
+    explanationOfCorrection: 'Accessing index 0 measures total duration correctly from start to finish.',
+    estimatedMinutes: 5,
+    xpReward: 200,
+    source: 'curated-fallback',
+    zone: 'Temporal Nexus',
+  },
+  {
+    id: 'the_final_signal_ts',
+    slug: 'the_final_signal',
+    title: 'The Final Signal (TS)',
+    storyContext:
+      'The central beacon signal decoder in the Deep Shadow Matrix is corrupting transmission packets containing duplicate noise markers.',
+    language: 'typescript',
+    difficulty: 'hard',
+    concept: 'Deduplication & Truthy Evaluation',
+    brokenCode: `function decodeSignalPackets(packets: number[]): number[] {
+    let cleanPackets: number[] = [];
+    for (let i = 0; i < packets.length; i++) {
+        let item = packets[i];
+        // Phantom bug: filtering out valid 0 packets because of truthiness check
+        if (item && !cleanPackets.includes(item)) {
+            cleanPackets.push(item);
+        }
+    }
+    return cleanPackets;
+}`,
+    expectedBehavior: 'Deduplicates numbers and strings in packets, preserving 0 as a valid numeric packet.',
+    actualBehavior: 'Drops `0` because `if (item)` evaluates `0` as falsy!',
+    entryFunction: 'decodeSignalPackets',
+    testCases: [
+      {
+        id: 'tc_fs_ts_1',
+        inputDescription: 'decodeSignalPackets([0, 1, 2, 0, 3, 1])',
+        inputs: [[0, 1, 2, 0, 3, 1]],
+        expectedOutput: [0, 1, 2, 3],
+      },
+      {
+        id: 'tc_fs_ts_2',
+        inputDescription: 'decodeSignalPackets([5, 5, 5])',
+        inputs: [[5, 5, 5]],
+        expectedOutput: [5],
+      },
+      {
+        id: 'tc_fs_ts_3',
+        inputDescription: 'decodeSignalPackets([0, 0])',
+        inputs: [[0, 0]],
+        expectedOutput: [0],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look closely at `if (item && ...)`. What happens when item is the number 0?',
+      hint2_clue: 'In TypeScript/JavaScript, 0 is falsy, so `if (0)` fails even though 0 is a valid packet value.',
+      hint3_narrow: 'Check `item !== null && item !== undefined` instead of relying on `if (item)`.',
+      solution: `function decodeSignalPackets(packets: number[]): number[] {
+    let cleanPackets: number[] = [];
+    for (let i = 0; i < packets.length; i++) {
+        let item = packets[i];
+        if (item !== null && item !== undefined && !cleanPackets.includes(item)) {
+            cleanPackets.push(item);
+        }
+    }
+    return cleanPackets;
+}`,
+      solutionExplanation: 'Explicit null/undefined checking ensures valid 0 integers are retained.',
+    },
+    explanationOfBug: 'Coercing item to a boolean caused valid zero (0) packets to be discarded as falsy.',
+    explanationOfCorrection: 'Using strict checks `item !== null && item !== undefined` allows 0 to be processed.',
+    estimatedMinutes: 8,
+    xpReward: 250,
+    source: 'curated-fallback',
+    zone: 'Deep Shadow Matrix',
+  },
 
   // =========================================================================
   // C++ CASES
@@ -1042,6 +1298,278 @@ export const CURATED_CHALLENGES: Challenge[] = [
     xpReward: 120,
     source: 'curated-fallback',
     zone: 'Cybernetic Core',
+  },
+  {
+    id: 'phantom_vault_cpp',
+    slug: 'phantom_vault',
+    title: 'The Phantom Vault (C++)',
+    storyContext:
+      'The security gatekeeper in the Dark Core is granting access to unauthorized intruders due to inverted boolean logic!',
+    language: 'cpp',
+    difficulty: 'medium',
+    concept: 'Boolean Logic & Compound Conditions',
+    brokenCode: `bool verifyVaultAccess(std::string userRole, bool hasKeycard, bool emergencyOverride) {
+    if (emergencyOverride) {
+        return true;
+    }
+    // Phantom logic flaw: grants access if keycard is false!
+    if (userRole == "Admin" || !hasKeycard) {
+        return true;
+    }
+    return false;
+}`,
+    expectedBehavior: 'Admins require a keycard unless emergency override is active; non-admins are denied.',
+    actualBehavior: 'Grants access to anyone who does NOT possess a keycard!',
+    entryFunction: 'verifyVaultAccess',
+    testCases: [
+      {
+        id: 'tc_pv_cpp_1',
+        inputDescription: 'verifyVaultAccess("Admin", true, false)',
+        inputs: ['Admin', true, false],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_cpp_2',
+        inputDescription: 'verifyVaultAccess("Guest", false, false)',
+        inputs: ['Guest', false, false],
+        expectedOutput: false,
+      },
+      {
+        id: 'tc_pv_cpp_3',
+        inputDescription: 'verifyVaultAccess("Guest", false, true)',
+        inputs: ['Guest', false, true],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_cpp_4',
+        inputDescription: 'verifyVaultAccess("Admin", false, false)',
+        inputs: ['Admin', false, false],
+        expectedOutput: false,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Inspect the condition `userRole == "Admin" || !hasKeycard`.',
+      hint2_clue: 'Why would someone get access when they DO NOT have a keycard (`!hasKeycard`)?',
+      hint3_narrow: 'Change the condition to `userRole == "Admin" && hasKeycard`.',
+      solution: `bool verifyVaultAccess(std::string userRole, bool hasKeycard, bool emergencyOverride) {
+    if (emergencyOverride) {
+        return true;
+    }
+    if (userRole == "Admin" && hasKeycard) {
+        return true;
+    }
+    return false;
+}`,
+      solutionExplanation: 'Using `&& hasKeycard` verifies both administrative credentials and physical access token.',
+    },
+    explanationOfBug: 'Using `|| !hasKeycard` mistakenly admitted any user without a keycard.',
+    explanationOfCorrection: 'Replaced with `&& hasKeycard` to require both Admin role and a valid keycard.',
+    estimatedMinutes: 5,
+    xpReward: 160,
+    source: 'curated-fallback',
+    zone: 'The Phantom Vault',
+  },
+  {
+    id: 'space_station_emergency_cpp',
+    slug: 'space_station_emergency',
+    title: 'Space Station Emergency (C++)',
+    storyContext:
+      'Orbital Sensor Station Kepler is reporting dangerous oxygen pressure spikes due to an accumulator reset mistake in telemetry batching.',
+    language: 'cpp',
+    difficulty: 'medium',
+    concept: 'Accumulator Scope & State Mutation',
+    brokenCode: `std::vector<int> calculateOxygenLevels(std::vector<int> readings) {
+    std::vector<int> result;
+    int currentOxygen = 100;
+    for (size_t i = 0; i < readings.size(); i++) {
+        // Phantom error: resetting oxygen to 100 on every reading!
+        int currentOxygen = 100 - readings[i];
+        result.push_back(currentOxygen);
+    }
+    return result;
+}`,
+    expectedBehavior: 'Oxygen levels should compound over time (previous level minus current consumption reading).',
+    actualBehavior: 'Resets to 100 - diff on every reading instead of subtracting from running level.',
+    entryFunction: 'calculateOxygenLevels',
+    testCases: [
+      {
+        id: 'tc_ss_cpp_1',
+        inputDescription: 'calculateOxygenLevels({10, 5, 15})',
+        inputs: [[10, 5, 15]],
+        expectedOutput: [90, 85, 70],
+      },
+      {
+        id: 'tc_ss_cpp_2',
+        inputDescription: 'calculateOxygenLevels({20, 30})',
+        inputs: [[20, 30]],
+        expectedOutput: [80, 50],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at how `currentOxygen` is re-declared inside the loop.',
+      hint2_clue: 'Re-declaring `int currentOxygen` shadows the outer accumulator.',
+      hint3_narrow: 'Remove `int` inside the loop and mutate: `currentOxygen = currentOxygen - readings[i];`.',
+      solution: `std::vector<int> calculateOxygenLevels(std::vector<int> readings) {
+    std::vector<int> result;
+    int currentOxygen = 100;
+    for (size_t i = 0; i < readings.size(); i++) {
+        currentOxygen = currentOxygen - readings[i];
+        result.push_back(currentOxygen);
+    }
+    return result;
+}`,
+      solutionExplanation: 'Updating the outer currentOxygen variable correctly accumulates changes across readings.',
+    },
+    explanationOfBug: 'Variable shadowing caused currentOxygen to reset on every iteration.',
+    explanationOfCorrection: 'Removed local declaration to update the outer accumulator properly.',
+    estimatedMinutes: 6,
+    xpReward: 180,
+    source: 'curated-fallback',
+    zone: 'Cybernetic Core',
+  },
+  {
+    id: 'the_time_machine_cpp',
+    slug: 'the_time_machine',
+    title: 'The Time Machine (C++)',
+    storyContext:
+      'The Chrono-Displacement Engine fails to calculate temporal jump offsets because of an off-by-one slice.',
+    language: 'cpp',
+    difficulty: 'hard',
+    concept: 'Vector Indexing & Off-by-one',
+    brokenCode: `int computeTemporalDrift(std::vector<int> timestamps) {
+    if (timestamps.size() < 2) {
+        return 0;
+    }
+    // Phantom altered the slice indices!
+    int firstStamp = timestamps[1];
+    int lastStamp = timestamps[timestamps.size() - 1];
+    return lastStamp - firstStamp;
+}`,
+    expectedBehavior: 'Calculates the drift between the very first timestamp (index 0) and the final timestamp.',
+    actualBehavior: 'Reads timestamps[1] instead of timestamps[0], ignoring the true starting anchor.',
+    entryFunction: 'computeTemporalDrift',
+    testCases: [
+      {
+        id: 'tc_tm_cpp_1',
+        inputDescription: 'computeTemporalDrift({100, 150, 220, 310})',
+        inputs: [[100, 150, 220, 310]],
+        expectedOutput: 210,
+      },
+      {
+        id: 'tc_tm_cpp_2',
+        inputDescription: 'computeTemporalDrift({50, 120})',
+        inputs: [[50, 120]],
+        expectedOutput: 70,
+      },
+      {
+        id: 'tc_tm_cpp_3',
+        inputDescription: 'computeTemporalDrift({99})',
+        inputs: [[99]],
+        expectedOutput: 0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the index used to fetch `firstStamp`.',
+      hint2_clue: 'In zero-indexed languages, the very first element is at index 0, not 1.',
+      hint3_narrow: 'Change `timestamps[1]` to `timestamps[0]`.',
+      solution: `int computeTemporalDrift(std::vector<int> timestamps) {
+    if (timestamps.size() < 2) {
+        return 0;
+    }
+    int firstStamp = timestamps[0];
+    int lastStamp = timestamps[timestamps.size() - 1];
+    return lastStamp - firstStamp;
+}`,
+      solutionExplanation: 'Using `timestamps[0]` accurately references the starting timestamp.',
+    },
+    explanationOfBug: 'Index 1 was used instead of 0, dropping the initial measurement.',
+    explanationOfCorrection: 'Accessing index 0 measures total duration correctly from start to finish.',
+    estimatedMinutes: 5,
+    xpReward: 200,
+    source: 'curated-fallback',
+    zone: 'Temporal Nexus',
+  },
+  {
+    id: 'the_final_signal_cpp',
+    slug: 'the_final_signal',
+    title: 'The Final Signal (C++)',
+    storyContext:
+      'The central beacon signal decoder in the Deep Shadow Matrix is corrupting transmission packets containing duplicate noise markers.',
+    language: 'cpp',
+    difficulty: 'hard',
+    concept: 'Deduplication & Truthy Evaluation',
+    brokenCode: `std::vector<int> decodeSignalPackets(std::vector<int> packets) {
+    std::vector<int> cleanPackets;
+    for (size_t i = 0; i < packets.size(); i++) {
+        int item = packets[i];
+        // Phantom bug: filtering out 0 packets!
+        if (item != 0) {
+            bool found = false;
+            for (size_t j = 0; j < cleanPackets.size(); j++) {
+                if (cleanPackets[j] == item) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                cleanPackets.push_back(item);
+            }
+        }
+    }
+    return cleanPackets;
+}`,
+    expectedBehavior: 'Deduplicates numbers in packets, preserving 0 as a valid numeric packet.',
+    actualBehavior: 'Drops `0` because `if (item != 0)` discards zero.',
+    entryFunction: 'decodeSignalPackets',
+    testCases: [
+      {
+        id: 'tc_fs_cpp_1',
+        inputDescription: 'decodeSignalPackets({0, 1, 2, 0, 3, 1})',
+        inputs: [[0, 1, 2, 0, 3, 1]],
+        expectedOutput: [0, 1, 2, 3],
+      },
+      {
+        id: 'tc_fs_cpp_2',
+        inputDescription: 'decodeSignalPackets({5, 5, 5})',
+        inputs: [[5, 5, 5]],
+        expectedOutput: [5],
+      },
+      {
+        id: 'tc_fs_cpp_3',
+        inputDescription: 'decodeSignalPackets({0, 0})',
+        inputs: [[0, 0]],
+        expectedOutput: [0],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look closely at the check `if (item != 0)`. Why filter out zero?',
+      hint2_clue: 'Zero (0) is a valid packet signal in this network and should be retained.',
+      hint3_narrow: 'Remove the `if (item != 0)` constraint and deduplicate all values including 0.',
+      solution: `std::vector<int> decodeSignalPackets(std::vector<int> packets) {
+    std::vector<int> cleanPackets;
+    for (size_t i = 0; i < packets.size(); i++) {
+        int item = packets[i];
+        bool found = false;
+        for (size_t j = 0; j < cleanPackets.size(); j++) {
+            if (cleanPackets[j] == item) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            cleanPackets.push_back(item);
+        }
+    }
+    return cleanPackets;
+}`,
+      solutionExplanation: 'Deduplicating without discarding zero preserves valid signal values.',
+    },
+    explanationOfBug: 'Condition `item != 0` discarded zero packets.',
+    explanationOfCorrection: 'Removing `item != 0` allows 0 to be properly deduplicated and preserved.',
+    estimatedMinutes: 8,
+    xpReward: 250,
+    source: 'curated-fallback',
+    zone: 'Deep Shadow Matrix',
   },
 
   // =========================================================================
@@ -1181,6 +1709,286 @@ public class Solution {
     xpReward: 120,
     source: 'curated-fallback',
     zone: 'Cybernetic Core',
+  },
+  {
+    id: 'phantom_vault_java',
+    slug: 'phantom_vault',
+    title: 'The Phantom Vault (Java)',
+    storyContext:
+      'The security gatekeeper in the Dark Core is granting access to unauthorized intruders due to inverted boolean logic!',
+    language: 'java',
+    difficulty: 'medium',
+    concept: 'Boolean Logic & Compound Conditions',
+    brokenCode: `public class Solution {
+    public static boolean verifyVaultAccess(String userRole, boolean hasKeycard, boolean emergencyOverride) {
+        if (emergencyOverride) {
+            return true;
+        }
+        // Phantom logic flaw: grants access if keycard is false!
+        if (userRole.equals("Admin") || !hasKeycard) {
+            return true;
+        }
+        return false;
+    }
+}`,
+    expectedBehavior: 'Admins require a keycard unless emergency override is active; non-admins are denied.',
+    actualBehavior: 'Grants access to anyone who does NOT possess a keycard!',
+    entryFunction: 'verifyVaultAccess',
+    testCases: [
+      {
+        id: 'tc_pv_jv_1',
+        inputDescription: 'verifyVaultAccess("Admin", true, false)',
+        inputs: ['Admin', true, false],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_jv_2',
+        inputDescription: 'verifyVaultAccess("Guest", false, false)',
+        inputs: ['Guest', false, false],
+        expectedOutput: false,
+      },
+      {
+        id: 'tc_pv_jv_3',
+        inputDescription: 'verifyVaultAccess("Guest", false, true)',
+        inputs: ['Guest', false, true],
+        expectedOutput: true,
+      },
+      {
+        id: 'tc_pv_jv_4',
+        inputDescription: 'verifyVaultAccess("Admin", false, false)',
+        inputs: ['Admin', false, false],
+        expectedOutput: false,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Inspect the condition `userRole.equals("Admin") || !hasKeycard`.',
+      hint2_clue: 'Why would someone get access when they DO NOT have a keycard (`!hasKeycard`)?',
+      hint3_narrow: 'Change the condition to `userRole.equals("Admin") && hasKeycard`.',
+      solution: `public class Solution {
+    public static boolean verifyVaultAccess(String userRole, boolean hasKeycard, boolean emergencyOverride) {
+        if (emergencyOverride) {
+            return true;
+        }
+        if (userRole.equals("Admin") && hasKeycard) {
+            return true;
+        }
+        return false;
+    }
+}`,
+      solutionExplanation: 'Using `&& hasKeycard` verifies both administrative credentials and physical access token.',
+    },
+    explanationOfBug: 'Using `|| !hasKeycard` mistakenly admitted any user without a keycard.',
+    explanationOfCorrection: 'Replaced with `&& hasKeycard` to require both Admin role and a valid keycard.',
+    estimatedMinutes: 5,
+    xpReward: 160,
+    source: 'curated-fallback',
+    zone: 'The Phantom Vault',
+  },
+  {
+    id: 'space_station_emergency_java',
+    slug: 'space_station_emergency',
+    title: 'Space Station Emergency (Java)',
+    storyContext:
+      'Orbital Sensor Station Kepler is reporting dangerous oxygen pressure spikes due to an accumulator reset mistake in telemetry batching.',
+    language: 'java',
+    difficulty: 'medium',
+    concept: 'Accumulator Scope & State Mutation',
+    brokenCode: `import java.util.ArrayList;
+
+public class Solution {
+    public static ArrayList<Integer> calculateOxygenLevels(int[] readings) {
+        ArrayList<Integer> result = new ArrayList<>();
+        int currentOxygen = 100;
+        for (int i = 0; i < readings.length; i++) {
+            // Phantom error: resetting oxygen to 100 on every reading!
+            int currentOxygen = 100 - readings[i];
+            result.add(currentOxygen);
+        }
+        return result;
+    }
+}`,
+    expectedBehavior: 'Oxygen levels should compound over time (previous level minus current consumption reading).',
+    actualBehavior: 'Resets to 100 - diff on every reading instead of subtracting from running level.',
+    entryFunction: 'calculateOxygenLevels',
+    testCases: [
+      {
+        id: 'tc_ss_jv_1',
+        inputDescription: 'calculateOxygenLevels(new int[]{10, 5, 15})',
+        inputs: [[10, 5, 15]],
+        expectedOutput: [90, 85, 70],
+      },
+      {
+        id: 'tc_ss_jv_2',
+        inputDescription: 'calculateOxygenLevels(new int[]{20, 30})',
+        inputs: [[20, 30]],
+        expectedOutput: [80, 50],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the declaration of `currentOxygen` inside the loop.',
+      hint2_clue: 'Re-declaring `int currentOxygen` creates a new variable shadowing the outer accumulator.',
+      hint3_narrow: 'Remove `int` inside the loop and mutate: `currentOxygen = currentOxygen - readings[i];`.',
+      solution: `import java.util.ArrayList;
+
+public class Solution {
+    public static ArrayList<Integer> calculateOxygenLevels(int[] readings) {
+        ArrayList<Integer> result = new ArrayList<>();
+        int currentOxygen = 100;
+        for (int i = 0; i < readings.length; i++) {
+            currentOxygen = currentOxygen - readings[i];
+            result.add(currentOxygen);
+        }
+        return result;
+    }
+}`,
+      solutionExplanation: 'Updating the outer currentOxygen variable correctly accumulates changes across readings.',
+    },
+    explanationOfBug: 'Variable shadowing caused currentOxygen to reset on every iteration.',
+    explanationOfCorrection: 'Removed `int` inside loop to update the outer accumulator properly.',
+    estimatedMinutes: 6,
+    xpReward: 180,
+    source: 'curated-fallback',
+    zone: 'Cybernetic Core',
+  },
+  {
+    id: 'the_time_machine_java',
+    slug: 'the_time_machine',
+    title: 'The Time Machine (Java)',
+    storyContext:
+      'The Chrono-Displacement Engine fails to calculate temporal jump offsets because of an off-by-one slice.',
+    language: 'java',
+    difficulty: 'hard',
+    concept: 'Array Indexing & Off-by-one',
+    brokenCode: `public class Solution {
+    public static int computeTemporalDrift(int[] timestamps) {
+        if (timestamps.length < 2) {
+            return 0;
+        }
+        // Phantom altered the slice indices!
+        int firstStamp = timestamps[1];
+        int lastStamp = timestamps[timestamps.length - 1];
+        return lastStamp - firstStamp;
+    }
+}`,
+    expectedBehavior: 'Calculates the drift between the very first timestamp (index 0) and the final timestamp.',
+    actualBehavior: 'Reads timestamps[1] instead of timestamps[0], ignoring the true starting anchor.',
+    entryFunction: 'computeTemporalDrift',
+    testCases: [
+      {
+        id: 'tc_tm_jv_1',
+        inputDescription: 'computeTemporalDrift(new int[]{100, 150, 220, 310})',
+        inputs: [[100, 150, 220, 310]],
+        expectedOutput: 210,
+      },
+      {
+        id: 'tc_tm_jv_2',
+        inputDescription: 'computeTemporalDrift(new int[]{50, 120})',
+        inputs: [[50, 120]],
+        expectedOutput: 70,
+      },
+      {
+        id: 'tc_tm_jv_3',
+        inputDescription: 'computeTemporalDrift(new int[]{99})',
+        inputs: [[99]],
+        expectedOutput: 0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the index used to fetch `firstStamp`.',
+      hint2_clue: 'In zero-indexed languages, the very first element is at index 0, not 1.',
+      hint3_narrow: 'Change `timestamps[1]` to `timestamps[0]`.',
+      solution: `public class Solution {
+    public static int computeTemporalDrift(int[] timestamps) {
+        if (timestamps.length < 2) {
+            return 0;
+        }
+        int firstStamp = timestamps[0];
+        int lastStamp = timestamps[timestamps.length - 1];
+        return lastStamp - firstStamp;
+    }
+}`,
+      solutionExplanation: 'Using `timestamps[0]` accurately references the starting timestamp.',
+    },
+    explanationOfBug: 'Index 1 was used instead of 0, dropping the initial measurement.',
+    explanationOfCorrection: 'Accessing index 0 measures total duration correctly from start to finish.',
+    estimatedMinutes: 5,
+    xpReward: 200,
+    source: 'curated-fallback',
+    zone: 'Temporal Nexus',
+  },
+  {
+    id: 'the_final_signal_java',
+    slug: 'the_final_signal',
+    title: 'The Final Signal (Java)',
+    storyContext:
+      'The central beacon signal decoder in the Deep Shadow Matrix is corrupting transmission packets containing duplicate noise markers.',
+    language: 'java',
+    difficulty: 'hard',
+    concept: 'Deduplication & Truthy Evaluation',
+    brokenCode: `import java.util.ArrayList;
+
+public class Solution {
+    public static ArrayList<Integer> decodeSignalPackets(int[] packets) {
+        ArrayList<Integer> cleanPackets = new ArrayList<>();
+        for (int i = 0; i < packets.length; i++) {
+            int item = packets[i];
+            // Phantom bug: filtering out 0 packets!
+            if (item != 0 && !cleanPackets.contains(item)) {
+                cleanPackets.add(item);
+            }
+        }
+        return cleanPackets;
+    }
+}`,
+    expectedBehavior: 'Deduplicates numbers in packets, preserving 0 as a valid numeric packet.',
+    actualBehavior: 'Drops `0` because `if (item != 0)` discards zero.',
+    entryFunction: 'decodeSignalPackets',
+    testCases: [
+      {
+        id: 'tc_fs_jv_1',
+        inputDescription: 'decodeSignalPackets(new int[]{0, 1, 2, 0, 3, 1})',
+        inputs: [[0, 1, 2, 0, 3, 1]],
+        expectedOutput: [0, 1, 2, 3],
+      },
+      {
+        id: 'tc_fs_jv_2',
+        inputDescription: 'decodeSignalPackets(new int[]{5, 5, 5})',
+        inputs: [[5, 5, 5]],
+        expectedOutput: [5],
+      },
+      {
+        id: 'tc_fs_jv_3',
+        inputDescription: 'decodeSignalPackets(new int[]{0, 0})',
+        inputs: [[0, 0]],
+        expectedOutput: [0],
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look closely at the check `if (item != 0)`. Why filter out zero?',
+      hint2_clue: 'Zero (0) is a valid packet signal in this network and should be retained.',
+      hint3_narrow: 'Remove the `item != 0` check and deduplicate all values including 0.',
+      solution: `import java.util.ArrayList;
+
+public class Solution {
+    public static ArrayList<Integer> decodeSignalPackets(int[] packets) {
+        ArrayList<Integer> cleanPackets = new ArrayList<>();
+        for (int i = 0; i < packets.length; i++) {
+            int item = packets[i];
+            if (!cleanPackets.contains(item)) {
+                cleanPackets.add(item);
+            }
+        }
+        return cleanPackets;
+    }
+}`,
+      solutionExplanation: 'Deduplicating without discarding zero preserves valid signal values.',
+    },
+    explanationOfBug: 'Condition `item != 0` discarded zero packets.',
+    explanationOfCorrection: 'Removing `item != 0` allows 0 to be properly deduplicated and preserved.',
+    estimatedMinutes: 8,
+    xpReward: 250,
+    source: 'curated-fallback',
+    zone: 'Deep Shadow Matrix',
   },
 ];
 

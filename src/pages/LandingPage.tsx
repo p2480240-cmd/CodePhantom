@@ -13,6 +13,8 @@ import {
   Check,
   XCircle,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { PhantomMascot } from '../components/PhantomMascot';
 import { HeatmapGrid } from '../components/HeatmapGrid';
@@ -39,13 +41,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   profile,
   activityHistory,
 }) => {
-  // Hero interactive preview state - dynamically syncs with profile.selectedLanguage
-  const heroChallenge = useMemo(() => {
-    return ChallengeService.getChallengeForLanguage(
-      CURATED_CHALLENGES[0],
-      profile.selectedLanguage
-    );
+  // Available challenges matching current profile language
+  const availableChallenges = useMemo(() => {
+    const list = ChallengeService.getChallengesByLanguage(profile.selectedLanguage);
+    if (list.length > 0) return list;
+    return [
+      ChallengeService.getChallengeForLanguage(
+        CURATED_CHALLENGES[0],
+        profile.selectedLanguage
+      ),
+    ];
   }, [profile.selectedLanguage]);
+
+  const [heroIndex, setHeroIndex] = useState(0);
+
+  // Active challenge safely clamped to available index
+  const heroChallenge = useMemo(() => {
+    return (
+      availableChallenges[heroIndex % availableChallenges.length] ||
+      availableChallenges[0]
+    );
+  }, [availableChallenges, heroIndex]);
 
   const [heroCode, setHeroCode] = useState(heroChallenge.brokenCode);
   const [hintStep, setHintStep] = useState(1);
@@ -65,16 +81,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     got: 10.0,
   });
 
-  // When selected language changes, update code, test results, and reset hints
+  // When active heroChallenge changes, update code, test results, and reset hints
   useEffect(() => {
     setHeroCode(heroChallenge.brokenCode);
     setHintStep(1);
+    setActiveTab('hints');
     setTestResult({
       passed: false,
-      passedCount: 1,
+      passedCount: 0,
       total: heroChallenge.testCases.length || 3,
       expected: heroChallenge.testCases[0]?.expectedOutput ?? 20.0,
-      got: 10.0,
+      got: 'Not run yet',
     });
   }, [heroChallenge]);
 
@@ -91,8 +108,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       passed: exec.success,
       passedCount: exec.passedCount,
       total: exec.totalCount,
-      expected: exec.results[0]?.expected ?? 20.0,
-      got: exec.results[0]?.actual ?? 10.0,
+      expected: exec.results[0]?.expected ?? (heroChallenge.testCases[0]?.expectedOutput ?? 20.0),
+      got: exec.results[0]?.actual ?? 'Error',
     });
   };
 
@@ -100,12 +117,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     setHeroCode(heroChallenge.brokenCode);
     setTestResult({
       passed: false,
-      passedCount: 1,
+      passedCount: 0,
       total: heroChallenge.testCases.length || 3,
       expected: heroChallenge.testCases[0]?.expectedOutput ?? 20.0,
-      got: 10.0,
+      got: 'Reset',
     });
     setHintStep(1);
+  };
+
+  const handleNextQuestion = () => {
+    setHeroIndex((prev) => (prev + 1) % availableChallenges.length);
+  };
+
+  const handlePrevQuestion = () => {
+    setHeroIndex((prev) => (prev - 1 + availableChallenges.length) % availableChallenges.length);
   };
 
   return (
@@ -201,9 +226,42 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 text-[11px] font-mono text-cyan-700 dark:text-phantom-cyan font-bold">
-                    <span>XP {heroChallenge.xpReward || 100}</span>
+                  <div className="flex items-center gap-2.5">
+                    {/* Case Switcher Navigation */}
+                    <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-white/5 rounded-md px-1.5 py-0.5 border border-slate-300/60 dark:border-white/10">
+                      <button
+                        onClick={handlePrevQuestion}
+                        title="Previous Question"
+                        className="p-0.5 text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-300/50 dark:hover:bg-white/10 rounded transition-colors"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="text-[10px] font-mono font-medium text-slate-700 dark:text-white/80 px-1">
+                        Case {heroIndex + 1}/{availableChallenges.length}
+                      </span>
+                      <button
+                        onClick={handleNextQuestion}
+                        title="Next Question"
+                        className="p-0.5 text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-300/50 dark:hover:bg-white/10 rounded transition-colors"
+                      >
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-[11px] font-mono text-cyan-700 dark:text-phantom-cyan font-bold">
+                      <span>XP {heroChallenge.xpReward || 100}</span>
+                    </div>
                   </div>
+                </div>
+
+                {/* Challenge Title & Concept Strip */}
+                <div className="px-3.5 py-1.5 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/5 flex items-center justify-between text-xs">
+                  <span className="font-semibold text-slate-800 dark:text-white/90 truncate">
+                    {heroChallenge.title}
+                  </span>
+                  <span className="text-slate-500 dark:text-white/40 text-[10px] font-mono shrink-0 ml-2">
+                    {heroChallenge.concept}
+                  </span>
                 </div>
 
                 {/* Editor Content Area */}
@@ -222,20 +280,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <RotateCcw className="w-3 h-3" />
                       <span>Reset</span>
                     </button>
-                    <button
-                      onClick={handleHeroRun}
-                      disabled={running}
-                      className="px-3 py-1 rounded bg-purple-600 hover:bg-purple-700 dark:bg-phantom-purple dark:hover:bg-phantom-violet text-white text-[11px] font-semibold flex items-center gap-1 transition-colors shadow-sm"
-                    >
-                      <Play className="w-3 h-3 fill-current" />
-                      <span>{running ? 'Running...' : 'Run Fix'}</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleHeroRun}
+                        disabled={running}
+                        className="px-3 py-1 rounded bg-purple-600 hover:bg-purple-700 dark:bg-phantom-purple dark:hover:bg-phantom-violet text-white text-[11px] font-semibold flex items-center gap-1 transition-colors shadow-sm"
+                      >
+                        <Play className="w-3 h-3 fill-current" />
+                        <span>{running ? 'Running...' : 'Run Fix'}</span>
+                      </button>
+                      {testResult.passed && (
+                        <button
+                          onClick={handleNextQuestion}
+                          className="px-3 py-1 rounded bg-teal-600 hover:bg-teal-700 dark:bg-phantom-teal dark:text-black dark:hover:bg-teal-300 text-white text-[11px] font-bold flex items-center gap-1 transition-all shadow-sm hover:scale-105"
+                          title="Load next challenge"
+                        >
+                          <span>Next Question</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 {/* Tests Failed / Passed Box (Matching Mockup) */}
                 <div
-                  className={`mx-3 my-2 p-2.5 rounded-xl border flex items-center justify-between text-xs font-mono transition-colors ${
+                  className={`mx-3 my-2 p-2.5 rounded-xl border flex flex-wrap items-center justify-between gap-2 text-xs font-mono transition-colors ${
                     testResult.passed
                       ? 'bg-teal-50 dark:bg-phantom-teal/15 border-teal-300 dark:border-phantom-teal/40 text-teal-800 dark:text-phantom-teal'
                       : 'bg-rose-50 dark:bg-phantom-crimson/15 border-rose-300 dark:border-phantom-crimson/40 text-rose-800 dark:text-phantom-crimson'
@@ -248,19 +318,47 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <XCircle className="w-4 h-4 text-rose-600 dark:text-phantom-crimson" />
                     )}
                     <span className="font-bold">
-                      {testResult.passed ? 'Tests Passed!' : 'Tests Failed'}
+                      {testResult.passed ? `Tests Passed! (${testResult.passedCount}/${testResult.total})` : 'Tests Failed'}
                     </span>
                   </div>
 
-                  <div className="text-[11px] opacity-90">
-                    <span>Expected: {String(testResult.expected)}</span>
-                    <span className="mx-1.5 opacity-40">|</span>
-                    <span>Got: {String(testResult.got)}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="text-[11px] opacity-90">
+                      <span>Expected: {String(testResult.expected)}</span>
+                      <span className="mx-1.5 opacity-40">|</span>
+                      <span>Got: {String(testResult.got)}</span>
+                    </div>
+                    {testResult.passed && (
+                      <button
+                        onClick={handleNextQuestion}
+                        className="px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 dark:bg-phantom-teal dark:text-black dark:hover:bg-teal-300 text-white font-sans font-bold text-[11px] flex items-center gap-1 shadow-sm transition-all hover:scale-105 active:scale-95 animate-pulse"
+                        title="Proceed to the next question"
+                      >
+                        <span>Next Question</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
 
                 {/* Hints / Clues Interactive Card */}
                 <div className="mx-3 mb-3 p-3 rounded-xl bg-slate-100/90 dark:bg-black/40 border border-slate-200 dark:border-white/10 text-xs transition-colors">
+                  {testResult.passed && (
+                    <div className="mb-2.5 p-2 rounded-lg bg-teal-100/80 dark:bg-phantom-teal/20 border border-teal-300 dark:border-phantom-teal/40 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 text-[11px] text-teal-900 dark:text-phantom-teal font-semibold">
+                        <Sparkles className="w-3.5 h-3.5 text-teal-600 dark:text-phantom-teal shrink-0 animate-bounce" />
+                        <span>Case solved! Ready for the next case?</span>
+                      </div>
+                      <button
+                        onClick={handleNextQuestion}
+                        className="px-2.5 py-1 rounded-md bg-teal-600 hover:bg-teal-700 dark:bg-phantom-teal dark:text-black font-bold text-[11px] flex items-center gap-1 shadow-sm transition-transform hover:scale-105"
+                      >
+                        <span>Next Question</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/5 pb-1.5 mb-2">
                     <div className="flex items-center gap-2">
                       <button
