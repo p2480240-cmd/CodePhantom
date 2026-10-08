@@ -11,6 +11,8 @@ interface CodeEditorProps {
   onSubmit?: () => void;
   isRunning?: boolean;
   isSubmitting?: boolean;
+  onSelectLine?: (lineNumber: number, lineText: string) => void;
+  selectedLine?: number | null;
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -22,9 +24,29 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   onSubmit,
   isRunning = false,
   isSubmitting = false,
+  onSelectLine,
+  selectedLine,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [copied, setCopied] = React.useState(false);
+
+  // File name based on language
+  const getFileName = (lang: Language) => {
+    switch (lang) {
+      case 'python':
+        return 'main.py';
+      case 'javascript':
+        return 'solution.js';
+      case 'typescript':
+        return 'solution.ts';
+      case 'cpp':
+        return 'solution.cpp';
+      case 'java':
+        return 'Solution.java';
+      default:
+        return 'main.py';
+    }
+  };
 
   // Handle Tab key for clean code indentation (4 spaces)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -73,7 +95,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           {/* Active File / Language Tag */}
           <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-phantom-violet">
             <span className="px-2 py-0.5 rounded bg-phantom-purple/20 border border-phantom-purple/30">
-              {language === 'python' ? 'main.py' : 'solution.js'}
+              {getFileName(language)}
             </span>
             <span className="text-white/40 text-[11px]">
               {language.toUpperCase()}
@@ -106,13 +128,27 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       {/* Code Editing Area */}
       <div className="relative flex-1 flex overflow-hidden font-mono text-sm bg-phantom-deep">
-        {/* Line Numbers Gutter */}
-        <div className="w-12 py-3 bg-[#080d1e] text-white/30 text-right pr-3 select-none border-r border-white/5 font-mono text-xs leading-6">
-          {lines.map((_, i) => (
-            <div key={i} className="hover:text-phantom-cyan transition-colors">
-              {i + 1}
-            </div>
-          ))}
+        {/* Line Numbers Gutter with Inspection Trigger */}
+        <div className="w-12 py-3 bg-[#080d1e] text-white/30 text-right pr-2 select-none border-r border-white/5 font-mono text-xs leading-6">
+          {lines.map((lText, i) => {
+            const lineNum = i + 1;
+            const isSelected = selectedLine === lineNum;
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => onSelectLine && onSelectLine(lineNum, lText)}
+                title={`Inspect Line ${lineNum} for suspicious logic`}
+                className={`w-full block text-right pr-1 rounded cursor-pointer transition-colors ${
+                  isSelected
+                    ? 'bg-phantom-cyan/20 text-phantom-cyan font-bold border-r-2 border-phantom-cyan'
+                    : 'hover:text-phantom-cyan hover:bg-white/5'
+                }`}
+              >
+                {lineNum}
+              </button>
+            );
+          })}
         </div>
 
         {/* Textarea Surface */}

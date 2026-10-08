@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Sparkles,
   Cpu,
@@ -13,13 +13,34 @@ import {
   Play,
   RotateCcw,
   Check,
+  Target,
+  Trophy,
+  History,
+  ClipboardList,
+  Flame,
+  Brain,
 } from 'lucide-react';
-import { Challenge, ExecutionResult, UserProfile, Language } from '../types';
+import {
+  Challenge,
+  ExecutionResult,
+  UserProfile,
+  Language,
+  SuspiciousLineAnalysis,
+  InvestigationEvent,
+  EvidenceItem,
+  EdgeCaseTest,
+} from '../types';
 import { CodeEditor } from '../components/CodeEditor';
 import { TestResultsPanel } from '../components/TestResultsPanel';
 import { ProgressiveHintsPanel } from '../components/ProgressiveHintsPanel';
 import { VictoryModal } from '../components/VictoryModal';
 import { AICaseGeneratorModal } from '../components/AICaseGeneratorModal';
+import { SuspiciousLinePanel } from '../components/SuspiciousLinePanel';
+import { PredictionCard } from '../components/PredictionCard';
+import { EvidenceBoard } from '../components/EvidenceBoard';
+import { InvestigationReplay } from '../components/InvestigationReplay';
+import { EdgeCaseChallengeModal } from '../components/EdgeCaseChallengeModal';
+import { AIVsHumanSpeedModal } from '../components/AIVsHumanSpeedModal';
 import { CodeExecutionService } from '../services/codeExecutionService';
 import { StorageService } from '../services/storageService';
 import { CURATED_CHALLENGES, ChallengeService } from '../services/challengeService';
@@ -64,6 +85,63 @@ export const HuntPage: React.FC<HuntPageProps> = ({
   const [showVictory, setShowVictory] = useState<boolean>(false);
   const [showAIModal, setShowAIModal] = useState<boolean>(false);
 
+  // Advanced Forensic Systems State
+  const [selectedLine, setSelectedLine] = useState<number | null>(null);
+  const [suspiciousAnalysis, setSuspiciousAnalysis] = useState<SuspiciousLineAnalysis | null>(null);
+  const [activeTab, setActiveTab] = useState<'tests' | 'predict' | 'evidence' | 'replay'>('tests');
+  const [showSpeedModal, setShowSpeedModal] = useState<boolean>(false);
+  const [showEdgeCaseModal, setShowEdgeCaseModal] = useState<boolean>(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+
+  // Investigation Events Replay Log
+  const [events, setEvents] = useState<InvestigationEvent[]>([
+    {
+      id: 'evt_start_' + Date.now(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      type: 'opened',
+      description: `Case file opened: ${currentChallenge.title}`,
+    },
+  ]);
+
+  // Evidence Checklist Items
+  const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>([
+    { id: 'ev_1', label: 'Inspect suspicious code logic in editor', completed: false },
+    { id: 'ev_2', label: 'Submit pre-execution prediction hypothesis', completed: false },
+    { id: 'ev_3', label: 'Execute preliminary sandbox diagnostic', completed: false },
+    { id: 'ev_4', label: 'Banish the anomaly & pass 100% test cases', completed: false },
+  ]);
+
+  // Timer counter for speed comparison
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setElapsedSeconds((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const addEvent = (
+    type: InvestigationEvent['type'],
+    description: string,
+    status?: 'success' | 'failure' | 'neutral'
+  ) => {
+    setEvents((prev) => [
+      ...prev,
+      {
+        id: 'evt_' + Date.now() + Math.random().toString(36).substring(2, 6),
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        type,
+        description,
+        status,
+      },
+    ]);
+  };
+
+  const markEvidence = (id: string) => {
+    setEvidenceItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, completed: true } : item))
+    );
+  };
+
   // If the user changes language in the top navbar, automatically adapt the challenge to that language!
   useEffect(() => {
     if (currentChallenge.language !== profile.selectedLanguage) {
@@ -77,6 +155,9 @@ export const HuntPage: React.FC<HuntPageProps> = ({
       setExecution(null);
       setRevealedHintLevel(0);
       setShowVictory(false);
+      setSelectedLine(null);
+      setSuspiciousAnalysis(null);
+      addEvent('opened', `Switched environment to ${profile.selectedLanguage.toUpperCase()}`);
     }
   }, [profile.selectedLanguage]);
 
@@ -95,6 +176,9 @@ export const HuntPage: React.FC<HuntPageProps> = ({
         setExecution(null);
         setRevealedHintLevel(0);
         setShowVictory(false);
+        setSelectedLine(null);
+        setSuspiciousAnalysis(null);
+        addEvent('opened', `Opened case file: ${adapted.title}`);
       }
     }
   }, [initialChallengeId]);
@@ -103,32 +187,99 @@ export const HuntPage: React.FC<HuntPageProps> = ({
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);
     StorageService.saveUserCode(currentChallenge.id, newCode);
+    markEvidence('ev_1');
+  };
+
+  // Click on a line in the gutter to inspect why that line is suspicious
+  const handleSelectLine = (lineNumber: number, lineText: string) => {
+    setSelectedLine(lineNumber);
+    markEvidence('ev_1');
+
+    // Deterministic forensic diagnosis for clicked line
+    const isArithmeticOrReturn =
+      lineText.includes('return') ||
+      lineText.includes('/') ||
+      lineText.includes('*') ||
+      lineText.includes('+') ||
+      lineText.includes('<=');
+
+    const analysis: SuspiciousLineAnalysis = {
+      lineNumber,
+      codeSnippet: lineText.trim(),
+      potentialIssue: isArithmeticOrReturn
+        ? `Suspicious mathematical operator or boundary modifier found in line ${lineNumber}.`
+        : `Statement inspected. Check if variable state flows into faulty operations downflow.`,
+      whySuspicious: isArithmeticOrReturn
+        ? `In ${currentChallenge.title}, logic discrepancies often stem from this calculation or loop boundary.`
+        : `Verify data types and scope initialization at this point of execution.`,
+      relatedConcept: currentChallenge.concept,
+      possibleConsequence: isArithmeticOrReturn
+        ? `Can halve output, cause off-by-one indexing errors, or fail edge cases.`
+        : `May produce subtle state distortions in subsequent blocks.`,
+      detectiveAdvice: 'Refactor operands and boundary guards to preserve mathematical consistency.',
+    };
+
+    setSuspiciousAnalysis(analysis);
+    addEvent('inspected', `Forensic scan of Line ${lineNumber}: "${lineText.trim().slice(0, 30)}..."`);
   };
 
   const handleRunTests = async () => {
     setIsRunning(true);
+    addEvent('executed', `Triggered sandbox verification run...`);
+    markEvidence('ev_3');
+
+    const previousPassed = execution ? execution.passedCount : undefined;
     const result = await CodeExecutionService.execute(
       code,
       currentChallenge.language,
       currentChallenge.entryFunction,
-      currentChallenge.testCases
+      currentChallenge.testCases,
+      previousPassed
     );
+
     setExecution(result);
     setIsRunning(false);
+
+    if (result.success) {
+      addEvent('executed', `Verification successful! Passed ${result.passedCount}/${result.totalCount} tests.`, 'success');
+    } else {
+      addEvent('executed', `Verification failed (${result.passedCount}/${result.totalCount} passed).`, 'failure');
+      // Record failure to Error Revision Window / Archive
+      StorageService.recordErrorRevision({
+        challengeId: currentChallenge.id,
+        challengeTitle: currentChallenge.title,
+        language: currentChallenge.language,
+        concept: currentChallenge.concept,
+        buggyCode: currentChallenge.brokenCode,
+        attemptedCode: code,
+        failureReason: result.syntaxError || `Failed tests (${result.passedCount}/${result.totalCount}). ${result.dynamicFeedback || ''}`,
+        passedTests: result.passedCount,
+        totalTests: result.totalCount,
+      });
+    }
   };
 
   const handleSubmitFix = async () => {
     setIsSubmitting(true);
+    addEvent('executed', `Submitting final solution to the Phantom Core...`);
+    markEvidence('ev_3');
+
+    const previousPassed = execution ? execution.passedCount : undefined;
     const result = await CodeExecutionService.execute(
       code,
       currentChallenge.language,
       currentChallenge.entryFunction,
-      currentChallenge.testCases
+      currentChallenge.testCases,
+      previousPassed
     );
+
     setExecution(result);
     setIsSubmitting(false);
 
     if (result.success) {
+      addEvent('solved', `Bug eliminated! Case closed in ${elapsedSeconds} seconds.`, 'success');
+      markEvidence('ev_4');
+
       // Calculate XP bonus
       const bonus = revealedHintLevel === 0 ? 50 : revealedHintLevel === 1 ? 25 : 0;
       const totalXP = currentChallenge.xpReward + bonus;
@@ -137,7 +288,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
       StorageService.saveUserCode(currentChallenge.id, code);
 
       // Record activity and update streak + XP
-      StorageService.recordActivity(currentChallenge.id, totalXP, currentChallenge.concept, 5);
+      StorageService.recordActivity(currentChallenge.id, totalXP, currentChallenge.concept, 5, revealedHintLevel > 0);
 
       // If challenge has a counterpart in another language, also mark it solved
       if (currentChallenge.slug) {
@@ -157,6 +308,20 @@ export const HuntPage: React.FC<HuntPageProps> = ({
       onUpdateProfile(updated);
 
       setShowVictory(true);
+    } else {
+      addEvent('executed', `Submission failed. Case remains unsolved.`, 'failure');
+      // Record failure to Error Revision Window / Archive
+      StorageService.recordErrorRevision({
+        challengeId: currentChallenge.id,
+        challengeTitle: currentChallenge.title,
+        language: currentChallenge.language,
+        concept: currentChallenge.concept,
+        buggyCode: currentChallenge.brokenCode,
+        attemptedCode: code,
+        failureReason: result.syntaxError || `Failed tests (${result.passedCount}/${result.totalCount}). ${result.dynamicFeedback || ''}`,
+        passedTests: result.passedCount,
+        totalTests: result.totalCount,
+      });
     }
   };
 
@@ -164,6 +329,9 @@ export const HuntPage: React.FC<HuntPageProps> = ({
     setCode(currentChallenge.brokenCode);
     StorageService.saveUserCode(currentChallenge.id, currentChallenge.brokenCode);
     setExecution(null);
+    setSelectedLine(null);
+    setSuspiciousAnalysis(null);
+    addEvent('edited', 'Reset code back to original broken state.');
   };
 
   const handleNextChallenge = () => {
@@ -190,9 +358,48 @@ export const HuntPage: React.FC<HuntPageProps> = ({
     setCode(saved || nextCase.brokenCode);
     setExecution(null);
     setRevealedHintLevel(0);
+    setSelectedLine(null);
+    setSuspiciousAnalysis(null);
+    setElapsedSeconds(0);
+    addEvent('opened', `Loaded next case: ${nextCase.title}`);
   };
 
   const isCurrentSolved = profile.solvedChallengeIds.includes(currentChallenge.id);
+
+  // Edge case definition
+  const currentEdgeCase: EdgeCaseTest = {
+    id: `ec_${currentChallenge.id}`,
+    name: 'Zero / Empty Array Extreme Boundary',
+    description: 'Verifies whether the corrected logic gracefully handles zero, empty structures, or negative inputs.',
+    inputDescription: 'Boundary Test Input ([])',
+    inputs: [[]],
+    expectedOutput: 0,
+    explanation: 'Boundary verification tests edge case behavior against empty inputs.',
+    trapExplanation: 'Flawed implementations frequently crash with ZeroDivisionError or IndexError when inputs are empty.',
+  };
+
+  const handleVerifyEdgeCase = async (currentCode: string): Promise<boolean> => {
+    const res = await CodeExecutionService.execute(
+      currentCode,
+      currentChallenge.language,
+      currentChallenge.entryFunction,
+      [
+        {
+          id: 'tc_edge_live',
+          inputDescription: 'Edge Case Verification',
+          inputs: [[]],
+          expectedOutput: 0,
+        },
+      ]
+    );
+    return res.success;
+  };
+
+  const formatTimer = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5 animate-fadeIn">
@@ -244,6 +451,12 @@ export const HuntPage: React.FC<HuntPageProps> = ({
               <span>+{currentChallenge.xpReward} XP</span>
             </span>
 
+            {/* Stopwatch Timer */}
+            <span className="flex items-center gap-1 text-[11px] font-mono text-white/50 bg-black/40 px-2 py-0.5 rounded border border-white/5">
+              <Clock className="w-3 h-3 text-phantom-cyan" />
+              <span>{formatTimer(elapsedSeconds)}</span>
+            </span>
+
             {/* Solved Status Indicator */}
             {isCurrentSolved && (
               <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-phantom-teal/20 text-phantom-teal border border-phantom-teal/40 text-[11px] font-mono font-bold shadow-sm">
@@ -270,11 +483,33 @@ export const HuntPage: React.FC<HuntPageProps> = ({
             <Tag className="w-3.5 h-3.5 text-phantom-violet" />
             <span>Target Concept: </span>
             <span className="text-phantom-cyan font-semibold">{currentChallenge.concept}</span>
+            <span className="text-white/20">•</span>
+            <span className="text-white/40 italic">Click any line number in gutter to inspect suspicious logic</span>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {/* AI vs Human Speed Benchmark */}
+          <button
+            onClick={() => setShowSpeedModal(true)}
+            title="Compare your debugging time vs AI benchmark"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-phantom-amber/10 hover:bg-phantom-amber/20 text-phantom-amber border border-phantom-amber/30 text-xs font-semibold transition-all"
+          >
+            <Trophy className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">AI Benchmark</span>
+          </button>
+
+          {/* Edge Case Hunter */}
+          <button
+            onClick={() => setShowEdgeCaseModal(true)}
+            title="Test adversarial boundary cases"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-phantom-crimson/10 hover:bg-phantom-crimson/20 text-phantom-crimson border border-phantom-crimson/30 text-xs font-semibold transition-all"
+          >
+            <Target className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Edge Cases</span>
+          </button>
+
           <button
             onClick={handleNextChallenge}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white border border-white/10 text-xs font-semibold transition-all"
@@ -312,12 +547,23 @@ export const HuntPage: React.FC<HuntPageProps> = ({
         </div>
       )}
 
+      {/* Suspicious Line Forensic Drawer (reveals when user clicks line gutter) */}
+      {suspiciousAnalysis && (
+        <SuspiciousLinePanel
+          analysis={suspiciousAnalysis}
+          onClose={() => {
+            setSuspiciousAnalysis(null);
+            setSelectedLine(null);
+          }}
+        />
+      )}
+
       {/* =========================================================================
           MAIN DEBUGGING WORKSPACE GRID (2-Columns on Desktop)
           ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch min-h-[580px]">
         {/* Left Column: Code Editor (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col h-[580px]">
+        <div className="lg:col-span-7 flex flex-col h-[600px]">
           <CodeEditor
             code={code}
             onChange={handleCodeChange}
@@ -327,25 +573,112 @@ export const HuntPage: React.FC<HuntPageProps> = ({
             onSubmit={handleSubmitFix}
             isRunning={isRunning}
             isSubmitting={isSubmitting}
+            onSelectLine={handleSelectLine}
+            selectedLine={selectedLine}
           />
         </div>
 
         {/* Right Column: Split Panels (Output & Progressive Hints) (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col gap-4 h-[580px] overflow-y-auto pr-1">
+        <div className="lg:col-span-5 flex flex-col gap-4 h-[600px] overflow-y-auto pr-1">
           {/* Progressive Hints Card */}
-          <div className="shrink-0 max-h-[310px]">
+          <div className="shrink-0 max-h-[300px]">
             <ProgressiveHintsPanel
               hints={currentChallenge.hints}
               revealedLevel={revealedHintLevel}
-              onRevealNext={() => setRevealedHintLevel((prev) => Math.min(3, prev + 1))}
-              onRevealSolution={() => setRevealedHintLevel(4)}
-              onApplySolution={(sol) => handleCodeChange(sol)}
+              onRevealNext={() => {
+                const nextLvl = Math.min(3, revealedHintLevel + 1);
+                setRevealedHintLevel(nextLvl);
+                addEvent('hint', `Requested Detective Clue Level ${nextLvl}`);
+              }}
+              onRevealSolution={() => {
+                setRevealedHintLevel(4);
+                addEvent('hint', 'Revealed complete verified solution.');
+              }}
+              onApplySolution={(sol) => {
+                handleCodeChange(sol);
+                addEvent('edited', 'Applied solution directly to editor.');
+              }}
             />
           </div>
 
-          {/* Test Results Diagnostics Card */}
-          <div className="flex-1">
-            <TestResultsPanel execution={execution} isRunning={isRunning || isSubmitting} />
+          {/* Forensic Tabs Strip: Tests, Predict, Evidence, Replay */}
+          <div className="flex-1 flex flex-col rounded-xl bg-phantom-deep border border-phantom-border/60 overflow-hidden shadow-xl">
+            <div className="flex items-center border-b border-phantom-border/60 bg-[#070b18] px-2 pt-2 gap-1 select-none overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('tests')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
+                  activeTab === 'tests'
+                    ? 'bg-phantom-deep border-phantom-border text-phantom-cyan'
+                    : 'border-transparent text-white/50 hover:text-white/80'
+                }`}
+              >
+                <Play className="w-3.5 h-3.5" />
+                <span>Test Suite</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('predict')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
+                  activeTab === 'predict'
+                    ? 'bg-phantom-deep border-phantom-border text-phantom-violet'
+                    : 'border-transparent text-white/50 hover:text-white/80'
+                }`}
+              >
+                <Brain className="w-3.5 h-3.5" />
+                <span>Predict</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('evidence')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
+                  activeTab === 'evidence'
+                    ? 'bg-phantom-deep border-phantom-border text-phantom-teal'
+                    : 'border-transparent text-white/50 hover:text-white/80'
+                }`}
+              >
+                <ClipboardList className="w-3.5 h-3.5" />
+                <span>Evidence</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('replay')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
+                  activeTab === 'replay'
+                    ? 'bg-phantom-deep border-phantom-border text-phantom-amber'
+                    : 'border-transparent text-white/50 hover:text-white/80'
+                }`}
+              >
+                <History className="w-3.5 h-3.5" />
+                <span>Replay</span>
+              </button>
+            </div>
+
+            {/* Tab Body */}
+            <div className="p-3 flex-1 overflow-y-auto">
+              {activeTab === 'tests' && (
+                <TestResultsPanel execution={execution} isRunning={isRunning || isSubmitting} />
+              )}
+
+              {activeTab === 'predict' && (
+                <PredictionCard
+                  predictions={currentChallenge.predictions}
+                  onPredicted={(isCorrect) => {
+                    markEvidence('ev_2');
+                    addEvent(
+                      'predicted',
+                      `Submitted prediction hypothesis: ${isCorrect ? 'Correct!' : 'Incorrect'}`,
+                      isCorrect ? 'success' : 'failure'
+                    );
+                  }}
+                />
+              )}
+
+              {activeTab === 'evidence' && (
+                <EvidenceBoard evidence={evidenceItems} caseId={currentChallenge.id} />
+              )}
+
+              {activeTab === 'replay' && <InvestigationReplay events={events} />}
+            </div>
           </div>
         </div>
       </div>
@@ -369,8 +702,33 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           StorageService.saveUserCode(newCh.id, newCh.brokenCode);
           setExecution(null);
           setRevealedHintLevel(0);
+          setSelectedLine(null);
+          setSuspiciousAnalysis(null);
+          addEvent('opened', `Generated AI challenge: ${newCh.title}`);
         }}
         currentLanguage={currentChallenge.language}
+      />
+
+      {/* AI vs Human Speed Modal */}
+      <AIVsHumanSpeedModal
+        isOpen={showSpeedModal}
+        onClose={() => setShowSpeedModal(false)}
+        aiBenchmarkSeconds={currentChallenge.estimatedMinutes ? currentChallenge.estimatedMinutes * 45 : 120}
+        playerSeconds={elapsedSeconds}
+        solved={isCurrentSolved}
+        onContinue={() => setShowSpeedModal(false)}
+      />
+
+      {/* Edge Case Hunter Modal */}
+      <EdgeCaseChallengeModal
+        isOpen={showEdgeCaseModal}
+        onClose={() => setShowEdgeCaseModal(false)}
+        edgeCase={currentEdgeCase}
+        onVerifyEdgeCase={handleVerifyEdgeCase}
+        currentCode={code}
+        onSuccess={() => {
+          addEvent('edge_case', 'Passed Adversarial Edge Case Hunter test!', 'success');
+        }}
       />
     </div>
   );

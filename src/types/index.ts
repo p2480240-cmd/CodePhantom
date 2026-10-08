@@ -1,4 +1,4 @@
-export type Language = 'python' | 'javascript';
+export type Language = 'python' | 'javascript' | 'typescript' | 'cpp' | 'java';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -21,13 +21,43 @@ export interface ProgressiveHints {
   solutionExplanation: string;// Why this fix works
 }
 
+export interface PredictionOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+  explanation: string;
+}
+
+export interface SuspiciousLineAnalysis {
+  lineNumber: number;
+  codeSnippet: string;
+  potentialIssue: string;
+  whySuspicious: string;
+  relatedConcept: string;
+  possibleConsequence: string;
+  detectiveAdvice?: string;
+}
+
+export interface EdgeCaseTest {
+  id: string;
+  name?: string;
+  description: string;
+  inputs: any[];
+  expectedOutput: any;
+  explanation?: string;
+  inputDescription?: string;
+  trapExplanation?: string;
+}
+
 export interface Challenge {
   id: string;
+  slug?: string;              // Cross-language identifier (e.g. "the_lost_robot")
   title: string;
   storyContext: string;
   language: Language;
   difficulty: Difficulty;
   concept: string;            // e.g. "Array Indexing / Boundary", "Calculation Precedence"
+  bugType?: string;           // e.g. "Off-by-One", "Logic Inversion", "Type Coercion"
   brokenCode: string;
   expectedBehavior: string;
   actualBehavior: string;
@@ -40,7 +70,10 @@ export interface Challenge {
   source: ChallengeSource;
   zone?: string;
   entryFunction: string;      // Name of the function to test
-  slug?: string;              // Cross-language identifier (e.g. "the_lost_robot")
+  predictions?: PredictionOption[];
+  suspiciousLines?: Record<number, SuspiciousLineAnalysis>;
+  edgeCase?: EdgeCaseTest;
+  aiBenchmarkTimeSeconds?: number;
 }
 
 export interface TestResult {
@@ -61,6 +94,41 @@ export interface ExecutionResult {
   logs: string[];
   syntaxError?: string;
   executionMode: 'client-sandbox' | 'remote-docker' | 'demo-evaluator';
+  madeItWorse?: boolean;
+  regressionMessage?: string;
+  dynamicFeedback?: string;
+  diagnosticMessage?: string;
+  previousPassedCount?: number;
+}
+
+export interface EvidenceItem {
+  id: string;
+  label: string;
+  completed: boolean;
+  timestamp?: string;
+}
+
+export interface InvestigationEvent {
+  id: string;
+  timestamp: string;
+  type: 'opened' | 'predicted' | 'executed' | 'inspected' | 'hint' | 'edited' | 'solved' | 'edge_case';
+  description: string;
+  status?: 'success' | 'failure' | 'neutral';
+}
+
+export interface ErrorRevisionEntry {
+  id: string;
+  challengeId: string;
+  challengeTitle: string;
+  language: Language;
+  timestamp: string;
+  concept: string;
+  buggyCode: string;
+  attemptedCode: string;
+  failureReason: string;
+  passedTests: number;
+  totalTests: number;
+  reviewed: boolean;
 }
 
 export interface DailyQuest {
@@ -100,24 +168,33 @@ export interface UserProfile {
   username: string;
   avatarSeed: string;
   role: string;               // e.g. "Phantom Detective"
+  rank: string;               // Rookie -> Code Scout -> Bug Tracker -> Logic Detective -> Phantom Hunter -> Debugging Agent -> Code Investigator -> Phantom Master
+  rankTitle?: string;
   level: number;
   xp: number;
   xpToNextLevel: number;
   streak: number;
+  streakWithoutHints?: number;
   longestStreak: number;
+  independentSolvingStreak: number;
+  longestIndependentStreak: number;
   lastActiveDate: string;     // YYYY-MM-DD
   selectedLanguage: Language;
   selectedMode: 'learn' | 'hunt';
   solvedChallengeIds: string[];
-  revealedHints: Record<string, number>; // challengeId -> highest hint level unlocked (1, 2, 3, 4=solution)
+  revealedHints: Record<string, number>;
   completedLessons: string[];
   achievements: Achievement[];
   dailyQuests: DailyQuest[];
-  savedCode?: Record<string, string>; // challengeId -> latest edited code
+  savedCode?: Record<string, string>;
   lastActiveChallengeId?: string;
   isGuest: boolean;
   apiKeyConfigured: boolean;
   customApiKey?: string;
+  errorRevisions: ErrorRevisionEntry[];
+  predictionsCount: number;
+  predictionsCorrect: number;
+  dnaStats: Record<string, { attempts: number; successes: number; avgTimeSec: number }>;
 }
 
 export interface LeaderboardUser {
@@ -146,4 +223,28 @@ export interface LearnLesson {
   entryFunction: string;
   testCases: TestCase[];
   xp: number;
+  predictions?: PredictionOption[];
+  stepByStepHint?: string;
+}
+
+export interface BugEncyclopediaEntry {
+  id: string;
+  name: string;
+  icon: string;
+  severity: 'Low' | 'Medium' | 'High' | 'Critical';
+  concept: string;
+  whatItIs: string;
+  typicalSymptoms: string[];
+  codeExample: string;
+  howToDetect: string;
+  commonMistakes: string[];
+  miniChallenge: {
+    broken: string;
+    fixed: string;
+    language: Language;
+    task: string;
+    entryFn: string;
+    testInput: any[];
+    expected: any;
+  };
 }

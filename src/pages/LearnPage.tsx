@@ -10,8 +10,12 @@ import {
   ShieldCheck,
   Check,
   XCircle,
+  Brain,
+  HelpCircle,
+  Lightbulb,
+  ExternalLink,
 } from 'lucide-react';
-import { LearnLesson, UserProfile } from '../types';
+import { LearnLesson, UserProfile, Language } from '../types';
 import { LEARN_LESSONS } from '../services/learnService';
 import { CodeExecutionService } from '../services/codeExecutionService';
 import { StorageService } from '../services/storageService';
@@ -27,7 +31,12 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   onUpdateProfile,
   onSwitchToHunt,
 }) => {
-  const [selectedLesson, setSelectedLesson] = useState<LearnLesson>(LEARN_LESSONS[0]);
+  const [selectedLang, setSelectedLang] = useState<Language | 'all'>('all');
+  const filteredLessons = selectedLang === 'all'
+    ? LEARN_LESSONS
+    : LEARN_LESSONS.filter((l) => l.language === selectedLang);
+
+  const [selectedLesson, setSelectedLesson] = useState<LearnLesson>(filteredLessons[0] || LEARN_LESSONS[0]);
   const [code, setCode] = useState<string>(selectedLesson.brokenCode);
   const [evaluating, setEvaluating] = useState<boolean>(false);
   const [evalResult, setEvalResult] = useState<{
@@ -37,10 +46,24 @@ export const LearnPage: React.FC<LearnPageProps> = ({
     message: string;
   } | null>(null);
 
+  // Interactive prediction state
+  const [selectedPrediction, setSelectedPrediction] = useState<string | null>(null);
+  const [showPredictionResult, setShowPredictionResult] = useState<boolean>(false);
+  const [showStepHint, setShowStepHint] = useState<boolean>(false);
+
   const handleSelectLesson = (lesson: LearnLesson) => {
     setSelectedLesson(lesson);
     setCode(lesson.brokenCode);
     setEvalResult(null);
+    setSelectedPrediction(null);
+    setShowPredictionResult(false);
+    setShowStepHint(false);
+  };
+
+  const handlePredictionAnswer = (optionId: string, isCorrect: boolean) => {
+    setSelectedPrediction(optionId);
+    setShowPredictionResult(true);
+    StorageService.recordPrediction(isCorrect);
   };
 
   const handleTestLessonCode = async () => {
@@ -74,7 +97,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
         success: false,
         passedCount: exec.passedCount,
         total: exec.totalCount,
-        message: exec.syntaxError || 'The logic still contains a bug. Inspect the takeaway below.',
+        message: exec.syntaxError || 'The logic still contains a bug. Check the prediction clue or step-by-step hint!',
       });
     }
   };
@@ -88,11 +111,11 @@ export const LearnPage: React.FC<LearnPageProps> = ({
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-phantom-purple/20 border border-phantom-purple/40 text-phantom-violet text-xs font-mono font-semibold mb-2">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>Interactive Micro-Lessons</span>
+            <span>Interactive Forensic Micro-Lessons</span>
           </div>
           <h2 className="text-2xl font-black text-white">Learn Mode: No Boring Lectures</h2>
           <p className="text-xs sm:text-sm text-white/70 max-w-2xl mt-1 leading-relaxed">
-            Inspect the broken scenario, predict the failure, edit the snippet in place, and understand the core programming principle in seconds.
+            Predict the failure hypothesis, edit the snippet directly in place, and master core programming principles without sitting through 40-minute theory videos.
           </p>
         </div>
 
@@ -101,16 +124,38 @@ export const LearnPage: React.FC<LearnPageProps> = ({
         </div>
       </div>
 
+      {/* Language Filter Chips */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs text-white/40 font-mono">Filter Language:</span>
+        {(['all', 'python', 'javascript', 'typescript', 'cpp', 'java'] as const).map((lang) => (
+          <button
+            key={lang}
+            onClick={() => {
+              setSelectedLang(lang);
+              const list = lang === 'all' ? LEARN_LESSONS : LEARN_LESSONS.filter((l) => l.language === lang);
+              if (list.length > 0) handleSelectLesson(list[0]);
+            }}
+            className={`px-3 py-1 rounded-lg text-xs font-mono uppercase transition-all ${
+              selectedLang === lang
+                ? 'bg-phantom-cyan text-black font-bold shadow-glow-cyan'
+                : 'bg-white/5 text-white/60 hover:text-white border border-white/10'
+            }`}
+          >
+            {lang}
+          </button>
+        ))}
+      </div>
+
       {/* Main Layout: Left Lessons List / Right Interactive Sandbox */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Module Nav (4 cols) */}
         <div className="lg:col-span-4 space-y-3">
           <h3 className="text-xs font-mono uppercase tracking-wider text-white/40 px-1 font-bold">
-            Curriculum Concepts
+            Curriculum Concepts ({filteredLessons.length})
           </h3>
 
-          <div className="space-y-2">
-            {LEARN_LESSONS.map((lesson) => {
+          <div className="space-y-2 max-h-[680px] overflow-y-auto pr-1">
+            {filteredLessons.map((lesson) => {
               const active = selectedLesson.id === lesson.id;
               const done = profile.completedLessons.includes(lesson.id);
 
@@ -128,13 +173,18 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                     <span className="text-[11px] font-mono uppercase text-phantom-violet font-semibold">
                       {lesson.concept}
                     </span>
-                    {done ? (
-                      <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
-                    ) : (
-                      <span className="text-[10px] text-phantom-amber font-mono font-bold">
-                        +{lesson.xp} XP
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-black/40 text-white/50">
+                        {lesson.language}
                       </span>
-                    )}
+                      {done ? (
+                        <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
+                      ) : (
+                        <span className="text-[10px] text-phantom-amber font-mono font-bold">
+                          +{lesson.xp} XP
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <h4 className="text-sm font-bold text-white">{lesson.title}</h4>
                 </div>
@@ -150,7 +200,14 @@ export const LearnPage: React.FC<LearnPageProps> = ({
             <div>
               <div className="flex items-center justify-between text-xs font-mono mb-2">
                 <span className="text-phantom-cyan font-bold">{selectedLesson.concept}</span>
-                <span className="uppercase text-white/50">{selectedLesson.language}</span>
+                <div className="flex items-center gap-2">
+                  <span className="uppercase text-white/50">{selectedLesson.language}</span>
+                  {isCompleted && (
+                    <span className="text-phantom-teal flex items-center gap-1 font-bold">
+                      <Check className="w-3.5 h-3.5" /> Mastered
+                    </span>
+                  )}
+                </div>
               </div>
               <h3 className="text-xl font-bold text-white mb-2">{selectedLesson.title}</h3>
               <p className="text-xs sm:text-sm text-white/70 leading-relaxed bg-black/30 p-3 rounded-xl border border-white/5">
@@ -159,40 +216,117 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               </p>
             </div>
 
-            {/* In-Place Code Editor */}
-            <div className="rounded-xl border border-phantom-border/80 overflow-hidden bg-[#070c1d]">
-              <div className="flex items-center justify-between px-3 py-2 bg-[#050813] border-b border-white/10 text-xs">
-                <span className="font-mono text-phantom-violet text-[11px]">
-                  {selectedLesson.language === 'python' ? 'lesson.py' : 'lesson.js'}
+            {/* STEP 1: Interactive Predict the Output */}
+            {selectedLesson.predictions && selectedLesson.predictions.length > 0 && (
+              <div className="p-4 rounded-xl bg-[#090e24] border border-phantom-purple/40 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-phantom-violet">
+                  <Brain className="w-4 h-4" />
+                  <span>STEP 1: PREDICT THE BEHAVIOR BEFORE EDITING</span>
+                </div>
+                <p className="text-xs text-white/80">
+                  What will happen if we run this broken code right now?
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {selectedLesson.predictions.map((p) => {
+                    const isSelected = selectedPrediction === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handlePredictionAnswer(p.id, p.isCorrect)}
+                        disabled={showPredictionResult}
+                        className={`text-left p-2.5 rounded-lg border text-xs font-mono transition-all ${
+                          showPredictionResult
+                            ? p.isCorrect
+                              ? 'bg-phantom-teal/20 border-phantom-teal text-phantom-teal font-semibold'
+                              : isSelected
+                              ? 'bg-phantom-crimson/20 border-phantom-crimson text-phantom-crimson'
+                              : 'bg-black/30 border-white/5 text-white/40'
+                            : 'bg-black/40 hover:bg-white/5 border-white/10 text-white/80 hover:text-white'
+                        }`}
+                      >
+                        {p.text}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {showPredictionResult && (
+                  <div className="p-3 rounded-lg bg-black/50 border border-white/10 text-xs text-white/80 space-y-1">
+                    <span className="font-mono text-phantom-cyan font-bold block">
+                      Forensic Hypothesis Verdict:
+                    </span>
+                    <p>
+                      {selectedLesson.predictions.find((p) => p.isCorrect)?.explanation}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* STEP 2: In-Place Code Editor */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-phantom-cyan font-bold flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>STEP 2: FIX THE DEFECT IN THE LIVE SANDBOX</span>
                 </span>
                 <button
-                  onClick={() => setCode(selectedLesson.brokenCode)}
-                  className="text-white/40 hover:text-white flex items-center gap-1 text-[11px]"
+                  onClick={() => setShowStepHint((prev) => !prev)}
+                  className="text-phantom-amber hover:text-white flex items-center gap-1 text-[11px] underline"
                 >
-                  <RotateCcw className="w-3 h-3" /> Reset
+                  <Lightbulb className="w-3 h-3" />
+                  <span>{showStepHint ? 'Hide Clue' : 'Need a Clue?'}</span>
                 </button>
               </div>
 
-              <textarea
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                spellCheck={false}
-                className="w-full h-40 p-3 bg-transparent text-phantom-white font-mono text-xs leading-5 resize-none outline-none whitespace-pre selection:bg-phantom-purple/40"
-              />
+              {showStepHint && selectedLesson.stepByStepHint && (
+                <div className="p-3 rounded-lg bg-phantom-amber/10 border border-phantom-amber/40 text-xs text-phantom-amber font-mono animate-fadeIn">
+                  💡 <strong>Clue:</strong> {selectedLesson.stepByStepHint}
+                </div>
+              )}
 
-              <div className="flex items-center justify-between px-3 py-2 bg-[#050813] border-t border-white/10">
-                <span className="text-[11px] text-white/40 font-mono">
-                  Target: {selectedLesson.expectedBehavior}
-                </span>
+              <div className="rounded-xl border border-phantom-border/80 overflow-hidden bg-[#070c1d]">
+                <div className="flex items-center justify-between px-3 py-2 bg-[#050813] border-b border-white/10 text-xs">
+                  <span className="font-mono text-phantom-violet text-[11px]">
+                    {selectedLesson.language === 'python'
+                      ? 'lesson.py'
+                      : selectedLesson.language === 'cpp'
+                      ? 'lesson.cpp'
+                      : selectedLesson.language === 'java'
+                      ? 'Lesson.java'
+                      : 'lesson.ts'}
+                  </span>
+                  <button
+                    onClick={() => setCode(selectedLesson.brokenCode)}
+                    className="text-white/40 hover:text-white flex items-center gap-1 text-[11px]"
+                  >
+                    <RotateCcw className="w-3 h-3" /> Reset
+                  </button>
+                </div>
 
-                <button
-                  onClick={handleTestLessonCode}
-                  disabled={evaluating}
-                  className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-cyan text-black font-bold text-xs flex items-center gap-1.5 shadow-glow-cyan hover:brightness-110 active:scale-95 transition-all"
-                >
-                  <Play className="w-3.5 h-3.5 fill-current" />
-                  <span>{evaluating ? 'Testing...' : 'Verify Fix'}</span>
-                </button>
+                <textarea
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  spellCheck={false}
+                  className="w-full h-40 p-3 bg-transparent text-phantom-white font-mono text-xs leading-5 resize-none outline-none whitespace-pre selection:bg-phantom-purple/40"
+                />
+
+                <div className="flex items-center justify-between px-3 py-2 bg-[#050813] border-t border-white/10">
+                  <span className="text-[11px] text-white/40 font-mono">
+                    Target: {selectedLesson.expectedBehavior}
+                  </span>
+
+                  <button
+                    onClick={handleTestLessonCode}
+                    disabled={evaluating}
+                    className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-cyan text-black font-bold text-xs flex items-center gap-1.5 shadow-glow-cyan hover:brightness-110 active:scale-95 transition-all"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current" />
+                    <span>{evaluating ? 'Testing...' : 'Verify Fix'}</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -232,6 +366,20 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 <span className="text-phantom-amber font-semibold">The Anatomy of the Bug: </span>
                 {selectedLesson.bugExplanation}
               </div>
+            </div>
+
+            {/* Action footer: Jump to live case */}
+            <div className="pt-2 flex items-center justify-between border-t border-white/5">
+              <span className="text-xs text-white/40 font-mono">
+                Ready to solve full investigative crime scenes?
+              </span>
+              <button
+                onClick={() => onSwitchToHunt()}
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-phantom-cyan border border-phantom-cyan/30 text-xs font-semibold flex items-center gap-1.5 transition-all"
+              >
+                <span>Enter Live Case Arena</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         </div>

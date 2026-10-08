@@ -12,6 +12,9 @@ import { MissionMapPage } from './pages/MissionMapPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { AchievementsPage } from './pages/AchievementsPage';
+import { ErrorRevisionPage } from './pages/ErrorRevisionPage';
+import { BugEncyclopediaPage } from './pages/BugEncyclopediaPage';
+import { BugDNAPage } from './pages/BugDNAPage';
 import { SettingsModal } from './components/SettingsModal';
 import { AuthModal } from './components/AuthModal';
 import { OnboardingModal } from './components/OnboardingModal';
@@ -164,6 +167,25 @@ export function App() {
           <MissionMapPage
             profile={profile}
             onSelectChallenge={(id) => handleStartHunt(id)}
+          />
+        )}
+
+        {currentTab === 'revisions' && (
+          <ErrorRevisionPage
+            profile={profile}
+            onOpenCase={handleStartHunt}
+            onRefreshProfile={() => setProfile(StorageService.getProfile())}
+          />
+        )}
+
+        {currentTab === 'encyclopedia' && (
+          <BugEncyclopediaPage />
+        )}
+
+        {currentTab === 'dna' && (
+          <BugDNAPage
+            profile={profile}
+            onOpenRecommendedCase={() => handleStartHunt()}
           />
         )}
 

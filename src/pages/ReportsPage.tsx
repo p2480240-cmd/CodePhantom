@@ -164,7 +164,7 @@ https://github.com/p2480240-cmd/CodePhantom`;
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-phantom-cyan" />
-                <span>365-Day Debugging Heatmap</span>
+                <span>Monthly Activity Heatmap (LeetCode Style)</span>
               </h3>
               <span className="text-xs text-white/40 font-mono">
                 {activeDays.length} active days recorded

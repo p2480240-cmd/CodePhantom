@@ -789,6 +789,399 @@ export const CURATED_CHALLENGES: Challenge[] = [
     source: 'curated-fallback',
     zone: 'Deep Shadow Matrix',
   },
+
+  // =========================================================================
+  // TYPESCRIPT CASES
+  // =========================================================================
+  {
+    id: 'calculate_average_ts',
+    slug: 'calculate_average',
+    title: 'The Glitched Scorekeeper (TS)',
+    storyContext:
+      'The neon arcade terminal in Sector 7 is giving players corrupted averages! The TypeScript sensor halving multiplier has gone rogue.',
+    language: 'typescript',
+    difficulty: 'easy',
+    concept: 'Operator Precedence & Type Coercion',
+    brokenCode: `function calculateAverage(numbers: number[]): number {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let total: number = 0;
+    for (let i = 0; i < numbers.length; i++) {
+        total += numbers[i];
+    }
+    // The phantom corrupted the division line
+    return total / (numbers.length * 2);
+}`,
+    expectedBehavior: 'Returns the exact arithmetic mean (sum / count) for a number array.',
+    actualBehavior: 'Returns half of the actual average because of accidental multiplication by 2.',
+    entryFunction: 'calculateAverage',
+    testCases: [
+      {
+        id: 'tc_ca_ts_1',
+        inputDescription: 'calculateAverage([10, 20, 30])',
+        inputs: [[10, 20, 30]],
+        expectedOutput: 20.0,
+      },
+      {
+        id: 'tc_ca_ts_2',
+        inputDescription: 'calculateAverage([5, 15])',
+        inputs: [[5, 15]],
+        expectedOutput: 10.0,
+      },
+      {
+        id: 'tc_ca_ts_3',
+        inputDescription: 'calculateAverage([100])',
+        inputs: [[100]],
+        expectedOutput: 100.0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look closely at the return statement on the final line.',
+      hint2_clue: 'The average is sum divided by count: sum / numbers.length.',
+      hint3_narrow: 'Remove the "* 2" multiplier from the denominator.',
+      solution: `function calculateAverage(numbers: number[]): number {
+    if (numbers.length === 0) {
+        return 0;
+    }
+    let total: number = 0;
+    for (let i = 0; i < numbers.length; i++) {
+        total += numbers[i];
+    }
+    return total / numbers.length;
+}`,
+      solutionExplanation: 'Dividing total by numbers.length without multiplying by 2 yields the correct average.',
+    },
+    explanationOfBug: 'An erroneous multiplier `* 2` in the divisor caused the result to be halved.',
+    explanationOfCorrection: 'Removing the factor of 2 restores the true mathematical arithmetic average.',
+    estimatedMinutes: 3,
+    xpReward: 100,
+    source: 'curated-fallback',
+    zone: 'The Neon Outskirts',
+  },
+  {
+    id: 'the_lost_robot_ts',
+    slug: 'the_lost_robot',
+    title: 'The Lost Robot (TS)',
+    storyContext:
+      'A patrol droid in the Cybernetic Core is wandering off the grid because its route boundary check is leaking.',
+    language: 'typescript',
+    difficulty: 'easy',
+    concept: 'Array Indexing & Boundary Errors',
+    brokenCode: `function getNextWaypoints(waypoints: string[]): number {
+    const activePath: string[] = [];
+    for (let i = 0; i <= waypoints.length; i++) {
+        if (i < waypoints.length) {
+            activePath.push(waypoints[i]);
+        } else {
+            activePath.push("CORRUPTED");
+        }
+    }
+    return activePath.length;
+}`,
+    expectedBehavior: 'Returns exactly the count of valid waypoints without appending out-of-bounds corruption.',
+    actualBehavior: 'Loops past waypoints.length and appends corrupted node.',
+    entryFunction: 'getNextWaypoints',
+    testCases: [
+      {
+        id: 'tc_rb_ts_1',
+        inputDescription: 'getNextWaypoints(["Alpha", "Bravo", "Charlie"])',
+        inputs: [["Alpha", "Bravo", "Charlie"]],
+        expectedOutput: 3,
+      },
+      {
+        id: 'tc_rb_ts_2',
+        inputDescription: 'getNextWaypoints(["Base"])',
+        inputs: [["Base"]],
+        expectedOutput: 1,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Inspect the condition in the for-loop.',
+      hint2_clue: 'The loop uses <= waypoints.length instead of < waypoints.length.',
+      hint3_narrow: 'Change i <= waypoints.length to i < waypoints.length and remove the CORRUPTED push.',
+      solution: `function getNextWaypoints(waypoints: string[]): number {
+    const activePath: string[] = [];
+    for (let i = 0; i < waypoints.length; i++) {
+        activePath.push(waypoints[i]);
+    }
+    return activePath.length;
+}`,
+      solutionExplanation: 'Standard boundary checking ensures exactly the valid waypoints are counted.',
+    },
+    explanationOfBug: 'Off-by-one boundary comparison appended an extra element.',
+    explanationOfCorrection: 'Using strict < condition keeps indexing within bounds.',
+    estimatedMinutes: 4,
+    xpReward: 120,
+    source: 'curated-fallback',
+    zone: 'Cybernetic Core',
+  },
+
+  // =========================================================================
+  // C++ CASES
+  // =========================================================================
+  {
+    id: 'calculate_average_cpp',
+    slug: 'calculate_average',
+    title: 'The Glitched Scorekeeper (C++)',
+    storyContext:
+      'The high-performance mainframe scorekeeper in Sector 7 is computing half-precision scores due to a phantom factor in C++.',
+    language: 'cpp',
+    difficulty: 'easy',
+    concept: 'Operator Precedence & Vector Iteration',
+    brokenCode: `double calculateAverage(std::vector<double> numbers) {
+    if (numbers.empty()) {
+        return 0.0;
+    }
+    double total = 0.0;
+    for (size_t i = 0; i < numbers.size(); i++) {
+        total += numbers[i];
+    }
+    // The phantom corrupted the division line
+    return total / (numbers.size() * 2);
+}`,
+    expectedBehavior: 'Returns arithmetic mean of double vector elements.',
+    actualBehavior: 'Returns half the true average due to multiplier * 2.',
+    entryFunction: 'calculateAverage',
+    testCases: [
+      {
+        id: 'tc_ca_cpp_1',
+        inputDescription: 'calculateAverage({10, 20, 30})',
+        inputs: [[10, 20, 30]],
+        expectedOutput: 20.0,
+      },
+      {
+        id: 'tc_ca_cpp_2',
+        inputDescription: 'calculateAverage({5, 15})',
+        inputs: [[5, 15]],
+        expectedOutput: 10.0,
+      },
+      {
+        id: 'tc_ca_cpp_3',
+        inputDescription: 'calculateAverage({100})',
+        inputs: [[100]],
+        expectedOutput: 100.0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look closely at the return statement denominator.',
+      hint2_clue: 'Divide by numbers.size(), not numbers.size() * 2.',
+      hint3_narrow: 'Change return total / (numbers.size() * 2) to return total / numbers.size();',
+      solution: `double calculateAverage(std::vector<double> numbers) {
+    if (numbers.empty()) {
+        return 0.0;
+    }
+    double total = 0.0;
+    for (size_t i = 0; i < numbers.size(); i++) {
+        total += numbers[i];
+    }
+    return total / numbers.size();
+}`,
+      solutionExplanation: 'Dividing total by numbers.size() restores standard arithmetic mean.',
+    },
+    explanationOfBug: 'Multiplying the divisor by 2 caused half values.',
+    explanationOfCorrection: 'Removing the factor of 2 calculates the correct average.',
+    estimatedMinutes: 4,
+    xpReward: 120,
+    source: 'curated-fallback',
+    zone: 'The Neon Outskirts',
+  },
+  {
+    id: 'the_lost_robot_cpp',
+    slug: 'the_lost_robot',
+    title: 'The Lost Robot (C++)',
+    storyContext:
+      'A patrol droid in the Cybernetic Core is wandering off the grid because its route boundary check is leaking.',
+    language: 'cpp',
+    difficulty: 'easy',
+    concept: 'Vector Bounds & Off-by-one',
+    brokenCode: `int getNextWaypoints(std::vector<std::string> waypoints) {
+    std::vector<std::string> activePath;
+    for (size_t i = 0; i <= waypoints.size(); i++) {
+        if (i < waypoints.size()) {
+            activePath.push_back(waypoints[i]);
+        } else {
+            activePath.push_back("CORRUPTED");
+        }
+    }
+    return activePath.size();
+}`,
+    expectedBehavior: 'Returns true count of valid waypoints without extra corrupted nodes.',
+    actualBehavior: 'Loops past size() and pushes CORRUPTED.',
+    entryFunction: 'getNextWaypoints',
+    testCases: [
+      {
+        id: 'tc_rb_cpp_1',
+        inputDescription: 'getNextWaypoints({"Alpha", "Bravo", "Charlie"})',
+        inputs: [["Alpha", "Bravo", "Charlie"]],
+        expectedOutput: 3,
+      },
+      {
+        id: 'tc_rb_cpp_2',
+        inputDescription: 'getNextWaypoints({"Base"})',
+        inputs: [["Base"]],
+        expectedOutput: 1,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Examine the loop limit: i <= waypoints.size().',
+      hint2_clue: 'In zero-indexed vectors, the last index is size() - 1.',
+      hint3_narrow: 'Change condition to i < waypoints.size() and remove corrupted push.',
+      solution: `int getNextWaypoints(std::vector<std::string> waypoints) {
+    std::vector<std::string> activePath;
+    for (size_t i = 0; i < waypoints.size(); i++) {
+        activePath.push_back(waypoints[i]);
+    }
+    return activePath.size();
+}`,
+      solutionExplanation: 'Bound condition i < waypoints.size() prevents buffer over-read.',
+    },
+    explanationOfBug: 'Loop ran to i <= size(), pushing out-of-bounds artifact.',
+    explanationOfCorrection: 'Setting upper bound to i < waypoints.size() guarantees clean paths.',
+    estimatedMinutes: 4,
+    xpReward: 120,
+    source: 'curated-fallback',
+    zone: 'Cybernetic Core',
+  },
+
+  // =========================================================================
+  // JAVA CASES
+  // =========================================================================
+  {
+    id: 'calculate_average_java',
+    slug: 'calculate_average',
+    title: 'The Glitched Scorekeeper (Java)',
+    storyContext:
+      'The enterprise server in Sector 7 is recording distorted telemetry averages. Solve the Java class bug.',
+    language: 'java',
+    difficulty: 'easy',
+    concept: 'Array Iteration & Operator Precedence',
+    brokenCode: `public class Solution {
+    public static double calculateAverage(double[] numbers) {
+        if (numbers.length == 0) {
+            return 0.0;
+        }
+        double total = 0.0;
+        for (int i = 0; i < numbers.length; i++) {
+            total += numbers[i];
+        }
+        // The phantom corrupted the division line
+        return total / (numbers.length * 2);
+    }
+}`,
+    expectedBehavior: 'Returns true arithmetic average of double array.',
+    actualBehavior: 'Divides by double length and returns half average.',
+    entryFunction: 'calculateAverage',
+    testCases: [
+      {
+        id: 'tc_ca_jv_1',
+        inputDescription: 'calculateAverage(new double[]{10, 20, 30})',
+        inputs: [[10, 20, 30]],
+        expectedOutput: 20.0,
+      },
+      {
+        id: 'tc_ca_jv_2',
+        inputDescription: 'calculateAverage(new double[]{5, 15})',
+        inputs: [[5, 15]],
+        expectedOutput: 10.0,
+      },
+      {
+        id: 'tc_ca_jv_3',
+        inputDescription: 'calculateAverage(new double[]{100})',
+        inputs: [[100]],
+        expectedOutput: 100.0,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the denominator in the return statement.',
+      hint2_clue: 'Divide total by numbers.length, without * 2.',
+      hint3_narrow: 'Replace return total / (numbers.length * 2) with return total / numbers.length;',
+      solution: `public class Solution {
+    public static double calculateAverage(double[] numbers) {
+        if (numbers.length == 0) {
+            return 0.0;
+        }
+        double total = 0.0;
+        for (int i = 0; i < numbers.length; i++) {
+            total += numbers[i];
+        }
+        return total / numbers.length;
+    }
+}`,
+      solutionExplanation: 'Dividing total by numbers.length computes the accurate average.',
+    },
+    explanationOfBug: 'Multiplier * 2 in divisor halved the returned value.',
+    explanationOfCorrection: 'Dividing cleanly by numbers.length produces correct results.',
+    estimatedMinutes: 4,
+    xpReward: 120,
+    source: 'curated-fallback',
+    zone: 'The Neon Outskirts',
+  },
+  {
+    id: 'the_lost_robot_java',
+    slug: 'the_lost_robot',
+    title: 'The Lost Robot (Java)',
+    storyContext:
+      'A patrol droid in the Cybernetic Core is wandering off the grid because its route boundary check is leaking.',
+    language: 'java',
+    difficulty: 'easy',
+    concept: 'Array Bounds & ArrayList',
+    brokenCode: `import java.util.ArrayList;
+
+public class Solution {
+    public static int getNextWaypoints(String[] waypoints) {
+        ArrayList<String> activePath = new ArrayList<>();
+        for (int i = 0; i <= waypoints.length; i++) {
+            if (i < waypoints.length) {
+                activePath.add(waypoints[i]);
+            } else {
+                activePath.add("CORRUPTED");
+            }
+        }
+        return activePath.size();
+    }
+}`,
+    expectedBehavior: 'Returns true count of valid waypoints without extra corrupted nodes.',
+    actualBehavior: 'Loops past array length and adds corrupted node.',
+    entryFunction: 'getNextWaypoints',
+    testCases: [
+      {
+        id: 'tc_rb_jv_1',
+        inputDescription: 'getNextWaypoints(new String[]{"Alpha", "Bravo", "Charlie"})',
+        inputs: [["Alpha", "Bravo", "Charlie"]],
+        expectedOutput: 3,
+      },
+      {
+        id: 'tc_rb_jv_2',
+        inputDescription: 'getNextWaypoints(new String[]{"Base"})',
+        inputs: [["Base"]],
+        expectedOutput: 1,
+      },
+    ],
+    hints: {
+      hint1_shadow: 'Look at the loop counter condition: i <= waypoints.length.',
+      hint2_clue: 'An array with length N has elements from index 0 to N-1.',
+      hint3_narrow: 'Change condition to i < waypoints.length.',
+      solution: `import java.util.ArrayList;
+
+public class Solution {
+    public static int getNextWaypoints(String[] waypoints) {
+        ArrayList<String> activePath = new ArrayList<>();
+        for (int i = 0; i < waypoints.length; i++) {
+            activePath.add(waypoints[i]);
+        }
+        return activePath.size();
+    }
+}`,
+      solutionExplanation: 'Looping strictly up to i < waypoints.length prevents indexing errors.',
+    },
+    explanationOfBug: 'Loop went up to i <= waypoints.length, causing spurious insertion.',
+    explanationOfCorrection: 'Using strict < operator prevents insertion of corrupted data.',
+    estimatedMinutes: 4,
+    xpReward: 120,
+    source: 'curated-fallback',
+    zone: 'Cybernetic Core',
+  },
 ];
 
 export class ChallengeService {

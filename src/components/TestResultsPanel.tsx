@@ -1,5 +1,4 @@
-import React from 'react';
-import { CheckCircle, XCircle, Terminal, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { CheckCircle, XCircle, Terminal, AlertTriangle, ShieldCheck, AlertOctagon, Sparkles } from 'lucide-react';
 import { ExecutionResult } from '../types';
 
 interface TestResultsPanelProps {
@@ -63,6 +62,36 @@ export const TestResultsPanel: React.FC<TestResultsPanelProps> = ({
           <span>{execution.executionMode}</span>
         </div>
       </div>
+
+      {/* "Make It Worse" Regression Warning */}
+      {execution.madeItWorse && !allPassed && (
+        <div className="p-3 bg-red-950/70 border border-red-500/70 rounded-lg text-xs text-red-200 flex items-start gap-2.5 animate-pulse shadow-lg">
+          <AlertOctagon className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+          <div>
+            <div className="font-bold text-red-300 font-mono text-[11.5px] uppercase">
+              ⚠️ Phantom Warning: Regression Detected ("Make It Worse")
+            </div>
+            <p className="text-[11px] text-red-200/90 mt-0.5 leading-relaxed">
+              {execution.regressionMessage || 'Your recent modification broke tests that were previously working or introduced a new runtime exception. Step back and reconsider your logic!'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Dynamic Detective Diagnostic Suggestion for this specific failure */}
+      {(execution.dynamicFeedback || execution.diagnosticMessage) && !allPassed && (
+        <div className="p-3 bg-phantom-purple/20 border border-phantom-violet/50 rounded-lg text-xs text-white/90 flex items-start gap-2.5 shadow-md">
+          <Sparkles className="w-4 h-4 text-phantom-cyan shrink-0 mt-0.5" />
+          <div className="space-y-0.5 flex-1">
+            <div className="font-bold text-phantom-cyan text-[11px] uppercase tracking-wider font-mono">
+              🔍 Phantom Detective Clue:
+            </div>
+            <p className="text-white/80 text-xs leading-relaxed">
+              {execution.dynamicFeedback || execution.diagnosticMessage}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Syntax Error if present */}
       {execution.syntaxError && (

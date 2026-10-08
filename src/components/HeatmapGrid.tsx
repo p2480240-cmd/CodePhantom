@@ -13,10 +13,10 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
 
-  // Month navigation state: defaults to current month/year
+  // Month navigation: defaults to current month/year
   const now = new Date();
   const [selectedYear, setSelectedYear] = useState<number>(now.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState<number>(now.getMonth()); // 0-indexed (0 = Jan, 9 = Oct)
+  const [selectedMonth, setSelectedMonth] = useState<number>(now.getMonth()); // 0-indexed
 
   const [tooltip, setTooltip] = useState<{
     text: string;
@@ -50,12 +50,10 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
 
   // Build calendar matrix for selectedMonth / selectedYear
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
-  // Day of week of the 1st of this month (0 = Sun, 1 = Mon ... 6 = Sat)
   const firstDayOfWeek = new Date(selectedYear, selectedMonth, 1).getDay();
-  // Adjust so Monday = 0, Sunday = 6
+  // Adjust Monday = 0, Sunday = 6
   const startOffset = (firstDayOfWeek + 6) % 7;
 
-  // Compute month summary statistics
   let monthTotalBugs = 0;
   let monthTotalXP = 0;
   let monthActiveDays = 0;
@@ -81,12 +79,13 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     monthDaysList.push({ dayNumber: d, dateStr, data: dayData });
   }
 
+  // LeetCode-style compact cell styling
   const getCellColor = (count: number) => {
-    if (count === 0) return 'bg-[#0f172a]/60 hover:border-white/30 border border-white/5 text-white/40';
-    if (count === 1) return 'bg-phantom-purple/40 border border-phantom-purple/70 text-white shadow-sm';
-    if (count === 2) return 'bg-phantom-purple/80 border border-phantom-violet text-white shadow-sm';
-    if (count <= 4) return 'bg-phantom-cyan/70 border border-phantom-cyan text-black font-bold shadow-glow-cyan';
-    return 'bg-phantom-cyan border border-white text-black font-extrabold shadow-glow-cyan';
+    if (count === 0) return 'bg-[#121a2f] hover:bg-[#1a2542] border border-white/5 text-white/30';
+    if (count === 1) return 'bg-[#4c1d95] hover:bg-[#5b21b6] border border-[#7c3aed] text-white shadow-sm';
+    if (count === 2) return 'bg-[#7c3aed] hover:bg-[#8b5cf6] border border-[#a78bfa] text-white shadow-sm';
+    if (count <= 4) return 'bg-[#06b6d4] hover:bg-[#22d3ee] border border-[#22d3ee] text-black font-bold shadow-glow-cyan';
+    return 'bg-[#22d3ee] hover:bg-white border border-white text-black font-extrabold shadow-glow-cyan';
   };
 
   const handleMouseEnter = (
@@ -101,7 +100,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     });
     const info =
       day.count > 0
-        ? `${day.count} bugs fixed (+${day.xp} XP) on ${formatted}`
+        ? `${day.count} bugs solved (+${day.xp} XP) on ${formatted}`
         : `No activity on ${formatted}`;
 
     setTooltip({
@@ -112,7 +111,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     });
   };
 
-  // Yearly data generator if user toggles yearly view
+  // Yearly data generator
   const today = new Date();
   const yearlyWeeks: { dateStr: string; day: ActivityDay }[][] = [];
   let currentWeek: { dateStr: string; day: ActivityDay }[] = [];
@@ -142,26 +141,25 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       {/* Floating Tooltip */}
       {tooltip.visible && (
         <div
-          className="fixed z-50 pointer-events-none transform -translate-x-1/2 px-3 py-1.5 text-[11px] font-mono text-white bg-black/95 border border-phantom-cyan/60 rounded-lg shadow-2xl whitespace-nowrap"
+          className="fixed z-50 pointer-events-none transform -translate-x-1/2 px-3 py-1 text-[11px] font-mono text-white bg-black/95 border border-phantom-cyan/60 rounded-lg shadow-2xl whitespace-nowrap"
           style={{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }}
         >
           {tooltip.text}
         </div>
       )}
 
-      {/* Top Header: Month Switcher & View Mode Toggle */}
+      {/* Controls & Month Switcher Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2.5">
-        {/* Month Navigation */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={handlePrevMonth}
             title="Previous Month"
-            className="p-1 rounded-lg bg-black/40 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
+            className="p-1 rounded-md bg-black/40 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-3.5 h-3.5" />
           </button>
 
-          <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 font-mono px-1">
+          <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 font-mono px-1.5">
             <CalendarIcon className="w-3.5 h-3.5 text-phantom-cyan" />
             <span>{monthNames[selectedMonth]} {selectedYear}</span>
           </div>
@@ -169,18 +167,18 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           <button
             onClick={handleNextMonth}
             title="Next Month"
-            className="p-1 rounded-lg bg-black/40 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
+            className="p-1 rounded-md bg-black/40 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        {/* Month Quick Summary Pills */}
+        {/* LeetCode-style activity indicators */}
         <div className="flex items-center gap-2 text-[11px] font-mono">
-          <span className="px-2 py-0.5 rounded bg-phantom-purple/20 text-phantom-violet border border-phantom-purple/30">
-            {monthTotalBugs} bugs fixed
+          <span className="px-2 py-0.5 rounded bg-phantom-purple/20 text-phantom-violet border border-phantom-purple/30 font-semibold">
+            {monthTotalBugs} Solved
           </span>
-          <span className="px-2 py-0.5 rounded bg-phantom-amber/15 text-phantom-amber border border-phantom-amber/30">
+          <span className="px-2 py-0.5 rounded bg-phantom-amber/15 text-phantom-amber border border-phantom-amber/30 font-semibold">
             +{monthTotalXP} XP
           </span>
           {!compact && (
@@ -194,61 +192,54 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
         </div>
       </div>
 
-      {/* MONTHLY CALENDAR VIEW (Default & Primary) */}
+      {/* MONTHLY CALENDAR: LEETCODE SIZED BOXES (Centered, Compact ~16px-20px square tiles) */}
       {viewMode === 'monthly' ? (
-        <div className="space-y-2">
-          {/* Weekday Labels Header */}
-          <div className="grid grid-cols-7 gap-1.5 text-center text-[10px] font-mono uppercase text-white/40 font-semibold py-1">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
-          </div>
+        <div className="flex flex-col items-center sm:items-start py-1">
+          <div className="inline-block p-3 rounded-xl bg-[#070b18] border border-white/10 shadow-inner">
+            {/* Weekday headers */}
+            <div className="grid grid-cols-7 gap-1.5 text-center text-[10px] font-mono uppercase text-white/40 mb-1.5 font-semibold">
+              <span className="w-5 text-center">Mo</span>
+              <span className="w-5 text-center">Tu</span>
+              <span className="w-5 text-center">We</span>
+              <span className="w-5 text-center">Th</span>
+              <span className="w-5 text-center">Fr</span>
+              <span className="w-5 text-center">Sa</span>
+              <span className="w-5 text-center">Su</span>
+            </div>
 
-          {/* Days Grid */}
-          <div className="grid grid-cols-7 gap-1.5">
-            {/* Empty offset spaces before 1st of month */}
-            {Array.from({ length: startOffset }).map((_, idx) => (
-              <div key={`offset-${idx}`} className="aspect-square rounded-lg bg-transparent" />
-            ))}
+            {/* LeetCode Grid of Days */}
+            <div className="grid grid-cols-7 gap-1.5">
+              {Array.from({ length: startOffset }).map((_, idx) => (
+                <div key={`offset-${idx}`} className="w-5 h-5 rounded-[3px] bg-transparent" />
+              ))}
 
-            {/* Actual Month Days */}
-            {monthDaysList.map(({ dayNumber, data }) => (
-              <div
-                key={data.date}
-                onMouseEnter={(e) => handleMouseEnter(e, data)}
-                onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
-                className={`aspect-square min-h-[32px] sm:min-h-[36px] rounded-lg p-1 flex flex-col justify-between transition-all cursor-pointer select-none ${getCellColor(
-                  data.count
-                )}`}
-              >
-                <div className="text-[10px] sm:text-xs font-mono font-medium leading-none">
+              {monthDaysList.map(({ dayNumber, data }) => (
+                <div
+                  key={data.date}
+                  onMouseEnter={(e) => handleMouseEnter(e, data)}
+                  onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
+                  className={`w-5 h-5 rounded-[3px] flex items-center justify-center text-[9px] font-mono transition-all cursor-pointer select-none ${getCellColor(
+                    data.count
+                  )}`}
+                >
                   {dayNumber}
                 </div>
-                {data.count > 0 && (
-                  <div className="text-[9px] font-mono leading-none self-end font-bold">
-                    {data.count}★
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       ) : (
-        /* YEARLY OVERVIEW VIEW (Fallback if requested) */
+        /* YEARLY OVERVIEW VIEW (LeetCode Submission Matrix) */
         <div className="overflow-x-auto pb-2 scrollbar-none">
-          <div className="inline-flex gap-1.5 min-w-full">
+          <div className="inline-flex gap-1 min-w-full p-2 bg-[#070b18] rounded-xl border border-white/10">
             {yearlyWeeks.map((week, wIdx) => (
-              <div key={wIdx} className="flex flex-col gap-1.5">
+              <div key={wIdx} className="flex flex-col gap-1">
                 {week.map((cell) => (
                   <div
                     key={cell.dateStr}
                     onMouseEnter={(e) => handleMouseEnter(e, cell.day)}
                     onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
-                    className={`w-3.5 h-3.5 rounded-[3px] transition-all cursor-pointer ${getCellColor(
+                    className={`w-3.5 h-3.5 rounded-[2px] transition-all cursor-pointer ${getCellColor(
                       cell.day.count
                     )}`}
                   />
@@ -259,15 +250,15 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
         </div>
       )}
 
-      {/* Legend & Month Navigation Notice */}
+      {/* Legend */}
       <div className="flex items-center justify-between text-[11px] text-white/40 pt-2 border-t border-white/5 select-none font-mono">
         <div className="flex items-center gap-1.5">
           <span>Less</span>
-          <div className="w-2.5 h-2.5 rounded-sm bg-[#0f172a]/80 border border-white/5" />
-          <div className="w-2.5 h-2.5 rounded-sm bg-phantom-purple/40" />
-          <div className="w-2.5 h-2.5 rounded-sm bg-phantom-purple/80" />
-          <div className="w-2.5 h-2.5 rounded-sm bg-phantom-cyan/70" />
-          <div className="w-2.5 h-2.5 rounded-sm bg-phantom-cyan" />
+          <div className="w-3 h-3 rounded-[2px] bg-[#121a2f] border border-white/10" />
+          <div className="w-3 h-3 rounded-[2px] bg-[#4c1d95]" />
+          <div className="w-3 h-3 rounded-[2px] bg-[#7c3aed]" />
+          <div className="w-3 h-3 rounded-[2px] bg-[#06b6d4]" />
+          <div className="w-3 h-3 rounded-[2px] bg-[#22d3ee]" />
           <span>More</span>
         </div>
 

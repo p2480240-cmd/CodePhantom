@@ -495,24 +495,58 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
           </div>
 
-          {/* 4. Atmospheric Quote Card */}
-          <div className="relative p-6 rounded-2xl bg-gradient-to-br from-[#120a2e] to-[#071329] border border-phantom-border shadow-xl flex flex-col justify-between overflow-hidden">
+          {/* 4. Atmospheric Quote Card with Powerful Code Matrix Background */}
+          <div className="group relative p-6 rounded-2xl bg-gradient-to-br from-[#130b30] via-[#0b122c] to-[#050917] border border-phantom-purple/40 shadow-2xl flex flex-col justify-between overflow-hidden">
+            {/* High-Tech Code Circuit / Binary Matrix Background Art */}
+            <div className="absolute inset-0 pointer-events-none opacity-25 group-hover:opacity-35 transition-opacity duration-500 overflow-hidden select-none">
+              <svg className="w-full h-full object-cover" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="codeGradQuote" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#a855f7" stopOpacity="0.8" />
+                    <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.8" />
+                  </linearGradient>
+                  <pattern id="matrixGridQuote" width="30" height="30" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#matrixGridQuote)" />
+                {/* Code Traces & Circuit Lines */}
+                <path d="M10 80 H 120 L 160 120 H 320" stroke="url(#codeGradQuote)" strokeWidth="1.5" strokeDasharray="6 4" />
+                <path d="M40 220 H 180 L 220 180 H 380" stroke="url(#codeGradQuote)" strokeWidth="1.5" strokeDasharray="4 4" />
+                <circle cx="160" cy="120" r="3.5" fill="#06b6d4" />
+                <circle cx="220" cy="180" r="3.5" fill="#a855f7" />
+                {/* Background Code Snippets & Symbols */}
+                <text x="20" y="45" fill="#06b6d4" fontSize="11" fontFamily="monospace" opacity="0.7">&lt;code&gt; while (bug.alive) &#123;</text>
+                <text x="45" y="65" fill="#a855f7" fontSize="10" fontFamily="monospace" opacity="0.6">hunt.revealShadow();</text>
+                <text x="20" y="160" fill="#a855f7" fontSize="10" fontFamily="monospace" opacity="0.5">const truth = solve();</text>
+                <text x="230" y="240" fill="#10b981" fontSize="10" fontFamily="monospace" opacity="0.6">&lt;/matrix&gt; 010110</text>
+                <text x="260" y="70" fill="#06b6d4" fontSize="20" fontFamily="monospace" opacity="0.4">&#123; ... &#125;</text>
+                <text x="310" y="140" fill="#ec4899" fontSize="14" fontFamily="monospace" opacity="0.4">λ =&gt; bug</text>
+              </svg>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#060914] via-transparent to-transparent" />
+            </div>
+
             {/* Subtle floating glow in card */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-phantom-cyan/20 rounded-full filter blur-xl" />
+            <div className="absolute -top-10 -right-10 w-36 h-36 bg-phantom-cyan/25 rounded-full filter blur-2xl" />
+            <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-phantom-purple/20 rounded-full filter blur-2xl" />
 
             <div className="relative z-10 space-y-3">
-              <span className="text-2xl text-phantom-violet font-serif">“</span>
-              <p className="text-base font-semibold text-white/90 leading-snug">
+              <span className="text-3xl text-phantom-violet font-serif block">“</span>
+              <p className="text-base font-semibold text-white/95 leading-snug tracking-wide">
                 Not just coding, but a journey of discovery.
               </p>
-              <div className="text-xs text-phantom-cyan font-mono">— CodePhantom</div>
+              <div className="text-xs text-phantom-cyan font-mono font-medium flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-phantom-cyan animate-pulse" />
+                <span>— CodePhantom Arena</span>
+              </div>
             </div>
 
             <div className="relative z-10 pt-4 mt-6 border-t border-white/10 flex items-center justify-between">
-              <span className="text-[11px] text-white/40">Ready to investigate?</span>
+              <span className="text-[11px] text-white/50 font-mono">Ready to investigate?</span>
               <button
                 onClick={() => onEnterArena()}
-                className="px-3 py-1.5 rounded-lg bg-phantom-purple hover:bg-phantom-violet text-white text-xs font-semibold shadow-glow-purple transition-all"
+                className="px-3.5 py-1.5 rounded-lg bg-phantom-purple hover:bg-phantom-violet text-white text-xs font-semibold shadow-glow-purple transition-all active:scale-95"
               >
                 Join Hunt
               </button>
