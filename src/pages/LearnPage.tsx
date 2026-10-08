@@ -234,6 +234,32 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               </p>
             </div>
 
+            {/* BROKEN CODE PREVIEW: Inspect Before Predicting */}
+            <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-slate-50 dark:bg-[#060a18] shadow-sm">
+              <div className="flex items-center justify-between px-3.5 py-2 bg-slate-100/90 dark:bg-[#040711] border-b border-slate-200 dark:border-white/10 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-purple-700 dark:text-phantom-violet font-semibold text-[11px]">
+                    {selectedLesson.language === 'python'
+                      ? 'lesson.py'
+                      : selectedLesson.language === 'cpp'
+                      ? 'lesson.cpp'
+                      : selectedLesson.language === 'java'
+                      ? 'Lesson.java'
+                      : 'lesson.ts'}
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 font-mono text-[10px] font-bold border border-rose-200 dark:border-rose-900/50">
+                    Broken Program
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono text-slate-500 dark:text-white/40">
+                  Target: {selectedLesson.entryFunction}(...)
+                </span>
+              </div>
+              <pre className="p-3.5 text-xs font-mono text-slate-800 dark:text-slate-100 overflow-x-auto whitespace-pre leading-relaxed select-text font-medium">
+                {selectedLesson.brokenCode}
+              </pre>
+            </div>
+
             {/* STEP 1: Interactive Predict the Output */}
             {selectedLesson.predictions && selectedLesson.predictions.length > 0 && (
               <div className="p-4 rounded-xl bg-purple-50/70 dark:bg-[#090e24] border border-purple-200 dark:border-phantom-purple/40 space-y-3">
@@ -241,8 +267,8 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                   <Brain className="w-4 h-4" />
                   <span>STEP 1: PREDICT THE BEHAVIOR BEFORE EDITING</span>
                 </div>
-                <p className="text-xs text-slate-700 dark:text-white/80">
-                  What will happen if we run this broken code right now?
+                <p className="text-xs text-slate-700 dark:text-white/80 font-medium">
+                  Looking at the broken program above, what will happen if we run it right now?
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -271,12 +297,13 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 </div>
 
                 {showPredictionResult && (
-                  <div className="p-3 rounded-lg bg-white/80 dark:bg-black/50 border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-white/80 space-y-1">
+                  <div className="p-3 rounded-lg bg-white/90 dark:bg-black/50 border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-white/80 space-y-1">
                     <span className="font-mono text-cyan-700 dark:text-phantom-cyan font-bold block">
                       Forensic Hypothesis Verdict:
                     </span>
-                    <p>
-                      {selectedLesson.predictions.find((p) => p.isCorrect)?.explanation}
+                    <p className="font-sans font-medium text-slate-700 dark:text-white/90 leading-relaxed">
+                      {selectedLesson.predictions.find((p) => p.id === selectedPrediction)?.explanation ||
+                       selectedLesson.predictions.find((p) => p.isCorrect)?.explanation}
                     </p>
                   </div>
                 )}
@@ -305,9 +332,10 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 </div>
               )}
 
-              <div className="rounded-xl border border-slate-300 dark:border-phantom-border/80 overflow-hidden bg-slate-900 dark:bg-[#070c1d]">
-                <div className="flex items-center justify-between px-3 py-2 bg-slate-800 dark:bg-[#050813] border-b border-white/10 text-xs">
-                  <span className="font-mono text-purple-300 dark:text-phantom-violet text-[11px]">
+              {/* DUAL MODE CODE EDITOR */}
+              <div className="rounded-xl border border-slate-200 dark:border-phantom-border/80 overflow-hidden bg-white dark:bg-[#070c1d] shadow-sm">
+                <div className="flex items-center justify-between px-3.5 py-2 bg-slate-100/90 dark:bg-[#050813] border-b border-slate-200 dark:border-white/10 text-xs">
+                  <span className="font-mono text-purple-700 dark:text-phantom-violet font-semibold text-[11px]">
                     {selectedLesson.language === 'python'
                       ? 'lesson.py'
                       : selectedLesson.language === 'cpp'
@@ -318,9 +346,9 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                   </span>
                   <button
                     onClick={() => setCode(selectedLesson.brokenCode)}
-                    className="text-slate-300 dark:text-white/40 hover:text-white flex items-center gap-1 text-[11px]"
+                    className="text-slate-500 hover:text-slate-800 dark:text-white/40 dark:hover:text-white flex items-center gap-1 text-[11px] transition-colors"
                   >
-                    <RotateCcw className="w-3 h-3" /> Reset
+                    <RotateCcw className="w-3 h-3" /> Reset Code
                   </button>
                 </div>
 
@@ -328,21 +356,21 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   spellCheck={false}
-                  className="w-full h-40 p-3 bg-transparent text-slate-100 dark:text-phantom-white font-mono text-xs leading-5 resize-none outline-none whitespace-pre selection:bg-phantom-purple/40"
+                  className="w-full h-44 p-3.5 bg-white dark:bg-[#070c1d] text-slate-900 dark:text-phantom-white font-mono text-xs leading-5 resize-none outline-none whitespace-pre selection:bg-purple-200 dark:selection:bg-phantom-purple/40"
                 />
 
-                <div className="flex items-center justify-between px-3 py-2 bg-slate-800 dark:bg-[#050813] border-t border-white/10">
-                  <span className="text-[11px] text-slate-400 dark:text-white/40 font-mono">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-3.5 py-2.5 bg-slate-100/90 dark:bg-[#050813] border-t border-slate-200 dark:border-white/10">
+                  <span className="text-[11px] text-slate-600 dark:text-white/50 font-mono font-medium">
                     Target: {selectedLesson.expectedBehavior}
                   </span>
 
                   <button
                     onClick={handleTestLessonCode}
                     disabled={evaluating}
-                    className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-cyan text-white font-bold text-xs flex items-center gap-1.5 shadow-glow-cyan hover:brightness-110 active:scale-95 transition-all"
+                    className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-cyan text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:brightness-110 active:scale-95 transition-all shrink-0"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>{evaluating ? 'Testing...' : 'Verify Fix'}</span>
+                    <span>{evaluating ? 'Testing Fix...' : 'Verify Fix'}</span>
                   </button>
                 </div>
               </div>
