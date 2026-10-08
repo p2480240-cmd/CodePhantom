@@ -35,6 +35,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSettings,
   onOpenAuth,
 }) => {
+  const isDark = theme === 'dark';
   const rankTitle = profile.rankTitle || getRankTitle(profile.level);
   const unreviewedCount = (profile.errorRevisions || []).filter((r) => !r.reviewed).length;
 
@@ -68,7 +69,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-phantom-midnight/85 border-b border-phantom-border/60 transition-all">
+    <header
+      className={`sticky top-0 z-40 w-full backdrop-blur-md border-b transition-colors duration-300 ${
+        isDark
+          ? 'bg-[#080D1B]/90 border-phantom-border/60 text-white'
+          : 'bg-white/95 border-slate-200 text-slate-800 shadow-sm'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left Side: Sidebar Toggle Button + Logo + Current Location */}
         <div className="flex items-center gap-3">
@@ -78,10 +85,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onToggleSidebar}
             title="Open Navigation Sidebar"
             aria-label="Open Navigation Sidebar"
-            className="p-2 rounded-xl bg-phantom-deep hover:bg-phantom-hover text-white/80 hover:text-white border border-phantom-border/70 hover:border-phantom-cyan transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+            className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${
+              isDark
+                ? 'bg-phantom-deep hover:bg-phantom-hover text-white/80 hover:text-white border-phantom-border/70 hover:border-phantom-cyan'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200 hover:border-slate-300'
+            }`}
           >
             <Menu className="w-5 h-5 text-phantom-cyan" />
-            <span className="hidden md:inline text-xs font-mono font-semibold text-white/70">
+            <span
+              className={`hidden md:inline text-xs font-mono font-semibold ${
+                isDark ? 'text-white/70' : 'text-slate-600'
+              }`}
+            >
               Menu
             </span>
             {unreviewedCount > 0 && (
@@ -98,7 +113,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Current Location Breadcrumb (visible on tablet/desktop) */}
-          <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-white/10 text-xs font-mono text-white/50">
+          <div
+            className={`hidden sm:flex items-center gap-1.5 pl-2 border-l text-xs font-mono ${
+              isDark ? 'border-white/10 text-white/50' : 'border-slate-200 text-slate-400'
+            }`}
+          >
             <span>/</span>
             <span className="text-phantom-violet font-semibold">{getTabLabel(currentTab)}</span>
           </div>
@@ -107,18 +126,38 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Right Side: Clean Utility Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Multi-Language Dropdown */}
-          <div className="flex items-center bg-phantom-deep border border-phantom-border/80 rounded-lg px-2 py-1 text-xs font-mono">
-            <span className="text-white/40 mr-1 hidden lg:inline">Lang:</span>
+          <div
+            className={`flex items-center border rounded-lg px-2 py-1 text-xs font-mono ${
+              isDark
+                ? 'bg-phantom-deep border-phantom-border/80'
+                : 'bg-slate-100 border-slate-200 shadow-sm'
+            }`}
+          >
+            <span className={`mr-1 hidden lg:inline ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
+              Lang:
+            </span>
             <select
               value={profile.selectedLanguage}
               onChange={(e) => onChangeLanguage(e.target.value as Language)}
-              className="bg-transparent text-phantom-cyan font-bold outline-none cursor-pointer"
+              className={`bg-transparent font-bold outline-none cursor-pointer ${
+                isDark ? 'text-phantom-cyan' : 'text-slate-800'
+              }`}
             >
-              <option value="python" className="bg-[#090e24] text-white">🐍 Python</option>
-              <option value="javascript" className="bg-[#090e24] text-white">⚡ JS</option>
-              <option value="typescript" className="bg-[#090e24] text-white">🔷 TS</option>
-              <option value="cpp" className="bg-[#090e24] text-white">⚙️ C++</option>
-              <option value="java" className="bg-[#090e24] text-white">☕ Java</option>
+              <option value="python" className={isDark ? 'bg-[#090e24] text-white' : 'bg-white text-slate-800'}>
+                🐍 Python
+              </option>
+              <option value="javascript" className={isDark ? 'bg-[#090e24] text-white' : 'bg-white text-slate-800'}>
+                ⚡ JS
+              </option>
+              <option value="typescript" className={isDark ? 'bg-[#090e24] text-white' : 'bg-white text-slate-800'}>
+                🔷 TS
+              </option>
+              <option value="cpp" className={isDark ? 'bg-[#090e24] text-white' : 'bg-white text-slate-800'}>
+                ⚙️ C++
+              </option>
+              <option value="java" className={isDark ? 'bg-[#090e24] text-white' : 'bg-white text-slate-800'}>
+                ☕ Java
+              </option>
             </select>
           </div>
 
@@ -128,7 +167,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Daily Streak Indicator */}
           <div
             title={`Daily Streak: ${profile.streak} days`}
-            className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-lg bg-phantom-amber/10 border border-phantom-amber/30 text-phantom-amber text-xs font-mono font-semibold"
+            className={`hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-mono font-semibold ${
+              isDark
+                ? 'bg-phantom-amber/10 border-phantom-amber/30 text-phantom-amber'
+                : 'bg-amber-50 border-amber-200 text-amber-700'
+            }`}
           >
             <Flame className="w-3.5 h-3.5 fill-current" />
             <span>{profile.streak}d</span>
@@ -137,18 +180,32 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Level / XP Pill */}
           <div
             onClick={() => onSelectTab('dashboard')}
-            className="cursor-pointer flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-lg bg-phantom-card border border-phantom-border hover:border-phantom-cyan/50 text-xs transition-colors"
+            className={`cursor-pointer flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-lg border text-xs transition-colors ${
+              isDark
+                ? 'bg-phantom-card border-phantom-border hover:border-phantom-cyan/50 text-white'
+                : 'bg-slate-100 border-slate-200 hover:border-slate-300 text-slate-800'
+            }`}
           >
             <div className="w-2 h-2 rounded-full bg-phantom-cyan animate-pulse" />
-            <span className="font-semibold text-white">Lv. {profile.level}</span>
-            <span className="text-white/40 font-mono hidden md:inline">({profile.xp} XP)</span>
+            <span className="font-semibold">Lv. {profile.level}</span>
+            <span
+              className={`font-mono hidden md:inline ${
+                isDark ? 'text-white/40' : 'text-slate-400'
+              }`}
+            >
+              ({profile.xp} XP)
+            </span>
           </div>
 
           {/* Settings Button */}
           <button
             onClick={onOpenSettings}
             title="Settings & API Key"
-            className="p-2 text-white/60 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-colors"
+            className={`p-2 rounded-lg border transition-colors ${
+              isDark
+                ? 'text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border-white/10'
+                : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border-slate-200'
+            }`}
           >
             <Settings className="w-4 h-4" />
           </button>

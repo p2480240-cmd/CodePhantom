@@ -37,35 +37,44 @@
    LIGHT MODE ADAPTATION LAYER
    ========================================================================= */
 html.light body {
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
 html.light ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #f1f5f9 !important;
 }
 html.light ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #cbd5e1 !important;
 }
 html.light ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #94a3b8 !important;
 }
 
-html.light .bg-phantom-midnight {
+/* Background surfaces in light mode */
+html.light .bg-phantom-midnight,
+html.light .bg-phantom-midnight\/85,
+html.light .bg-phantom-midnight\/80,
+html.light .bg-phantom-midnight\/90 {
   background-color: #f8fafc !important;
 }
-html.light .bg-phantom-deep {
+
+html.light .bg-phantom-deep,
+html.light .bg-phantom-deep\/60,
+html.light .bg-phantom-deep\/70,
+html.light .bg-phantom-deep\/80 {
   background-color: #ffffff !important;
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
-}
-html.light .bg-phantom-card {
-  background-color: #f1f5f9 !important;
-}
-html.light .bg-phantom-hover:hover {
-  background-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* Container & Dark code blocks in light mode */
+html.light .bg-phantom-card {
+  background-color: #f8fafc !important;
+}
+html.light .bg-phantom-hover:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Specific dark background overrides in light mode */
 html.light .bg-\[\#070b18\],
 html.light .bg-\[\#080d1e\],
 html.light .bg-\[\#090e1f\],
@@ -75,11 +84,41 @@ html.light .bg-\[\#090e24\],
 html.light .bg-\[\#060914\],
 html.light .bg-\[\#060814\],
 html.light .bg-\[\#060a1a\],
-html.light .bg-\[\#090f23\] {
-  background-color: #f1f5f9 !important;
+html.light .bg-\[\#090f23\],
+html.light .bg-\[\#080d1b\],
+html.light .bg-\[\#0b1226\],
+html.light .bg-\[\#0f1730\],
+html.light .bg-\[\#0d1633\] {
+  background-color: #f8fafc !important;
   color: #0f172a !important;
 }
 
+/* Solved case boxes and highlights */
+html.light .bg-\[\#0b1724\] {
+  background-color: #f0fdfa !important;
+  border-color: #5eead4 !important;
+  color: #0f172a !important;
+}
+html.light .bg-\[\#0b1724\] h4,
+html.light .bg-\[\#0b1724\] span,
+html.light .bg-\[\#0b1724\] p {
+  color: #0f172a !important;
+}
+
+/* Header & Sidebar explicit light mode rules */
+html.light header.sticky {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light aside {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Inner containers & cards */
 html.light .bg-black\/30,
 html.light .bg-black\/40,
 html.light .bg-black\/50,
@@ -102,36 +141,30 @@ html.light .border-white\/10 {
   border-color: #e2e8f0 !important;
 }
 
-/* Light mode text hierarchy (preserving styled action buttons) */
-html.light div:not(.bg-phantom-purple):not(.bg-phantom-teal):not(.bg-gradient-to-r) > .text-white,
+/* Light mode text hierarchy */
 html.light h1.text-white,
 html.light h2.text-white,
 html.light h3.text-white,
 html.light h4.text-white,
-html.light span.text-white:not(button *),
-html.light p.text-white {
+html.light .text-phantom-white {
   color: #0f172a !important;
 }
 
-html.light .text-white\/90,
-html.light .text-white\/80 {
+html.light p.text-white,
+html.light p.text-white\/90,
+html.light p.text-white\/80 {
   color: #1e293b !important;
 }
 
 html.light .text-white\/70,
 html.light .text-white\/60 {
-  color: #334155 !important;
+  color: #475569 !important;
 }
 
 html.light .text-white\/50,
 html.light .text-white\/40,
 html.light .text-white\/30 {
   color: #64748b !important;
-}
-
-html.light .text-white\/20,
-html.light .text-white\/10 {
-  color: #94a3b8 !important;
 }
 
 html.light textarea {
