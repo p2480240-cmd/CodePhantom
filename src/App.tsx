@@ -113,7 +113,7 @@ export function App() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-phantom-midnight text-phantom-white selection:bg-phantom-purple selection:text-white transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-phantom-midnight text-slate-900 dark:text-phantom-white selection:bg-phantom-purple selection:text-white transition-colors duration-300">
       {/* Top Streamlined Navigation Bar */}
       <Navbar
         onToggleSidebar={() => setIsSidebarOpen(true)}

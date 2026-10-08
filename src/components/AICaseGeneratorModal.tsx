@@ -44,16 +44,16 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg p-6 rounded-2xl bg-phantom-deep border border-phantom-purple/50 shadow-2xl text-white space-y-5">
-        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-lg p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-purple/50 shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-phantom-cyan" />
+            <Cpu className="w-5 h-5 text-cyan-600 dark:text-phantom-cyan" />
             <h3 className="text-lg font-bold">Synthesize AI Case File</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-white/50 hover:text-white rounded-lg hover:bg-white/5"
+            className="p-1 text-slate-400 dark:text-white/50 hover:text-slate-800 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
           >
             <X className="w-5 h-5" />
           </button>
@@ -61,17 +61,17 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
 
         <form onSubmit={handleGenerate} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-white/80 block mb-1">
+            <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
               Programming Language
             </label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setLang('python')}
-                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-2 ${
+                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-2 transition-all ${
                   lang === 'python'
-                    ? 'bg-phantom-purple/30 border-phantom-cyan text-white'
-                    : 'bg-black/30 border-white/10 text-white/60'
+                    ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan text-purple-950 dark:text-white font-bold'
+                    : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-black/40'
                 }`}
               >
                 <Terminal className="w-3.5 h-3.5" />
@@ -80,10 +80,10 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
               <button
                 type="button"
                 onClick={() => setLang('javascript')}
-                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-2 ${
+                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-2 transition-all ${
                   lang === 'javascript'
-                    ? 'bg-phantom-purple/30 border-phantom-cyan text-white'
-                    : 'bg-black/30 border-white/10 text-white/60'
+                    ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan text-purple-950 dark:text-white font-bold'
+                    : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-black/40'
                 }`}
               >
                 <Code className="w-3.5 h-3.5" />
@@ -93,7 +93,7 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-white/80 block mb-1">
+            <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
               Target Difficulty
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -102,10 +102,10 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
                   key={d}
                   type="button"
                   onClick={() => setDiff(d)}
-                  className={`py-1.5 text-xs capitalize rounded-lg border ${
+                  className={`py-1.5 text-xs capitalize rounded-lg border transition-all ${
                     diff === d
-                      ? 'bg-phantom-purple/30 border-phantom-violet text-white font-semibold'
-                      : 'bg-black/30 border-white/10 text-white/60'
+                      ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-violet text-purple-950 dark:text-white font-bold'
+                      : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100'
                   }`}
                 >
                   {d}
@@ -115,7 +115,7 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-white/80 block mb-1">
+            <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
               Mystery Scenario / Concept (Optional)
             </label>
             <input
@@ -123,13 +123,13 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="e.g. Rogue AI drone, off-by-one matrix slice, corrupted inventory"
-              className="w-full px-3 py-2 text-xs bg-black/40 border border-white/15 rounded-lg text-white font-mono focus:border-phantom-cyan outline-none"
+              className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/15 rounded-lg text-slate-900 dark:text-white font-mono focus:border-cyan-500 dark:focus:border-phantom-cyan outline-none"
             />
           </div>
 
           {statusMessage && (
-            <div className="p-3 bg-black/40 rounded-lg border border-phantom-cyan/30 text-xs font-mono text-phantom-cyan flex items-center gap-2">
-              <Sparkles className="w-4 h-4 shrink-0 animate-pulse text-phantom-cyan" />
+            <div className="p-3 bg-cyan-50 dark:bg-black/40 rounded-lg border border-cyan-200 dark:border-phantom-cyan/30 text-xs font-mono text-cyan-800 dark:text-phantom-cyan flex items-center gap-2">
+              <Sparkles className="w-4 h-4 shrink-0 animate-pulse text-cyan-600 dark:text-phantom-cyan" />
               <span>{statusMessage}</span>
             </div>
           )}
@@ -139,7 +139,7 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-xs text-white/60 hover:text-white rounded-lg border border-white/10"
+              className="px-4 py-2 text-xs text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
             >
               Cancel
             </button>

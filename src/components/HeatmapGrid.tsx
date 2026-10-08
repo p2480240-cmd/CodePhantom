@@ -81,9 +81,9 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
 
   // LeetCode-style compact cell styling
   const getCellColor = (count: number) => {
-    if (count === 0) return 'bg-[#121a2f] hover:bg-[#1a2542] border border-white/5 text-white/30';
-    if (count === 1) return 'bg-[#4c1d95] hover:bg-[#5b21b6] border border-[#7c3aed] text-white shadow-sm';
-    if (count === 2) return 'bg-[#7c3aed] hover:bg-[#8b5cf6] border border-[#a78bfa] text-white shadow-sm';
+    if (count === 0) return 'bg-slate-100 dark:bg-[#121a2f] hover:bg-slate-200 dark:hover:bg-[#1a2542] border border-slate-200/80 dark:border-white/5 text-slate-400 dark:text-white/30';
+    if (count === 1) return 'bg-[#7c3aed] dark:bg-[#4c1d95] hover:bg-[#8b5cf6] dark:hover:bg-[#5b21b6] border border-[#a78bfa] dark:border-[#7c3aed] text-white shadow-sm';
+    if (count === 2) return 'bg-[#9333ea] dark:bg-[#7c3aed] hover:bg-[#a855f7] dark:hover:bg-[#8b5cf6] border border-[#c084fc] dark:border-[#a78bfa] text-white shadow-sm';
     if (count <= 4) return 'bg-[#06b6d4] hover:bg-[#22d3ee] border border-[#22d3ee] text-black font-bold shadow-glow-cyan';
     return 'bg-[#22d3ee] hover:bg-white border border-white text-black font-extrabold shadow-glow-cyan';
   };
@@ -141,7 +141,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       {/* Floating Tooltip */}
       {tooltip.visible && (
         <div
-          className="fixed z-50 pointer-events-none transform -translate-x-1/2 px-3 py-1 text-[11px] font-mono text-white bg-black/95 border border-phantom-cyan/60 rounded-lg shadow-2xl whitespace-nowrap"
+          className="fixed z-50 pointer-events-none transform -translate-x-1/2 px-3 py-1 text-[11px] font-mono text-white bg-slate-900/95 dark:bg-black/95 border border-purple-500/60 dark:border-phantom-cyan/60 rounded-lg shadow-2xl whitespace-nowrap"
           style={{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }}
         >
           {tooltip.text}
@@ -149,25 +149,25 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       )}
 
       {/* Controls & Month Switcher Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-white/5 pb-2.5">
         <div className="flex items-center gap-1.5">
           <button
             onClick={handlePrevMonth}
             title="Previous Month"
-            className="p-1 rounded-md bg-black/40 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
+            className="p-1 rounded-md bg-slate-100 dark:bg-black/40 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
 
-          <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 font-mono px-1.5">
-            <CalendarIcon className="w-3.5 h-3.5 text-phantom-cyan" />
+          <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5 font-mono px-1.5">
+            <CalendarIcon className="w-3.5 h-3.5 text-purple-600 dark:text-phantom-cyan" />
             <span>{monthNames[selectedMonth]} {selectedYear}</span>
           </div>
 
           <button
             onClick={handleNextMonth}
             title="Next Month"
-            className="p-1 rounded-md bg-black/40 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
+            className="p-1 rounded-md bg-slate-100 dark:bg-black/40 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
@@ -175,16 +175,16 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
 
         {/* LeetCode-style activity indicators */}
         <div className="flex items-center gap-2 text-[11px] font-mono">
-          <span className="px-2 py-0.5 rounded bg-phantom-purple/20 text-phantom-violet border border-phantom-purple/30 font-semibold">
+          <span className="px-2 py-0.5 rounded bg-purple-100 dark:bg-phantom-purple/20 text-purple-700 dark:text-phantom-violet border border-purple-300 dark:border-phantom-purple/30 font-semibold">
             {monthTotalBugs} Solved
           </span>
-          <span className="px-2 py-0.5 rounded bg-phantom-amber/15 text-phantom-amber border border-phantom-amber/30 font-semibold">
+          <span className="px-2 py-0.5 rounded bg-amber-100 dark:bg-phantom-amber/15 text-amber-700 dark:text-phantom-amber border border-amber-300 dark:border-phantom-amber/30 font-semibold">
             +{monthTotalXP} XP
           </span>
           {!compact && (
             <button
               onClick={() => setViewMode(viewMode === 'monthly' ? 'yearly' : 'monthly')}
-              className="text-[10px] text-white/40 hover:text-phantom-cyan underline ml-1"
+              className="text-[10px] text-slate-500 dark:text-white/40 hover:text-purple-600 dark:hover:text-phantom-cyan underline ml-1"
             >
               {viewMode === 'monthly' ? 'Show Full Year' : 'Show Monthly'}
             </button>
@@ -195,9 +195,9 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       {/* MONTHLY CALENDAR: LEETCODE SIZED BOXES (Centered, Compact ~16px-20px square tiles) */}
       {viewMode === 'monthly' ? (
         <div className="flex flex-col items-center sm:items-start py-1">
-          <div className="inline-block p-3 rounded-xl bg-[#070b18] border border-white/10 shadow-inner">
+          <div className="inline-block p-3 rounded-xl bg-slate-50 dark:bg-[#070b18] border border-slate-200 dark:border-white/10 shadow-inner">
             {/* Weekday headers */}
-            <div className="grid grid-cols-7 gap-1.5 text-center text-[10px] font-mono uppercase text-white/40 mb-1.5 font-semibold">
+            <div className="grid grid-cols-7 gap-1.5 text-center text-[10px] font-mono uppercase text-slate-500 dark:text-white/40 mb-1.5 font-semibold">
               <span className="w-5 text-center">Mo</span>
               <span className="w-5 text-center">Tu</span>
               <span className="w-5 text-center">We</span>
@@ -231,7 +231,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       ) : (
         /* YEARLY OVERVIEW VIEW (LeetCode Submission Matrix) */
         <div className="overflow-x-auto pb-2 scrollbar-none">
-          <div className="inline-flex gap-1 min-w-full p-2 bg-[#070b18] rounded-xl border border-white/10">
+          <div className="inline-flex gap-1 min-w-full p-2 bg-slate-50 dark:bg-[#070b18] rounded-xl border border-slate-200 dark:border-white/10">
             {yearlyWeeks.map((week, wIdx) => (
               <div key={wIdx} className="flex flex-col gap-1">
                 {week.map((cell) => (
@@ -251,18 +251,18 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       )}
 
       {/* Legend */}
-      <div className="flex items-center justify-between text-[11px] text-white/40 pt-2 border-t border-white/5 select-none font-mono">
+      <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-white/40 pt-2 border-t border-slate-200 dark:border-white/5 select-none font-mono">
         <div className="flex items-center gap-1.5">
           <span>Less</span>
-          <div className="w-3 h-3 rounded-[2px] bg-[#121a2f] border border-white/10" />
-          <div className="w-3 h-3 rounded-[2px] bg-[#4c1d95]" />
+          <div className="w-3 h-3 rounded-[2px] bg-slate-100 dark:bg-[#121a2f] border border-slate-300 dark:border-white/10" />
           <div className="w-3 h-3 rounded-[2px] bg-[#7c3aed]" />
+          <div className="w-3 h-3 rounded-[2px] bg-[#9333ea]" />
           <div className="w-3 h-3 rounded-[2px] bg-[#06b6d4]" />
           <div className="w-3 h-3 rounded-[2px] bg-[#22d3ee]" />
           <span>More</span>
         </div>
 
-        <div className="text-[10px] text-white/40">
+        <div className="text-[10px] text-slate-500 dark:text-white/40">
           {monthActiveDays} active days in {monthNames[selectedMonth]}
         </div>
       </div>

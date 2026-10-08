@@ -198,27 +198,27 @@ export const BugEncyclopediaPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn font-sans">
       {/* Header */}
-      <div className="p-6 rounded-3xl bg-phantom-deep border border-phantom-border shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="p-6 rounded-3xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-phantom-purple/20 border border-phantom-purple/40 text-phantom-violet text-xs font-mono font-semibold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 dark:bg-phantom-purple/20 border border-purple-300 dark:border-phantom-purple/40 text-purple-800 dark:text-phantom-violet text-xs font-mono font-semibold mb-2">
             <Bug className="w-3.5 h-3.5" />
             <span>Digital Detective Bestiary</span>
           </div>
-          <h2 className="text-2xl font-black text-white">The Bug Encyclopedia</h2>
-          <p className="text-xs sm:text-sm text-white/70 max-w-2xl mt-1 leading-relaxed">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">The Bug Encyclopedia</h2>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-white/70 max-w-2xl mt-1 leading-relaxed">
             Detailed anatomy, symptoms, detection tactics, and mini debugging experiments for common programming shadows.
           </p>
         </div>
 
         {/* Search */}
         <div className="relative w-full md:w-64">
-          <Search className="w-4 h-4 text-white/40 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 dark:text-white/40 absolute left-3 top-2.5" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search bug categories..."
-            className="w-full pl-9 pr-3 py-2 text-xs bg-black/40 border border-white/10 rounded-xl text-white font-mono focus:border-phantom-cyan outline-none"
+            className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white font-mono focus:border-purple-500 dark:focus:border-phantom-cyan outline-none"
           />
         </div>
       </div>
@@ -238,26 +238,26 @@ export const BugEncyclopediaPage: React.FC = () => {
                 }}
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${
                   active
-                    ? 'bg-phantom-purple/20 border-phantom-cyan shadow-glow-cyan'
-                    : 'bg-phantom-deep hover:bg-phantom-hover border-phantom-border/60'
+                    ? 'bg-purple-50 dark:bg-phantom-purple/20 border-purple-400 dark:border-phantom-cyan shadow-sm dark:shadow-glow-cyan'
+                    : 'bg-white dark:bg-phantom-deep hover:bg-slate-50 dark:hover:bg-phantom-hover border border-slate-200 dark:border-phantom-border/60'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{bug.icon}</span>
-                    <h4 className="text-sm font-bold text-white">{bug.name}</h4>
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white">{bug.name}</h4>
                   </div>
                   <span
                     className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
                       bug.severity === 'Critical'
-                        ? 'bg-phantom-crimson/20 text-phantom-crimson'
-                        : 'bg-phantom-amber/20 text-phantom-amber'
+                        ? 'bg-rose-100 text-rose-800 dark:bg-phantom-crimson/20 dark:text-phantom-crimson'
+                        : 'bg-amber-100 text-amber-800 dark:bg-phantom-amber/20 dark:text-phantom-amber'
                     }`}
                   >
                     {bug.severity}
                   </span>
                 </div>
-                <div className="text-[11px] text-white/50 font-mono ml-7">
+                <div className="text-[11px] text-slate-500 dark:text-white/50 font-mono ml-7">
                   {bug.concept}
                 </div>
               </div>
@@ -266,39 +266,39 @@ export const BugEncyclopediaPage: React.FC = () => {
         </div>
 
         {/* Detail Panel (8 cols) */}
-        <div className="lg:col-span-8 p-6 rounded-2xl bg-phantom-deep border border-phantom-border shadow-2xl space-y-5">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="lg:col-span-8 p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-2xl space-y-5">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
             <div className="flex items-center gap-3">
               <span className="text-3xl">{selectedBug.icon}</span>
               <div>
-                <h3 className="text-xl font-bold text-white">{selectedBug.name}</h3>
-                <span className="text-xs text-phantom-cyan font-mono">{selectedBug.concept}</span>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{selectedBug.name}</h3>
+                <span className="text-xs text-purple-700 dark:text-phantom-cyan font-mono font-semibold">{selectedBug.concept}</span>
               </div>
             </div>
-            <span className="text-xs font-mono px-3 py-1 rounded-full bg-phantom-purple/20 text-phantom-violet border border-phantom-purple/40">
+            <span className="text-xs font-mono px-3 py-1 rounded-full bg-purple-100 dark:bg-phantom-purple/20 text-purple-800 dark:text-phantom-violet border border-purple-300 dark:border-phantom-purple/40 font-semibold">
               Severity: {selectedBug.severity}
             </span>
           </div>
 
           {/* What it is */}
           <div className="space-y-1">
-            <span className="text-xs font-bold text-phantom-violet uppercase tracking-wider font-mono">
+            <span className="text-xs font-bold text-purple-800 dark:text-phantom-violet uppercase tracking-wider font-mono">
               Anatomy & Definition
             </span>
-            <p className="text-xs text-white/80 leading-relaxed bg-black/30 p-3 rounded-xl border border-white/5">
+            <p className="text-xs text-slate-700 dark:text-white/80 leading-relaxed bg-slate-50 dark:bg-black/30 p-3 rounded-xl border border-slate-200 dark:border-white/5">
               {selectedBug.whatItIs}
             </p>
           </div>
 
           {/* Typical symptoms */}
           <div className="space-y-2">
-            <span className="text-xs font-bold text-phantom-amber uppercase tracking-wider font-mono">
+            <span className="text-xs font-bold text-amber-700 dark:text-phantom-amber uppercase tracking-wider font-mono">
               Observable Symptoms
             </span>
-            <ul className="space-y-1.5 text-xs text-white/80">
+            <ul className="space-y-1.5 text-xs text-slate-700 dark:text-white/80">
               {selectedBug.typicalSymptoms.map((sym, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="text-phantom-amber font-bold">•</span>
+                  <span className="text-amber-500 font-bold">•</span>
                   <span>{sym}</span>
                 </li>
               ))}
@@ -307,30 +307,30 @@ export const BugEncyclopediaPage: React.FC = () => {
 
           {/* Code example */}
           <div className="space-y-1">
-            <span className="text-xs font-bold text-phantom-cyan uppercase tracking-wider font-mono">
+            <span className="text-xs font-bold text-cyan-800 dark:text-phantom-cyan uppercase tracking-wider font-mono">
               Suspicious Code Signature
             </span>
-            <pre className="p-3 bg-[#050813] border border-white/10 rounded-xl font-mono text-xs text-phantom-white overflow-x-auto whitespace-pre">
+            <pre className="p-3 bg-slate-900 dark:bg-[#050813] border border-slate-850 dark:border-white/10 rounded-xl font-mono text-xs text-slate-100 dark:text-phantom-white overflow-x-auto whitespace-pre">
               {selectedBug.codeExample}
             </pre>
           </div>
 
           {/* Detection & Common Mistakes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 bg-black/40 border border-phantom-teal/30 rounded-xl space-y-1">
-              <span className="text-[11px] font-bold text-phantom-teal font-mono uppercase block">
+            <div className="p-3.5 bg-slate-50 dark:bg-black/40 border border-teal-200 dark:border-phantom-teal/30 rounded-xl space-y-1">
+              <span className="text-[11px] font-bold text-teal-800 dark:text-phantom-teal font-mono uppercase block">
                 How to Detect
               </span>
-              <p className="text-white/80 leading-relaxed text-[11px]">
+              <p className="text-slate-700 dark:text-white/80 leading-relaxed text-[11px]">
                 {selectedBug.howToDetect}
               </p>
             </div>
 
-            <div className="p-3.5 bg-black/40 border border-phantom-crimson/30 rounded-xl space-y-1">
-              <span className="text-[11px] font-bold text-phantom-crimson font-mono uppercase block">
+            <div className="p-3.5 bg-slate-50 dark:bg-black/40 border border-rose-200 dark:border-phantom-crimson/30 rounded-xl space-y-1">
+              <span className="text-[11px] font-bold text-rose-800 dark:text-phantom-crimson font-mono uppercase block">
                 Common Traps
               </span>
-              <ul className="space-y-1 text-white/80 text-[11px]">
+              <ul className="space-y-1 text-slate-700 dark:text-white/80 text-[11px]">
                 {selectedBug.commonMistakes.map((m, i) => (
                   <li key={i}>• {m}</li>
                 ))}
@@ -339,21 +339,21 @@ export const BugEncyclopediaPage: React.FC = () => {
           </div>
 
           {/* Interactive Mini Challenge */}
-          <div className="p-4 rounded-xl bg-gradient-to-r from-[#0d1633] to-[#080d1e] border border-phantom-cyan/40 space-y-3">
+          <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 via-indigo-50/40 to-cyan-50/40 dark:from-[#0d1633] dark:to-[#080d1e] border border-purple-200 dark:border-phantom-cyan/40 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-phantom-cyan" />
-                <h4 className="text-xs font-bold text-white font-mono uppercase">
+                <ShieldCheck className="w-4 h-4 text-purple-700 dark:text-phantom-cyan" />
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white font-mono uppercase">
                   Mini Diagnostic Challenge
                 </h4>
               </div>
-              <span className="text-[10px] font-mono text-phantom-amber">+25 XP</span>
+              <span className="text-[10px] font-mono text-amber-700 dark:text-phantom-amber font-bold">+25 XP</span>
             </div>
 
-            <p className="text-xs text-white/80">{selectedBug.miniChallenge.task}</p>
+            <p className="text-xs text-slate-700 dark:text-white/80">{selectedBug.miniChallenge.task}</p>
 
-            <div className="flex items-center justify-between p-2.5 bg-black/60 rounded-lg border border-white/10 font-mono text-xs">
-              <span className={miniSolved ? 'text-phantom-teal font-bold' : 'text-white/70'}>
+            <div className="flex items-center justify-between p-2.5 bg-slate-900 dark:bg-black/60 rounded-lg border border-slate-800 dark:border-white/10 font-mono text-xs">
+              <span className={miniSolved ? 'text-teal-400 font-bold' : 'text-slate-200 dark:text-white/70'}>
                 {miniSolved ? selectedBug.miniChallenge.fixed : selectedBug.miniChallenge.broken}
               </span>
               <button

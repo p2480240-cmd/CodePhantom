@@ -79,9 +79,9 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const lines = code.split('\n');
 
   return (
-    <div className="flex flex-col h-full rounded-xl border border-phantom-border bg-phantom-deep shadow-2xl overflow-hidden">
+    <div className="flex flex-col h-full rounded-xl border border-slate-200 dark:border-phantom-border bg-white dark:bg-phantom-deep shadow-sm dark:shadow-2xl overflow-hidden transition-colors">
       {/* Editor Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#070b18] border-b border-phantom-border/60 select-none">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 dark:bg-[#070b18] border-b border-slate-200 dark:border-phantom-border/60 select-none">
         <div className="flex items-center gap-3">
           {/* Mac-style editor dots */}
           <div className="flex items-center gap-1.5">
@@ -90,14 +90,14 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             <span className="w-2.5 h-2.5 rounded-full bg-phantom-teal/80" />
           </div>
 
-          <div className="h-4 w-[1px] bg-white/10" />
+          <div className="h-4 w-[1px] bg-slate-200 dark:bg-white/10" />
 
           {/* Active File / Language Tag */}
-          <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-phantom-violet">
-            <span className="px-2 py-0.5 rounded bg-phantom-purple/20 border border-phantom-purple/30">
+          <div className="flex items-center gap-1.5 text-xs font-mono font-medium text-purple-700 dark:text-phantom-violet">
+            <span className="px-2 py-0.5 rounded bg-purple-100/70 dark:bg-phantom-purple/20 border border-purple-200 dark:border-phantom-purple/30">
               {getFileName(language)}
             </span>
-            <span className="text-white/40 text-[11px]">
+            <span className="text-slate-500 dark:text-white/40 text-[11px]">
               {language.toUpperCase()}
             </span>
           </div>
@@ -109,7 +109,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             <button
               onClick={onReset}
               title="Reset code to original broken state"
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-white/60 hover:text-white bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-slate-600 hover:text-slate-900 dark:text-white/60 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded border border-slate-200 dark:border-white/10 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Reset</span>
@@ -119,17 +119,17 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           <button
             onClick={handleCopy}
             title="Copy code"
-            className="p-1.5 text-white/60 hover:text-white bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-colors"
+            className="p-1.5 text-slate-600 hover:text-slate-900 dark:text-white/60 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded border border-slate-200 dark:border-white/10 transition-colors"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-phantom-teal" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-teal-600 dark:text-phantom-teal" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
 
       {/* Code Editing Area */}
-      <div className="relative flex-1 flex overflow-hidden font-mono text-sm bg-phantom-deep">
+      <div className="relative flex-1 flex overflow-hidden font-mono text-sm bg-slate-50/50 dark:bg-phantom-deep">
         {/* Line Numbers Gutter with Inspection Trigger */}
-        <div className="w-12 py-3 bg-[#080d1e] text-white/30 text-right pr-2 select-none border-r border-white/5 font-mono text-xs leading-6">
+        <div className="w-12 py-3 bg-slate-100/80 dark:bg-[#080d1e] text-slate-400 dark:text-white/30 text-right pr-2 select-none border-r border-slate-200 dark:border-white/5 font-mono text-xs leading-6">
           {lines.map((lText, i) => {
             const lineNum = i + 1;
             const isSelected = selectedLine === lineNum;
@@ -141,8 +141,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                 title={`Inspect Line ${lineNum} for suspicious logic`}
                 className={`w-full block text-right pr-1 rounded cursor-pointer transition-colors ${
                   isSelected
-                    ? 'bg-phantom-cyan/20 text-phantom-cyan font-bold border-r-2 border-phantom-cyan'
-                    : 'hover:text-phantom-cyan hover:bg-white/5'
+                    ? 'bg-cyan-100 dark:bg-phantom-cyan/20 text-cyan-800 dark:text-phantom-cyan font-bold border-r-2 border-cyan-500 dark:border-phantom-cyan'
+                    : 'hover:text-cyan-700 dark:hover:text-phantom-cyan hover:bg-slate-200/60 dark:hover:bg-white/5'
                 }`}
               >
                 {lineNum}
@@ -161,18 +161,18 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             spellCheck={false}
             autoCapitalize="off"
             autoCorrect="off"
-            className="w-full h-full p-3 font-mono text-[13.5px] leading-6 bg-transparent text-phantom-white resize-none outline-none focus:ring-0 selection:bg-phantom-purple/40 whitespace-pre"
+            className="w-full h-full p-3 font-mono text-[13.5px] leading-6 bg-transparent text-slate-900 dark:text-phantom-white resize-none outline-none focus:ring-0 selection:bg-purple-200 dark:selection:bg-phantom-purple/40 whitespace-pre"
             placeholder="Type your code here..."
           />
         </div>
       </div>
 
       {/* Editor Footer / Run & Submit Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-[#060914] border-t border-phantom-border/60">
-        <div className="text-xs text-white/40 flex items-center gap-2">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-50 dark:bg-[#060914] border-t border-slate-200 dark:border-phantom-border/60">
+        <div className="text-xs text-slate-500 dark:text-white/40 flex items-center gap-2">
           <span>{lines.length} lines</span>
           <span>•</span>
-          <span className="text-phantom-cyan font-mono text-[11px]">Tab = 4 spaces</span>
+          <span className="text-cyan-700 dark:text-phantom-cyan font-mono text-[11px]">Tab = 4 spaces</span>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -180,7 +180,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             <button
               onClick={onRun}
               disabled={isRunning || isSubmitting}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-phantom-deep border border-phantom-cyan/40 text-phantom-cyan hover:bg-phantom-cyan/10 transition-all font-medium text-xs shadow-sm hover:shadow-glow-cyan active:scale-95 disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white dark:bg-phantom-deep border border-cyan-400 dark:border-phantom-cyan/40 text-cyan-700 dark:text-phantom-cyan hover:bg-cyan-50 dark:hover:bg-phantom-cyan/10 transition-all font-medium text-xs shadow-sm hover:shadow-md dark:hover:shadow-glow-cyan active:scale-95 disabled:opacity-50"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>{isRunning ? 'Running...' : 'Run Tests'}</span>

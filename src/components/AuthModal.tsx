@@ -47,29 +47,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-md p-6 rounded-2xl bg-phantom-deep border border-phantom-border shadow-2xl text-white space-y-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-md p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <User className="w-5 h-5 text-phantom-cyan" />
+            <User className="w-5 h-5 text-cyan-600 dark:text-phantom-cyan" />
             <h3 className="text-lg font-bold">Detective Profile & Access</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-white/50 hover:text-white rounded-lg hover:bg-white/5"
+            className="p-1 text-slate-400 dark:text-white/50 hover:text-slate-800 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Demo Mode Badge */}
-        <div className="p-3.5 rounded-xl bg-phantom-purple/15 border border-phantom-purple/30 text-xs space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-phantom-violet">
-            <Shield className="w-4 h-4 text-phantom-cyan" />
+        <div className="p-3.5 rounded-xl bg-purple-50 dark:bg-phantom-purple/15 border border-purple-200 dark:border-phantom-purple/30 text-xs space-y-1">
+          <div className="flex items-center gap-1.5 font-bold text-purple-700 dark:text-phantom-violet">
+            <Shield className="w-4 h-4 text-cyan-600 dark:text-phantom-cyan" />
             <span>Hackathon Instant Demo Mode Active</span>
           </div>
-          <p className="text-white/70 text-[11px] leading-relaxed">
+          <p className="text-slate-600 dark:text-white/70 text-[11px] leading-relaxed">
             No signup, credit cards, or verification required. Judges and developers can immediately access all missions and features.
           </p>
         </div>
@@ -77,14 +77,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSaveAlias} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-white/80 block mb-1">
+            <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
               Detective Call-Sign / Username
             </label>
             <input
               type="text"
               value={alias}
               onChange={(e) => setAlias(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-black/40 border border-white/15 rounded-lg text-white font-mono focus:border-phantom-cyan outline-none"
+              className="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/15 rounded-lg text-slate-900 dark:text-white font-mono focus:border-cyan-500 dark:focus:border-phantom-cyan outline-none"
               placeholder="e.g. CyberSherlock"
             />
           </div>
@@ -93,7 +93,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               type="button"
               onClick={handleSwitchToDemo}
-              className="text-xs text-phantom-cyan hover:underline"
+              className="text-xs text-cyan-700 dark:text-phantom-cyan hover:underline font-medium"
             >
               Reset to Judge Demo Alias
             </button>
@@ -104,7 +104,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 onClose();
                 onStartOnboarding();
               }}
-              className="text-xs text-phantom-amber hover:underline flex items-center gap-1"
+              className="text-xs text-amber-600 dark:text-phantom-amber hover:underline flex items-center gap-1 font-medium"
             >
               <Sparkles className="w-3 h-3" />
               <span>Rerun Onboarding Wizard</span>
@@ -115,13 +115,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs text-white/60 hover:text-white rounded-lg border border-white/10 hover:bg-white/5"
+              className="px-4 py-2 text-xs text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-violet text-white shadow-glow-purple"
+              className="px-5 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-violet text-white shadow-glow-purple hover:brightness-110 transition-all"
             >
               Save Profile
             </button>

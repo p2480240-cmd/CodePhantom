@@ -29,28 +29,28 @@ export const AIVsHumanSpeedModal: React.FC<AIVsHumanSpeedModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn font-sans">
-      <div className="relative w-full max-w-md p-6 rounded-2xl bg-phantom-deep border border-phantom-cyan/50 shadow-2xl text-white space-y-4">
-        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn font-sans">
+      <div className="relative w-full max-w-md p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-cyan/50 shadow-2xl text-slate-900 dark:text-white space-y-4 transition-colors">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-phantom-cyan" />
-            <h3 className="text-base font-bold text-white font-mono uppercase tracking-wider">
+            <Cpu className="w-5 h-5 text-cyan-600 dark:text-phantom-cyan" />
+            <h3 className="text-base font-bold text-slate-900 dark:text-white font-mono uppercase tracking-wider">
               🤖 Speed Challenge: AI vs Human
             </h3>
           </div>
-          <button onClick={onClose} className="text-white/40 hover:text-white">
+          <button onClick={onClose} className="text-slate-400 dark:text-white/40 hover:text-slate-800 dark:hover:text-white">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Score comparison banner */}
         <div className="grid grid-cols-2 gap-3 text-center">
-          <div className="p-3 bg-black/40 border border-white/10 rounded-xl space-y-1">
-            <span className="text-[10px] font-mono uppercase text-white/40 block">
+          <div className="p-3 bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl space-y-1">
+            <span className="text-[10px] font-mono uppercase text-slate-500 dark:text-white/40 block">
               Gemini AI Benchmark
             </span>
-            <div className="text-xl font-bold font-mono text-white/80 flex items-center justify-center gap-1">
-              <Clock className="w-4 h-4 text-white/40" />
+            <div className="text-xl font-bold font-mono text-slate-800 dark:text-white/80 flex items-center justify-center gap-1">
+              <Clock className="w-4 h-4 text-slate-400 dark:text-white/40" />
               <span>{formatSec(aiBenchmarkSeconds)}</span>
             </div>
           </div>
@@ -58,8 +58,8 @@ export const AIVsHumanSpeedModal: React.FC<AIVsHumanSpeedModalProps> = ({
           <div
             className={`p-3 rounded-xl border space-y-1 ${
               playerWon
-                ? 'bg-phantom-teal/20 border-phantom-teal text-phantom-teal'
-                : 'bg-phantom-amber/20 border-phantom-amber text-phantom-amber'
+                ? 'bg-teal-50 dark:bg-phantom-teal/20 border-teal-300 dark:border-phantom-teal text-teal-800 dark:text-phantom-teal'
+                : 'bg-amber-50 dark:bg-phantom-amber/20 border-amber-300 dark:border-phantom-amber text-amber-800 dark:text-phantom-amber'
             }`}
           >
             <span className="text-[10px] font-mono uppercase block opacity-80">
@@ -76,14 +76,14 @@ export const AIVsHumanSpeedModal: React.FC<AIVsHumanSpeedModalProps> = ({
         <div
           className={`p-4 rounded-xl border text-center space-y-1 ${
             playerWon
-              ? 'bg-gradient-to-r from-phantom-purple/30 to-phantom-cyan/30 border-phantom-cyan shadow-glow-cyan'
-              : 'bg-black/40 border-white/10 text-white/70'
+              ? 'bg-gradient-to-r from-purple-50 to-cyan-50 dark:from-phantom-purple/30 dark:to-phantom-cyan/30 border-cyan-300 dark:border-phantom-cyan shadow-sm dark:shadow-glow-cyan text-slate-900 dark:text-white'
+              : 'bg-slate-50 dark:bg-black/40 border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70'
           }`}
         >
           <div className="text-base font-black font-mono">
             {playerWon ? '🕵️ YOU BEAT THE PHANTOM!' : '🤖 The Phantom Outpaced You!'}
           </div>
-          <p className="text-xs text-white/80">
+          <p className="text-xs text-slate-600 dark:text-white/80">
             {playerWon
               ? `You cracked the case ${aiBenchmarkSeconds - playerSeconds}s faster than the Gemini benchmark speed!`
               : 'The AI solved it slightly faster. Keep sharpening your pattern recognition to claim the Speed Crown!'}

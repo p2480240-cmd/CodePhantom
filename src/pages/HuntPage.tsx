@@ -406,85 +406,85 @@ export const HuntPage: React.FC<HuntPageProps> = ({
       {/* =========================================================================
           MISSION HEADER BAR
           ========================================================================= */}
-      <div className="p-5 rounded-2xl bg-phantom-deep border border-phantom-border shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-sm dark:shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors">
         <div className="space-y-1.5 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={onBackToMissions}
-              className="text-xs text-white/50 hover:text-white flex items-center gap-1 transition-colors"
+              className="text-xs text-slate-500 hover:text-slate-900 dark:text-white/50 dark:hover:text-white flex items-center gap-1 transition-colors"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span>Back</span>
             </button>
-            <span className="text-white/20">•</span>
+            <span className="text-slate-300 dark:text-white/20">•</span>
 
             {/* Source Label */}
             <span
               className={`px-2 py-0.5 rounded text-[11px] font-mono font-semibold border ${
                 currentChallenge.source === 'ai-generated'
-                  ? 'bg-phantom-cyan/15 text-phantom-cyan border-phantom-cyan/40 shadow-glow-cyan'
-                  : 'bg-phantom-purple/15 text-phantom-violet border-phantom-purple/30'
+                  ? 'bg-cyan-50 dark:bg-phantom-cyan/15 text-cyan-700 dark:text-phantom-cyan border-cyan-300 dark:border-phantom-cyan/40 shadow-sm dark:shadow-glow-cyan'
+                  : 'bg-purple-50 dark:bg-phantom-purple/15 text-purple-700 dark:text-phantom-violet border-purple-200 dark:border-phantom-purple/30'
               }`}
             >
               {currentChallenge.source === 'ai-generated' ? '✨ Gemini AI Synthesized' : 'Curated Case File'}
             </span>
 
             {/* Language & Difficulty Tags */}
-            <span className="px-2 py-0.5 rounded text-[11px] font-mono uppercase bg-phantom-purple/20 text-phantom-cyan border border-phantom-cyan/30 font-bold">
+            <span className="px-2 py-0.5 rounded text-[11px] font-mono uppercase bg-purple-100/70 dark:bg-phantom-purple/20 text-purple-800 dark:text-phantom-cyan border border-purple-200 dark:border-phantom-cyan/30 font-bold">
               {currentChallenge.language}
             </span>
             <span
               className={`px-2 py-0.5 rounded text-[11px] font-mono uppercase border ${
                 currentChallenge.difficulty === 'easy'
-                  ? 'bg-phantom-teal/10 text-phantom-teal border-phantom-teal/30'
+                  ? 'bg-teal-50 dark:bg-phantom-teal/10 text-teal-700 dark:text-phantom-teal border-teal-200 dark:border-phantom-teal/30'
                   : currentChallenge.difficulty === 'medium'
-                  ? 'bg-phantom-amber/10 text-phantom-amber border-phantom-amber/30'
-                  : 'bg-phantom-crimson/10 text-phantom-crimson border-phantom-crimson/30'
+                  ? 'bg-amber-50 dark:bg-phantom-amber/10 text-amber-700 dark:text-phantom-amber border-amber-200 dark:border-phantom-amber/30'
+                  : 'bg-rose-50 dark:bg-phantom-crimson/10 text-rose-700 dark:text-phantom-crimson border-rose-200 dark:border-phantom-crimson/30'
               }`}
             >
               {currentChallenge.difficulty}
             </span>
 
             {/* Reward */}
-            <span className="flex items-center gap-1 text-[11px] font-mono text-phantom-amber font-bold">
+            <span className="flex items-center gap-1 text-[11px] font-mono text-amber-600 dark:text-phantom-amber font-bold">
               <Zap className="w-3 h-3 fill-current" />
               <span>+{currentChallenge.xpReward} XP</span>
             </span>
 
             {/* Stopwatch Timer */}
-            <span className="flex items-center gap-1 text-[11px] font-mono text-white/50 bg-black/40 px-2 py-0.5 rounded border border-white/5">
-              <Clock className="w-3 h-3 text-phantom-cyan" />
+            <span className="flex items-center gap-1 text-[11px] font-mono text-slate-600 dark:text-white/50 bg-slate-100 dark:bg-black/40 px-2 py-0.5 rounded border border-slate-200 dark:border-white/5">
+              <Clock className="w-3 h-3 text-cyan-600 dark:text-phantom-cyan" />
               <span>{formatTimer(elapsedSeconds)}</span>
             </span>
 
             {/* Solved Status Indicator */}
             {isCurrentSolved && (
-              <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-phantom-teal/20 text-phantom-teal border border-phantom-teal/40 text-[11px] font-mono font-bold shadow-sm">
+              <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-teal-100 dark:bg-phantom-teal/20 text-teal-800 dark:text-phantom-teal border border-teal-300 dark:border-phantom-teal/40 text-[11px] font-mono font-bold shadow-sm">
                 <Check className="w-3 h-3" />
                 <span>Solved</span>
               </span>
             )}
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>{currentChallenge.title}</span>
             {isCurrentSolved && (
               <span title="Solved">
-                <CheckCircle className="w-5 h-5 text-phantom-teal shrink-0" />
+                <CheckCircle className="w-5 h-5 text-teal-600 dark:text-phantom-teal shrink-0" />
               </span>
             )}
           </h2>
 
-          <p className="text-xs sm:text-sm text-white/70 leading-relaxed max-w-3xl">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-white/70 leading-relaxed max-w-3xl">
             {currentChallenge.storyContext}
           </p>
 
-          <div className="flex items-center gap-2 pt-1 text-xs text-white/50 font-mono">
-            <Tag className="w-3.5 h-3.5 text-phantom-violet" />
+          <div className="flex items-center gap-2 pt-1 text-xs text-slate-500 dark:text-white/50 font-mono">
+            <Tag className="w-3.5 h-3.5 text-purple-600 dark:text-phantom-violet" />
             <span>Target Concept: </span>
-            <span className="text-phantom-cyan font-semibold">{currentChallenge.concept}</span>
-            <span className="text-white/20">•</span>
-            <span className="text-white/40 italic">Click any line number in gutter to inspect suspicious logic</span>
+            <span className="text-purple-700 dark:text-phantom-cyan font-semibold">{currentChallenge.concept}</span>
+            <span className="text-slate-300 dark:text-white/20">•</span>
+            <span className="text-slate-400 dark:text-white/40 italic">Click any line number in gutter to inspect suspicious logic</span>
           </div>
         </div>
 
@@ -494,7 +494,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           <button
             onClick={() => setShowSpeedModal(true)}
             title="Compare your debugging time vs AI benchmark"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-phantom-amber/10 hover:bg-phantom-amber/20 text-phantom-amber border border-phantom-amber/30 text-xs font-semibold transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 dark:bg-phantom-amber/10 hover:bg-amber-100 dark:hover:bg-phantom-amber/20 text-amber-700 dark:text-phantom-amber border border-amber-200 dark:border-phantom-amber/30 text-xs font-semibold transition-all"
           >
             <Trophy className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">AI Benchmark</span>
@@ -504,7 +504,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           <button
             onClick={() => setShowEdgeCaseModal(true)}
             title="Test adversarial boundary cases"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-phantom-crimson/10 hover:bg-phantom-crimson/20 text-phantom-crimson border border-phantom-crimson/30 text-xs font-semibold transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 dark:bg-phantom-crimson/10 hover:bg-rose-100 dark:hover:bg-phantom-crimson/20 text-rose-700 dark:text-phantom-crimson border border-rose-200 dark:border-phantom-crimson/30 text-xs font-semibold transition-all"
           >
             <Target className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Edge Cases</span>
@@ -512,7 +512,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
 
           <button
             onClick={handleNextChallenge}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white border border-white/10 text-xs font-semibold transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 hover:text-slate-900 dark:text-white/80 dark:hover:text-white border border-slate-200 dark:border-white/10 text-xs font-semibold transition-all"
             title="Next challenge in this language"
           >
             <span>Next Case</span>
@@ -521,7 +521,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
 
           <button
             onClick={() => setShowAIModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-phantom-purple/20 hover:bg-phantom-purple/30 text-phantom-cyan border border-phantom-purple/40 text-xs font-semibold shadow-glow-purple transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 dark:bg-phantom-purple/20 dark:hover:bg-phantom-purple/30 text-purple-900 dark:text-phantom-cyan border border-purple-300 dark:border-phantom-purple/40 text-xs font-semibold shadow-sm dark:shadow-glow-purple transition-all active:scale-95"
           >
             <Cpu className="w-4 h-4" />
             <span>Generate AI Case</span>
@@ -602,14 +602,14 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           </div>
 
           {/* Forensic Tabs Strip: Tests, Predict, Evidence, Replay */}
-          <div className="flex-1 flex flex-col rounded-xl bg-phantom-deep border border-phantom-border/60 overflow-hidden shadow-xl">
-            <div className="flex items-center border-b border-phantom-border/60 bg-[#070b18] px-2 pt-2 gap-1 select-none overflow-x-auto">
+          <div className="flex-1 flex flex-col rounded-xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border/60 overflow-hidden shadow-sm dark:shadow-xl transition-colors">
+            <div className="flex items-center border-b border-slate-200 dark:border-phantom-border/60 bg-slate-50 dark:bg-[#070b18] px-2 pt-2 gap-1 select-none overflow-x-auto">
               <button
                 onClick={() => setActiveTab('tests')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'tests'
-                    ? 'bg-phantom-deep border-phantom-border text-phantom-cyan'
-                    : 'border-transparent text-white/50 hover:text-white/80'
+                    ? 'bg-white dark:bg-phantom-deep border-slate-200 dark:border-phantom-border text-cyan-600 dark:text-phantom-cyan font-bold'
+                    : 'border-transparent text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white/80'
                 }`}
               >
                 <Play className="w-3.5 h-3.5" />
@@ -620,8 +620,8 @@ export const HuntPage: React.FC<HuntPageProps> = ({
                 onClick={() => setActiveTab('predict')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'predict'
-                    ? 'bg-phantom-deep border-phantom-border text-phantom-violet'
-                    : 'border-transparent text-white/50 hover:text-white/80'
+                    ? 'bg-white dark:bg-phantom-deep border-slate-200 dark:border-phantom-border text-purple-600 dark:text-phantom-violet font-bold'
+                    : 'border-transparent text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white/80'
                 }`}
               >
                 <Brain className="w-3.5 h-3.5" />
@@ -632,8 +632,8 @@ export const HuntPage: React.FC<HuntPageProps> = ({
                 onClick={() => setActiveTab('evidence')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'evidence'
-                    ? 'bg-phantom-deep border-phantom-border text-phantom-teal'
-                    : 'border-transparent text-white/50 hover:text-white/80'
+                    ? 'bg-white dark:bg-phantom-deep border-slate-200 dark:border-phantom-border text-teal-600 dark:text-phantom-teal font-bold'
+                    : 'border-transparent text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white/80'
                 }`}
               >
                 <ClipboardList className="w-3.5 h-3.5" />
@@ -644,8 +644,8 @@ export const HuntPage: React.FC<HuntPageProps> = ({
                 onClick={() => setActiveTab('replay')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'replay'
-                    ? 'bg-phantom-deep border-phantom-border text-phantom-amber'
-                    : 'border-transparent text-white/50 hover:text-white/80'
+                    ? 'bg-white dark:bg-phantom-deep border-slate-200 dark:border-phantom-border text-amber-600 dark:text-phantom-amber font-bold'
+                    : 'border-transparent text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white/80'
                 }`}
               >
                 <History className="w-3.5 h-3.5" />
