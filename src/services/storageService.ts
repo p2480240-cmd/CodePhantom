@@ -165,7 +165,7 @@ function generateInitialActivityHistory(): Record<string, ActivityDay> {
     };
   }
 
-  // Pre-seed realistic days
+  // Pre-seed realistic days across last 3-4 months
   const seededOffsets = [
     { offset: 0, count: 2, xp: 200, mins: 15, concepts: ['Loops', 'Boundary Errors'] },
     { offset: 1, count: 3, xp: 280, mins: 22, concepts: ['Off-By-One', 'Lists'] },
@@ -176,6 +176,17 @@ function generateInitialActivityHistory(): Record<string, ActivityDay> {
     { offset: 9, count: 3, xp: 250, mins: 25, concepts: ['Recursion'] },
     { offset: 14, count: 2, xp: 160, mins: 18, concepts: ['Loops'] },
     { offset: 20, count: 5, xp: 480, mins: 45, concepts: ['Data Structures'] },
+    { offset: 26, count: 2, xp: 190, mins: 16, concepts: ['Algorithms'] },
+    { offset: 33, count: 3, xp: 290, mins: 24, concepts: ['Loops', 'Complexity'] },
+    { offset: 41, count: 1, xp: 110, mins: 12, concepts: ['Sorting'] },
+    { offset: 48, count: 4, xp: 380, mins: 32, concepts: ['Pointers', 'References'] },
+    { offset: 55, count: 2, xp: 170, mins: 15, concepts: ['Conditionals'] },
+    { offset: 63, count: 3, xp: 260, mins: 20, concepts: ['Strings', 'Parsing'] },
+    { offset: 71, count: 1, xp: 95, mins: 10, concepts: ['Math'] },
+    { offset: 79, count: 4, xp: 340, mins: 28, concepts: ['Recursion', 'Trees'] },
+    { offset: 88, count: 2, xp: 180, mins: 17, concepts: ['Boundaries'] },
+    { offset: 96, count: 3, xp: 270, mins: 22, concepts: ['Exception Handling'] },
+    { offset: 105, count: 2, xp: 190, mins: 18, concepts: ['Type Checking'] },
   ];
 
   seededOffsets.forEach(({ offset, count, xp, mins, concepts }) => {
@@ -384,7 +395,18 @@ export class StorageService {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.ACTIVITY_HISTORY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        let activeCount = 0;
+        for (const k in parsed) {
+          if (parsed[k]?.count > 0) activeCount++;
+        }
+        if (activeCount < 14) {
+          const fresh = generateInitialActivityHistory();
+          const merged = { ...fresh, ...parsed };
+          StorageService.saveActivityHistory(merged);
+          return merged;
+        }
+        return parsed;
       }
     } catch (e) {
       console.warn('Error reading activity history:', e);
