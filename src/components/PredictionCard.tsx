@@ -58,7 +58,7 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({
   const selectedOption = options.find((o) => o.id === selectedId);
 
   return (
-    <div className="p-4 rounded-xl bg-white dark:bg-[#080e22] border border-slate-200 dark:border-phantom-purple/40 shadow-sm dark:shadow-xl space-y-3 font-sans transition-colors">
+    <div role="region" aria-label="Detective Deduction: Predict the Output" className="p-4 rounded-xl bg-white dark:bg-[#080e22] border border-slate-200 dark:border-phantom-purple/40 shadow-sm dark:shadow-xl space-y-3 font-sans transition-colors">
       <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/5 pb-2">
         <div className="flex items-center gap-2">
           <Brain className="w-4 h-4 text-purple-600 dark:text-phantom-violet" />
@@ -94,6 +94,8 @@ export const PredictionCard: React.FC<PredictionCardProps> = ({
               key={opt.id}
               onClick={() => handleSelect(opt)}
               disabled={submitted}
+              aria-pressed={isSelected}
+              aria-label={`Hypothesis: ${opt.text}`}
               className={`p-2.5 rounded-lg border text-left text-xs transition-all flex items-start gap-2 ${btnStyle}`}
             >
               <div className="mt-0.5">

@@ -333,6 +333,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           <button
             onClick={handlePrevSingleMonth}
             title="Previous Month"
+            aria-label="Previous Month"
             className="p-1.5 rounded-lg bg-slate-100 dark:bg-black/40 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -351,6 +352,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           <button
             onClick={handleNextSingleMonth}
             title="Next Month"
+            aria-label="Next Month"
             className="p-1.5 rounded-lg bg-slate-100 dark:bg-black/40 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

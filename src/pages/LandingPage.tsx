@@ -232,6 +232,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <button
                         onClick={handlePrevQuestion}
                         title="Previous Question"
+                        aria-label="Previous Question"
                         className="p-0.5 text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-300/50 dark:hover:bg-white/10 rounded transition-colors"
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
@@ -242,6 +243,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <button
                         onClick={handleNextQuestion}
                         title="Next Question"
+                        aria-label="Next Question"
                         className="p-0.5 text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-300/50 dark:hover:bg-white/10 rounded transition-colors"
                       >
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -267,6 +269,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 {/* Editor Content Area */}
                 <div className="p-3 bg-white dark:bg-[#080d1e] font-mono text-xs leading-5 relative">
                   <textarea
+                    id="hero-code-editor"
+                    aria-label="Interactive mystery code editor"
                     value={heroCode}
                     onChange={(e) => setHeroCode(e.target.value)}
                     spellCheck={false}
@@ -275,6 +279,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <div className="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-white/5">
                     <button
                       onClick={handleHeroReset}
+                      aria-label="Reset hero challenge code"
                       className="text-[11px] text-slate-500 hover:text-slate-800 dark:text-white/50 dark:hover:text-white flex items-center gap-1 transition-colors"
                     >
                       <RotateCcw className="w-3 h-3" />
@@ -283,6 +288,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={handleHeroRun}
+                        aria-label="Execute code and verify test fix"
                         disabled={running}
                         className="px-3 py-1 rounded bg-purple-600 hover:bg-purple-700 dark:bg-phantom-purple dark:hover:bg-phantom-violet text-white text-[11px] font-semibold flex items-center gap-1 transition-colors shadow-sm"
                       >
@@ -292,6 +298,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       {testResult.passed && (
                         <button
                           onClick={handleNextQuestion}
+                          aria-label="Load next mystery question"
                           className="px-3 py-1 rounded bg-teal-600 hover:bg-teal-700 dark:bg-phantom-teal dark:text-black dark:hover:bg-teal-300 text-white text-[11px] font-bold flex items-center gap-1 transition-all shadow-sm hover:scale-105"
                           title="Load next challenge"
                         >
@@ -331,6 +338,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {testResult.passed && (
                       <button
                         onClick={handleNextQuestion}
+                        aria-label="Proceed to the next question"
                         className="px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 dark:bg-phantom-teal dark:text-black dark:hover:bg-teal-300 text-white font-sans font-bold text-[11px] flex items-center gap-1 shadow-sm transition-all hover:scale-105 active:scale-95 animate-pulse"
                         title="Proceed to the next question"
                       >
@@ -351,6 +359,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       </div>
                       <button
                         onClick={handleNextQuestion}
+                        aria-label="Load next challenge question"
                         className="px-2.5 py-1 rounded-md bg-teal-600 hover:bg-teal-700 dark:bg-phantom-teal dark:text-black font-bold text-[11px] flex items-center gap-1 shadow-sm transition-transform hover:scale-105"
                       >
                         <span>Next Question</span>

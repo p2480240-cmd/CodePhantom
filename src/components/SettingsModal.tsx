@@ -77,15 +77,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-lg p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
+        className="relative w-full max-w-lg p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <Key className="w-5 h-5 text-cyan-600 dark:text-phantom-cyan" />
-            <h3 className="text-lg font-bold">Arena & AI Configuration</h3>
+            <h3 id="settings-modal-title" className="text-lg font-bold">Arena & AI Configuration</h3>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close Settings modal"
             className="p-1 text-slate-400 dark:text-white/50 hover:text-slate-800 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
           >
             <X className="w-5 h-5" />
@@ -94,11 +100,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Gemini API Key Section */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block">
+          <label htmlFor="gemini-api-key-input" className="text-xs font-semibold text-slate-700 dark:text-white/80 block">
             Google Gemini API Key (Optional)
           </label>
           <div className="flex gap-2">
             <input
+              id="gemini-api-key-input"
+              aria-label="Google Gemini API Key"
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
@@ -107,6 +115,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             />
             <button
               onClick={handleSaveApiKey}
+              aria-label="Save Gemini API Key"
               className="px-3.5 py-2 bg-phantom-purple hover:bg-phantom-violet text-white text-xs font-semibold rounded-lg transition-colors shadow-sm"
             >
               Save

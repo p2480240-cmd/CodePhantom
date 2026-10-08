@@ -443,6 +443,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={onBackToMissions}
+              aria-label="Back to Mission Map"
               className="text-xs text-slate-500 hover:text-slate-900 dark:text-white/50 dark:hover:text-white flex items-center gap-1 transition-colors"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
@@ -525,6 +526,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           {/* AI vs Human Speed Benchmark */}
           <button
             onClick={() => setShowSpeedModal(true)}
+            aria-label="Compare your debugging time vs AI benchmark"
             title="Compare your debugging time vs AI benchmark"
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 dark:bg-phantom-amber/10 hover:bg-amber-100 dark:hover:bg-phantom-amber/20 text-amber-700 dark:text-phantom-amber border border-amber-200 dark:border-phantom-amber/30 text-xs font-semibold transition-all"
           >
@@ -535,6 +537,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           {/* Edge Case Hunter */}
           <button
             onClick={() => setShowEdgeCaseModal(true)}
+            aria-label="Test adversarial boundary cases"
             title="Test adversarial boundary cases"
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 dark:bg-phantom-crimson/10 hover:bg-rose-100 dark:hover:bg-phantom-crimson/20 text-rose-700 dark:text-phantom-crimson border border-rose-200 dark:border-phantom-crimson/30 text-xs font-semibold transition-all"
           >
@@ -544,6 +547,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
 
           <button
             onClick={handleNextChallenge}
+            aria-label="Next challenge in this language"
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 hover:text-slate-900 dark:text-white/80 dark:hover:text-white border border-slate-200 dark:border-white/10 text-xs font-semibold transition-all"
             title="Next challenge in this language"
           >
@@ -553,6 +557,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
 
           <button
             onClick={() => setShowAIModal(true)}
+            aria-label="Synthesize new AI case with Gemini"
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-100 hover:bg-purple-200 dark:bg-phantom-purple/20 dark:hover:bg-phantom-purple/30 text-purple-900 dark:text-phantom-cyan border border-purple-300 dark:border-phantom-purple/40 text-xs font-semibold shadow-sm dark:shadow-glow-purple transition-all active:scale-95"
           >
             <Cpu className="w-4 h-4" />
@@ -572,6 +577,7 @@ export const HuntPage: React.FC<HuntPageProps> = ({
           </div>
           <button
             onClick={handleNextChallenge}
+            aria-label="Go to next unsolved case"
             className="px-2.5 py-1 rounded bg-phantom-teal text-black font-bold text-[11px] hover:brightness-110 transition-all"
           >
             Go to Next Unsolved Case &rarr;
@@ -635,8 +641,11 @@ export const HuntPage: React.FC<HuntPageProps> = ({
 
           {/* Forensic Tabs Strip: Tests, Predict, Evidence, Replay */}
           <div className="flex-1 flex flex-col rounded-xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border/60 overflow-hidden shadow-sm dark:shadow-xl transition-colors">
-            <div className="flex items-center border-b border-slate-200 dark:border-phantom-border/60 bg-slate-50 dark:bg-[#070b18] px-2 pt-2 gap-1 select-none overflow-x-auto">
+            <div role="tablist" aria-label="Investigation Panels" className="flex items-center border-b border-slate-200 dark:border-phantom-border/60 bg-slate-50 dark:bg-[#070b18] px-2 pt-2 gap-1 select-none overflow-x-auto">
               <button
+                role="tab"
+                aria-selected={activeTab === 'tests'}
+                aria-label="Test Suite Panel"
                 onClick={() => setActiveTab('tests')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'tests'
@@ -649,6 +658,9 @@ export const HuntPage: React.FC<HuntPageProps> = ({
               </button>
 
               <button
+                role="tab"
+                aria-selected={activeTab === 'predict'}
+                aria-label="Predict Output Panel"
                 onClick={() => setActiveTab('predict')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'predict'
@@ -661,6 +673,9 @@ export const HuntPage: React.FC<HuntPageProps> = ({
               </button>
 
               <button
+                role="tab"
+                aria-selected={activeTab === 'evidence'}
+                aria-label="Evidence Board Panel"
                 onClick={() => setActiveTab('evidence')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'evidence'
@@ -673,6 +688,9 @@ export const HuntPage: React.FC<HuntPageProps> = ({
               </button>
 
               <button
+                role="tab"
+                aria-selected={activeTab === 'replay'}
+                aria-label="Investigation Replay Panel"
                 onClick={() => setActiveTab('replay')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-xs font-mono font-medium transition-colors border-t border-x ${
                   activeTab === 'replay'

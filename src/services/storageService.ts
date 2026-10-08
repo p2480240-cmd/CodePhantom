@@ -9,6 +9,53 @@ const STORAGE_KEYS = {
   THEME: 'codephantom_theme',
 };
 
+// Safe storage abstraction with automatic in-memory fallback for SSR/Vitest/Node environments
+const memoryStore = new Map<string, string>();
+
+const safeStorage = {
+  getItem(key: string): string | null {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return memoryStore.get(key) ?? null;
+      }
+    }
+    return memoryStore.get(key) ?? null;
+  },
+  setItem(key: string, value: string): void {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(key, value);
+        return;
+      } catch {
+        // Fall back to memoryStore
+      }
+    }
+    memoryStore.set(key, value);
+  },
+  removeItem(key: string): void {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        // ignore
+      }
+    }
+    memoryStore.delete(key);
+  },
+  clear(): void {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.clear();
+      } catch {
+        // ignore
+      }
+    }
+    memoryStore.clear();
+  },
+};
+
 export const INITIAL_ACHIEVEMENTS: Achievement[] = [
   {
     id: 'first_fix',
@@ -211,7 +258,7 @@ function generateInitialActivityHistory(): Record<string, ActivityDay> {
 export class StorageService {
   static getProfile(): UserProfile {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
+      const stored = safeStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (!parsed.solvedChallengeIds) parsed.solvedChallengeIds = [];
@@ -280,7 +327,7 @@ export class StorageService {
 
   static saveProfile(profile: UserProfile): void {
     try {
-      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
+      safeStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
     } catch (e) {
       console.error('Failed to save profile:', e);
     }
@@ -288,7 +335,7 @@ export class StorageService {
 
   static saveUserCode(challengeId: string, code: string): void {
     try {
-      localStorage.setItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`, code);
+      safeStorage.setItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`, code);
       const profile = StorageService.getProfile();
       if (!profile.savedCode) profile.savedCode = {};
       profile.savedCode[challengeId] = code;
@@ -300,7 +347,7 @@ export class StorageService {
 
   static getUserCode(challengeId: string): string | null {
     try {
-      const direct = localStorage.getItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`);
+      const direct = safeStorage.getItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`);
       if (direct) return direct;
       const profile = StorageService.getProfile();
       return profile.savedCode?.[challengeId] || null;
@@ -311,7 +358,7 @@ export class StorageService {
 
   static clearUserCode(challengeId: string): void {
     try {
-      localStorage.removeItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`);
+      safeStorage.removeItem(`${STORAGE_KEYS.SAVED_CODE_PREFIX}${challengeId}`);
       const profile = StorageService.getProfile();
       if (profile.savedCode && profile.savedCode[challengeId]) {
         delete profile.savedCode[challengeId];
@@ -325,7 +372,7 @@ export class StorageService {
   // =========================================================================
   static getErrorRevisions(): ErrorRevisionEntry[] {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.ERROR_REVISIONS);
+      const stored = safeStorage.getItem(STORAGE_KEYS.ERROR_REVISIONS);
       if (stored) return JSON.parse(stored);
     } catch (e) {}
     // Seed sample illustrative revision so the window isn't empty on day 1
@@ -345,8 +392,12 @@ export class StorageService {
         reviewed: false,
       },
     ];
-    localStorage.setItem(STORAGE_KEYS.ERROR_REVISIONS, JSON.stringify(defaultRevisions));
+    safeStorage.setItem(STORAGE_KEYS.ERROR_REVISIONS, JSON.stringify(defaultRevisions));
     return defaultRevisions;
+  }
+
+  static clearErrorRevisions(): void {
+    safeStorage.removeItem(STORAGE_KEYS.ERROR_REVISIONS);
   }
 
   static recordErrorRevision(entry: Omit<ErrorRevisionEntry, 'id' | 'timestamp' | 'reviewed'>): void {
@@ -360,7 +411,7 @@ export class StorageService {
       };
       // Keep up to 20 recent error revisions
       const updated = [newEntry, ...existing].slice(0, 20);
-      localStorage.setItem(STORAGE_KEYS.ERROR_REVISIONS, JSON.stringify(updated));
+      safeStorage.setItem(STORAGE_KEYS.ERROR_REVISIONS, JSON.stringify(updated));
 
       const profile = StorageService.getProfile();
       profile.errorRevisions = updated;
@@ -374,7 +425,7 @@ export class StorageService {
     try {
       const existing = StorageService.getErrorRevisions();
       const updated = existing.map((r) => (r.id === revisionId ? { ...r, reviewed: true } : r));
-      localStorage.setItem(STORAGE_KEYS.ERROR_REVISIONS, JSON.stringify(updated));
+      safeStorage.setItem(STORAGE_KEYS.ERROR_REVISIONS, JSON.stringify(updated));
 
       const profile = StorageService.getProfile();
       profile.errorRevisions = updated;
@@ -393,7 +444,7 @@ export class StorageService {
 
   static getActivityHistory(): Record<string, ActivityDay> {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.ACTIVITY_HISTORY);
+      const stored = safeStorage.getItem(STORAGE_KEYS.ACTIVITY_HISTORY);
       if (stored) {
         const parsed = JSON.parse(stored);
         let activeCount = 0;
@@ -419,7 +470,7 @@ export class StorageService {
 
   static saveActivityHistory(history: Record<string, ActivityDay>): void {
     try {
-      localStorage.setItem(STORAGE_KEYS.ACTIVITY_HISTORY, JSON.stringify(history));
+      safeStorage.setItem(STORAGE_KEYS.ACTIVITY_HISTORY, JSON.stringify(history));
     } catch (e) {
       console.error('Failed to save activity history:', e);
     }
@@ -542,7 +593,7 @@ export class StorageService {
 
   static getTheme(): 'dark' | 'light' {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.THEME);
+      const stored = safeStorage.getItem(STORAGE_KEYS.THEME);
       if (stored === 'light' || stored === 'dark') {
         return stored;
       }
@@ -552,7 +603,7 @@ export class StorageService {
 
   static setTheme(theme: 'dark' | 'light'): void {
     try {
-      localStorage.setItem(STORAGE_KEYS.THEME, theme);
+      safeStorage.setItem(STORAGE_KEYS.THEME, theme);
       if (typeof document !== 'undefined') {
         if (theme === 'dark') {
           document.documentElement.classList.add('dark');
@@ -565,10 +616,20 @@ export class StorageService {
     } catch (e) {}
   }
 
+  static updateSelectedLanguage(language: Language): void {
+    const profile = StorageService.getProfile();
+    profile.selectedLanguage = language;
+    StorageService.saveProfile(profile);
+  }
+
   static resetAllData(): void {
-    localStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
-    localStorage.removeItem(STORAGE_KEYS.ACTIVITY_HISTORY);
-    localStorage.removeItem(STORAGE_KEYS.CUSTOM_CHALLENGES);
-    localStorage.removeItem(STORAGE_KEYS.ERROR_REVISIONS);
+    safeStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
+    safeStorage.removeItem(STORAGE_KEYS.ACTIVITY_HISTORY);
+    safeStorage.removeItem(STORAGE_KEYS.CUSTOM_CHALLENGES);
+    safeStorage.removeItem(STORAGE_KEYS.ERROR_REVISIONS);
+  }
+
+  static resetProfile(): void {
+    this.resetAllData();
   }
 }

@@ -106,7 +106,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Brand Logo */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-label="Go to Home Arena"
             onClick={() => onSelectTab('home')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelectTab('home'); }}
             className="cursor-pointer hover:opacity-95 transition-opacity shrink-0 flex items-center"
           >
             <PhantomLogo size="md" />
@@ -133,10 +137,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'bg-slate-100 border-slate-200 shadow-sm'
             }`}
           >
-            <span className={`mr-1 hidden lg:inline ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
+            <label htmlFor="navbar-language-select" className={`mr-1 hidden lg:inline ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
               Lang:
-            </span>
+            </label>
             <select
+              id="navbar-language-select"
+              aria-label="Programming Language Selection"
               value={profile.selectedLanguage}
               onChange={(e) => onChangeLanguage(e.target.value as Language)}
               className={`bg-transparent font-bold outline-none cursor-pointer text-xs ${
@@ -181,7 +187,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Level / XP Pill */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-label={`Open Detective Dashboard. Level ${profile.level}, ${profile.xp} XP`}
             onClick={() => onSelectTab('dashboard')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelectTab('dashboard'); }}
             className={`cursor-pointer flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-lg border text-xs transition-colors shrink-0 ${
               isDark
                 ? 'bg-phantom-card border-phantom-border hover:border-phantom-cyan/50 text-white'
@@ -203,6 +213,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onOpenSettings}
             title="Settings & API Key"
+            aria-label="Settings and API Key configuration"
             className={`hidden sm:flex p-2 rounded-lg border transition-colors shrink-0 ${
               isDark
                 ? 'text-white/60 hover:text-white bg-white/5 hover:bg-white/10 border-white/10'
@@ -215,6 +226,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* User / Auth Pill */}
           <button
             onClick={onOpenAuth}
+            aria-label={`Detective profile: ${profile.isGuest ? 'Demo Mode' : profile.username}`}
             className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-violet text-white text-xs font-semibold hover:brightness-110 shadow-glow-purple transition-all shrink-0"
           >
             <User className="w-3.5 h-3.5" />

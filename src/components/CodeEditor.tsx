@@ -109,6 +109,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             <button
               onClick={onReset}
               title="Reset code to original broken state"
+              aria-label="Reset code to original broken state"
               className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-slate-600 hover:text-slate-900 dark:text-white/60 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded border border-slate-200 dark:border-white/10 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -119,6 +120,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           <button
             onClick={handleCopy}
             title="Copy code"
+            aria-label="Copy code to clipboard"
             className="p-1.5 text-slate-600 hover:text-slate-900 dark:text-white/60 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 rounded border border-slate-200 dark:border-white/10 transition-colors"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-teal-600 dark:text-phantom-teal" /> : <Copy className="w-3.5 h-3.5" />}
@@ -139,6 +141,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                 type="button"
                 onClick={() => onSelectLine && onSelectLine(lineNum, lText)}
                 title={`Inspect Line ${lineNum} for suspicious logic`}
+                aria-label={`Inspect Line ${lineNum}`}
                 className={`w-full block text-right pr-1 rounded cursor-pointer transition-colors ${
                   isSelected
                     ? 'bg-cyan-100 dark:bg-phantom-cyan/20 text-cyan-800 dark:text-phantom-cyan font-bold border-r-2 border-cyan-500 dark:border-phantom-cyan'
@@ -155,6 +158,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         <div className="relative flex-1 h-full overflow-auto">
           <textarea
             ref={textareaRef}
+            id="code-editor-textarea"
+            aria-label="Source code editor"
             value={code}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -179,6 +184,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           {onRun && (
             <button
               onClick={onRun}
+              aria-label="Run test suite"
               disabled={isRunning || isSubmitting}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white dark:bg-phantom-deep border border-cyan-400 dark:border-phantom-cyan/40 text-cyan-700 dark:text-phantom-cyan hover:bg-cyan-50 dark:hover:bg-phantom-cyan/10 transition-all font-medium text-xs shadow-sm hover:shadow-md dark:hover:shadow-glow-cyan active:scale-95 disabled:opacity-50"
             >
@@ -190,6 +196,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           {onSubmit && (
             <button
               onClick={onSubmit}
+              aria-label="Submit solution fix"
               disabled={isRunning || isSubmitting}
               className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-violet text-white font-semibold text-xs transition-all shadow-glow-purple hover:brightness-110 active:scale-95 disabled:opacity-50"
             >

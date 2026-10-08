@@ -45,14 +45,20 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-purple/50 shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ai-case-modal-title"
+        className="relative w-full max-w-lg p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-purple/50 shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors"
+      >
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <Cpu className="w-5 h-5 text-cyan-600 dark:text-phantom-cyan" />
-            <h3 className="text-lg font-bold">Synthesize AI Case File</h3>
+            <h3 id="ai-case-modal-title" className="text-lg font-bold">Synthesize AI Case File</h3>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close AI case synthesis modal"
             className="p-1 text-slate-400 dark:text-white/50 hover:text-slate-800 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
           >
             <X className="w-5 h-5" />
@@ -146,10 +152,12 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
+            <label htmlFor="ai-scenario-input" className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
               Mystery Scenario / Concept (Optional)
             </label>
             <input
+              id="ai-scenario-input"
+              aria-label="Mystery Scenario or Target Concept"
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}

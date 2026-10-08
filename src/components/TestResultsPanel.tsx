@@ -31,7 +31,7 @@ export const TestResultsPanel: React.FC<TestResultsPanelProps> = ({
   const allPassed = execution.success;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div role="region" aria-label="Test Suite Execution Results" aria-live="polite" className="flex flex-col gap-3">
       {/* Overall Status Banner matching the Mockup Card style */}
       <div
         className={`p-3.5 rounded-xl border flex items-center justify-between ${

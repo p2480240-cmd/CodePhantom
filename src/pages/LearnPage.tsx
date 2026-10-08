@@ -315,8 +315,13 @@ export const LearnPage: React.FC<LearnPageProps> = ({
           <div className="p-3.5 rounded-2xl bg-white dark:bg-[#070c1d] border border-purple-200 dark:border-phantom-purple/30 shadow-xl space-y-3 max-h-[460px] overflow-y-auto animate-fadeIn">
             {/* Mobile Search */}
             <div className="relative">
+              <label htmlFor="mobile-learn-search" className="sr-only">
+                Search concepts or topics
+              </label>
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
+                id="mobile-learn-search"
+                aria-label="Search concepts or topics"
                 type="text"
                 placeholder="Search concepts or topics..."
                 value={searchQuery}
@@ -326,6 +331,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
+                  aria-label="Clear search query"
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs px-1"
                 >
                   ✕
@@ -336,10 +342,12 @@ export const LearnPage: React.FC<LearnPageProps> = ({
             {/* Mobile Language Selector Dropdown */}
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <label className="text-[10px] font-mono font-semibold text-slate-500 dark:text-white/50 block mb-1">
+                <label htmlFor="mobile-learn-language-select" className="text-[10px] font-mono font-semibold text-slate-500 dark:text-white/50 block mb-1">
                   Language:
                 </label>
                 <select
+                  id="mobile-learn-language-select"
+                  aria-label="Filter lessons by programming language"
                   value={selectedLang}
                   onChange={(e) => setSelectedLang(e.target.value as Language | 'all')}
                   className="w-full px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-mono font-semibold text-slate-800 dark:text-white outline-none"
@@ -354,10 +362,12 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               </div>
 
               <div>
-                <label className="text-[10px] font-mono font-semibold text-slate-500 dark:text-white/50 block mb-1">
+                <label htmlFor="mobile-learn-chapter-select" className="text-[10px] font-mono font-semibold text-slate-500 dark:text-white/50 block mb-1">
                   Chapter:
                 </label>
                 <select
+                  id="mobile-learn-chapter-select"
+                  aria-label="Filter lessons by chapter"
                   value={selectedChapter}
                   onChange={(e) => {
                     const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
@@ -456,8 +466,13 @@ export const LearnPage: React.FC<LearnPageProps> = ({
             {/* 1. SEARCH BAR: Moved to the left at the top of the sidebar! */}
             <div className="space-y-1">
               <div className="relative">
+                <label htmlFor="desktop-learn-search" className="sr-only">
+                  Search concepts or topics
+                </label>
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
+                  id="desktop-learn-search"
+                  aria-label="Search concepts or topics"
                   type="text"
                   placeholder="Search concepts or topics..."
                   value={searchQuery}
@@ -467,6 +482,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
+                    aria-label="Clear search query"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs px-1"
                   >
                     ✕
@@ -477,11 +493,13 @@ export const LearnPage: React.FC<LearnPageProps> = ({
 
             {/* 2. LANGUAGE SELECTION DROPDOWN: Moved downwards below the search bar! */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono font-semibold text-slate-600 dark:text-white/60 flex items-center gap-1.5 px-0.5">
+              <label htmlFor="desktop-learn-language-select" className="text-[11px] font-mono font-semibold text-slate-600 dark:text-white/60 flex items-center gap-1.5 px-0.5">
                 <Filter className="w-3.5 h-3.5 text-purple-600 dark:text-phantom-violet" />
                 <span>Language Filter:</span>
               </label>
               <select
+                id="desktop-learn-language-select"
+                aria-label="Filter lessons by programming language"
                 value={selectedLang}
                 onChange={(e) => {
                   const lang = e.target.value as Language | 'all';
@@ -518,11 +536,13 @@ export const LearnPage: React.FC<LearnPageProps> = ({
 
             {/* 3. CHAPTER FILTER DROPDOWN: Compact chapter selector */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono font-semibold text-slate-600 dark:text-white/60 flex items-center gap-1.5 px-0.5">
+              <label htmlFor="desktop-learn-chapter-select" className="text-[11px] font-mono font-semibold text-slate-600 dark:text-white/60 flex items-center gap-1.5 px-0.5">
                 <Layers className="w-3.5 h-3.5 text-cyan-600 dark:text-phantom-cyan" />
                 <span>Chapter Focus:</span>
               </label>
               <select
+                id="desktop-learn-chapter-select"
+                aria-label="Filter lessons by chapter"
                 value={selectedChapter}
                 onChange={(e) => {
                   const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
@@ -716,6 +736,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                       onClick={() => setIsTopicsSidebarOpen(true)}
                       className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-100 dark:bg-phantom-purple/20 text-purple-700 dark:text-phantom-violet border border-purple-200 dark:border-phantom-purple/40 hover:brightness-110 text-xs font-semibold shadow-sm transition-all"
                       title="Show Topics Sidebar"
+                      aria-label="Show Topics Sidebar"
                     >
                       <PanelLeftOpen className="w-3.5 h-3.5" />
                       <span>Show Topics ({filteredLessons.length})</span>
@@ -748,6 +769,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                       disabled={!hasPrev}
                       className="p-1 rounded-md border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       title="Previous Lesson"
+                      aria-label="Previous Lesson"
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
                     </button>
@@ -759,6 +781,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                       disabled={!hasNext}
                       className="p-1 rounded-md border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       title="Next Lesson"
+                      aria-label="Next Lesson"
                     >
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
@@ -898,6 +921,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                   </span>
                   <button
                     onClick={() => setCode(selectedLesson.brokenCode)}
+                    aria-label="Reset lesson code to original state"
                     className="text-slate-500 hover:text-slate-800 dark:text-white/40 dark:hover:text-white flex items-center gap-1 text-[11px] transition-colors"
                   >
                     <RotateCcw className="w-3 h-3" /> Reset Code
@@ -905,6 +929,8 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 </div>
 
                 <textarea
+                  id="interactive-exercise-code"
+                  aria-label="Interactive lesson code editor"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   spellCheck={false}
@@ -918,6 +944,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
 
                   <button
                     onClick={handleTestLessonCode}
+                    aria-label="Verify lesson fix against target behavior"
                     disabled={evaluating}
                     className="w-full sm:w-auto px-5 py-2 sm:py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-cyan text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:brightness-110 active:scale-95 transition-all shrink-0"
                   >

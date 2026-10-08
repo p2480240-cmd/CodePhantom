@@ -195,6 +195,27 @@ export class CodeExecutionService {
   /**
    * Safe JavaScript / TypeScript sandbox
    */
+  private static validateCodeSecurity(code: string, entryFunction: string): void {
+    if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(entryFunction)) {
+      throw new Error(`Security Exception: Invalid function identifier "${entryFunction}".`);
+    }
+
+    const forbiddenPatterns = [
+      /\bprocess\s*\./,
+      /\bimport\s*\(/,
+      /\b__proto__\b/,
+      /\bconstructor\s*\[\s*['"`]prototype['"`]\s*\]/,
+      /\bindexedDB\b/,
+      /\bopenDatabase\b/,
+    ];
+
+    for (const pattern of forbiddenPatterns) {
+      if (pattern.test(code)) {
+        throw new Error('Security Exception: Prohibited system call or prototype tampering detected.');
+      }
+    }
+  }
+
   private static executeJavaScript(
     rawCode: string,
     entryFunction: string,
@@ -204,6 +225,28 @@ export class CodeExecutionService {
     const logs: string[] = [];
     const results: TestResult[] = [];
     let passedCount = 0;
+
+    // Security validation
+    try {
+      this.validateCodeSecurity(rawCode, entryFunction);
+    } catch (secErr: any) {
+      return {
+        success: false,
+        passedCount: 0,
+        totalCount: testCases.length,
+        results: testCases.map((tc) => ({
+          testId: tc.id,
+          passed: false,
+          inputDescription: tc.inputDescription,
+          expected: tc.expectedOutput,
+          actual: 'Security Exception',
+          error: secErr.message,
+        })),
+        logs: [`[SECURITY] ${secErr.message}`],
+        syntaxError: secErr.message,
+        executionMode: 'client-sandbox',
+      };
+    }
 
     // Simple strip of common TypeScript type annotations if in TS mode
     let code = rawCode;
@@ -226,6 +269,10 @@ export class CodeExecutionService {
         const sessionStorage = undefined;
         const alert = undefined;
         const Worker = undefined;
+        const globalThis = undefined;
+        const process = undefined;
+        const navigator = undefined;
+        const indexedDB = undefined;
         const console = {
           log: (...args) => capturedLogs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')),
           error: (...args) => capturedLogs.push('[ERROR] ' + args.join(' ')),
@@ -318,6 +365,7 @@ export class CodeExecutionService {
     let passedCount = 0;
 
     try {
+      this.validateCodeSecurity(code, entryFunction);
       const jsCode = this.transpilePythonToJS(code, entryFunction);
 
       const sandboxedFunctionFactory = new Function(
@@ -327,6 +375,12 @@ export class CodeExecutionService {
         const document = undefined;
         const fetch = undefined;
         const localStorage = undefined;
+        const sessionStorage = undefined;
+        const Worker = undefined;
+        const globalThis = undefined;
+        const process = undefined;
+        const navigator = undefined;
+        const indexedDB = undefined;
         const print = (...args) => capturedLogs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
         const int = (x) => isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10);
         const float = (x) => isNaN(parseFloat(x)) ? 0 : parseFloat(x);

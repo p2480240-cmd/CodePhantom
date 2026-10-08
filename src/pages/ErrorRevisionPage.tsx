@@ -26,7 +26,7 @@ export const ErrorRevisionPage: React.FC<ErrorRevisionPageProps> = ({
 
   const handleClearAll = () => {
     if (confirm('Clear all error revision records from your detective archive?')) {
-      localStorage.removeItem('codephantom_error_revisions');
+      StorageService.clearErrorRevisions();
       const p = StorageService.getProfile();
       p.errorRevisions = [];
       StorageService.saveProfile(p);
@@ -65,6 +65,7 @@ export const ErrorRevisionPage: React.FC<ErrorRevisionPageProps> = ({
           {revisions.length > 0 && (
             <button
               onClick={handleClearAll}
+              aria-label="Clear all error revision records"
               className="p-2 text-slate-400 hover:text-rose-600 dark:text-white/40 dark:hover:text-phantom-crimson rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
               title="Clear error log"
             >

@@ -138,7 +138,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             isDark ? 'bg-phantom-deep/60 border-phantom-border/60' : 'bg-slate-50 border-slate-200'
           }`}
         >
-          <div onClick={() => handleNavClick('home')} className="cursor-pointer">
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label="CodePhantom Home Arena"
+            onClick={() => handleNavClick('home')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleNavClick('home'); }}
+            className="cursor-pointer"
+          >
             <PhantomLogo size="md" />
           </div>
           <button
@@ -307,10 +314,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Language Selector Row */}
           <div className="flex items-center justify-between px-2">
-            <span className={`text-xs font-mono ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
+            <label htmlFor="sidebar-language-select" className={`text-xs font-mono ${isDark ? 'text-white/60' : 'text-slate-600'}`}>
               Language:
-            </span>
+            </label>
             <select
+              id="sidebar-language-select"
+              aria-label="Sidebar Language Preference"
               value={profile.selectedLanguage}
               onChange={(e) => onChangeLanguage(e.target.value as Language)}
               className={`border font-mono font-bold text-xs rounded-lg px-2 py-1 outline-none cursor-pointer ${

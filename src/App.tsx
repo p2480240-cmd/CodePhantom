@@ -114,6 +114,14 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-phantom-midnight text-slate-900 dark:text-phantom-white selection:bg-phantom-purple selection:text-white transition-colors duration-300">
+      {/* Skip to Main Content Link for Keyboard and Screen Reader Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-phantom-purple focus:text-white focus:rounded-xl focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-phantom-cyan font-semibold text-xs transition-transform"
+      >
+        Skip to main content
+      </a>
+
       {/* Top Streamlined Navigation Bar */}
       <Navbar
         onToggleSidebar={() => setIsSidebarOpen(true)}
@@ -147,7 +155,7 @@ export function App() {
       />
 
       {/* Main Page Body */}
-      <main className="flex-1 w-full max-w-full overflow-x-hidden">
+      <main id="main-content" tabIndex={-1} className="flex-1 w-full max-w-full overflow-x-hidden focus:outline-none">
         {currentTab === 'home' && (
           <LandingPage
             onEnterArena={(id) => handleStartHunt(id)}

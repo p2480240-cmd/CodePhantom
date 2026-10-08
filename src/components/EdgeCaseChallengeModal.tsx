@@ -38,15 +38,24 @@ export const EdgeCaseChallengeModal: React.FC<EdgeCaseChallengeModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-md p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-crimson/50 shadow-2xl text-slate-900 dark:text-white space-y-4 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edge-case-title"
+        className="relative w-full max-w-md p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-crimson/50 shadow-2xl text-slate-900 dark:text-white space-y-4 transition-colors"
+      >
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-rose-500 dark:text-phantom-crimson animate-pulse" />
-            <h3 className="text-base font-bold text-slate-900 dark:text-white font-mono">
+            <h3 id="edge-case-title" className="text-base font-bold text-slate-900 dark:text-white font-mono">
               ⚠️ Another Shadow Awakens...
             </h3>
           </div>
-          <button onClick={onClose} className="text-slate-400 dark:text-white/40 hover:text-slate-800 dark:hover:text-white">
+          <button
+            onClick={onClose}
+            aria-label="Close Edge Case modal"
+            className="text-slate-400 dark:text-white/40 hover:text-slate-800 dark:hover:text-white"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>

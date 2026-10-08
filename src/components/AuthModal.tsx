@@ -48,15 +48,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-md p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        className="relative w-full max-w-md p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-cyan-600 dark:text-phantom-cyan" />
-            <h3 className="text-lg font-bold">Detective Profile & Access</h3>
+            <h3 id="auth-modal-title" className="text-lg font-bold">Detective Profile & Access</h3>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close Profile modal"
             className="p-1 text-slate-400 dark:text-white/50 hover:text-slate-800 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
           >
             <X className="w-5 h-5" />
@@ -77,10 +83,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSaveAlias} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
+            <label htmlFor="detective-alias-input" className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
               Detective Call-Sign / Username
             </label>
             <input
+              id="detective-alias-input"
+              aria-label="Detective Call-Sign or Username"
               type="text"
               value={alias}
               onChange={(e) => setAlias(e.target.value)}

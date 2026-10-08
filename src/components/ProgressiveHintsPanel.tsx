@@ -38,11 +38,18 @@ export const ProgressiveHintsPanel: React.FC<ProgressiveHintsPanelProps> = ({
   ];
 
   return (
-    <div className="flex flex-col h-full rounded-xl border border-slate-200 dark:border-phantom-border bg-white dark:bg-phantom-deep shadow-sm dark:shadow-xl overflow-hidden transition-colors">
+    <div
+      role="region"
+      aria-label="Progressive Clues and Solution"
+      className="flex flex-col h-full rounded-xl border border-slate-200 dark:border-phantom-border bg-white dark:bg-phantom-deep shadow-sm dark:shadow-xl overflow-hidden transition-colors"
+    >
       {/* Tab Switcher matching the Mockup */}
-      <div className="flex items-center justify-between border-b border-slate-200 dark:border-phantom-border/60 bg-slate-50 dark:bg-[#070b18] px-4 py-2">
+      <div role="tablist" aria-label="Clues and Solutions Tabs" className="flex items-center justify-between border-b border-slate-200 dark:border-phantom-border/60 bg-slate-50 dark:bg-[#070b18] px-4 py-2">
         <div className="flex items-center gap-2">
           <button
+            role="tab"
+            aria-selected={activeTab === 'hints'}
+            aria-label={`Hints tab, ${Math.min(3, revealedLevel)} of 3 revealed`}
             onClick={() => setActiveTab('hints')}
             className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
               activeTab === 'hints'
@@ -53,6 +60,9 @@ export const ProgressiveHintsPanel: React.FC<ProgressiveHintsPanelProps> = ({
             Hints ({Math.min(3, revealedLevel)}/3)
           </button>
           <button
+            role="tab"
+            aria-selected={activeTab === 'explanation'}
+            aria-label="Solution and Post-Mortem tab"
             onClick={() => setActiveTab('explanation')}
             className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
               activeTab === 'explanation'

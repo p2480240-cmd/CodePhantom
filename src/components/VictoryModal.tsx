@@ -41,7 +41,12 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-teal/50 shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="victory-modal-title"
+        className="relative w-full max-w-lg p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-teal/50 shadow-2xl text-slate-900 dark:text-white space-y-5 transition-colors"
+      >
         {/* Glow Header */}
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-teal-100 dark:bg-phantom-teal/20 border border-teal-300 dark:border-phantom-teal flex items-center justify-center text-teal-600 dark:text-phantom-teal shadow-sm dark:shadow-glow-teal">
@@ -51,7 +56,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             <span className="text-xs uppercase tracking-widest text-teal-700 dark:text-phantom-teal font-mono font-semibold">
               Mystery Solved
             </span>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Shadow Banished!</h3>
+            <h3 id="victory-modal-title" className="text-xl font-bold text-slate-900 dark:text-white">Shadow Banished!</h3>
           </div>
         </div>
 
@@ -97,12 +102,14 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
         <div className="flex items-center justify-end gap-3 pt-2">
           <button
             onClick={onClose}
+            aria-label="Review code without advancing"
             className="px-4 py-2 text-xs text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
           >
             Review Code
           </button>
           <button
             onClick={onNext}
+            aria-label="Advance to next mystery mission"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-phantom-purple to-phantom-cyan text-black font-bold text-xs shadow-glow-cyan hover:brightness-110 active:scale-95 transition-all"
           >
             <span>Next Mission</span>

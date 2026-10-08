@@ -36,7 +36,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-xl p-8 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border/80 shadow-2xl text-slate-900 dark:text-white space-y-6 transition-colors">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="onboarding-modal-title"
+        className="relative w-full max-w-xl p-8 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border/80 shadow-2xl text-slate-900 dark:text-white space-y-6 transition-colors"
+      >
         {/* Step indicator */}
         <div className="flex items-center justify-between text-xs font-mono text-slate-400 dark:text-white/40 border-b border-slate-200 dark:border-white/10 pb-3">
           <div className="flex items-center gap-2">
@@ -52,17 +57,19 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
             <div className="flex justify-center">
               <PhantomLogo size="lg" />
             </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            <h2 id="onboarding-modal-title" className="text-2xl font-extrabold text-slate-900 dark:text-white">
               “Every bug leaves a shadow.”
             </h2>
             <p className="text-sm text-slate-600 dark:text-white/70 max-w-md mx-auto leading-relaxed">
               Welcome, investigator. In CodePhantom, the AI creates the mysteries, and you hunt them down. Choose your callsign to enter the arena.
             </p>
             <div className="max-w-xs mx-auto pt-2">
-              <label className="text-xs text-slate-500 dark:text-white/60 block text-left mb-1 font-mono">
+              <label htmlFor="onboarding-callsign-input" className="text-xs text-slate-500 dark:text-white/60 block text-left mb-1 font-mono">
                 Detective Callsign:
               </label>
               <input
+                id="onboarding-callsign-input"
+                aria-label="Detective Callsign"
                 type="text"
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}

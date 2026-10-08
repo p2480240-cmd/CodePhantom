@@ -212,8 +212,13 @@ export const BugEncyclopediaPage: React.FC = () => {
 
         {/* Search */}
         <div className="relative w-full md:w-64">
+          <label htmlFor="bug-encyclopedia-search" className="sr-only">
+            Search bug categories
+          </label>
           <Search className="w-4 h-4 text-slate-400 dark:text-white/40 absolute left-3 top-2.5" />
           <input
+            id="bug-encyclopedia-search"
+            aria-label="Search bug categories"
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -232,9 +237,18 @@ export const BugEncyclopediaPage: React.FC = () => {
             return (
               <div
                 key={bug.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={active}
                 onClick={() => {
                   setSelectedBug(bug);
                   setMiniSolved(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setSelectedBug(bug);
+                    setMiniSolved(false);
+                  }
                 }}
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${
                   active

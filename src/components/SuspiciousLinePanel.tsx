@@ -14,7 +14,11 @@ export const SuspiciousLinePanel: React.FC<SuspiciousLinePanelProps> = ({
   if (!analysis) return null;
 
   return (
-    <div className="p-4 rounded-xl bg-white dark:bg-[#090f23] border border-cyan-300 dark:border-phantom-cyan/40 shadow-sm dark:shadow-xl space-y-3 font-sans animate-fadeIn transition-colors">
+    <div
+      role="region"
+      aria-label={`Line ${analysis.lineNumber} Forensic Analysis`}
+      className="p-4 rounded-xl bg-white dark:bg-[#090f23] border border-cyan-300 dark:border-phantom-cyan/40 shadow-sm dark:shadow-xl space-y-3 font-sans animate-fadeIn transition-colors"
+    >
       <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md bg-cyan-100 dark:bg-phantom-cyan/20 border border-cyan-300 dark:border-phantom-cyan/40 flex items-center justify-center text-cyan-700 dark:text-phantom-cyan">
@@ -29,6 +33,7 @@ export const SuspiciousLinePanel: React.FC<SuspiciousLinePanelProps> = ({
         </div>
         <button
           onClick={onClose}
+          aria-label="Close forensic analysis panel"
           className="text-slate-400 dark:text-white/40 hover:text-slate-800 dark:hover:text-white p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/5"
         >
           <X className="w-3.5 h-3.5" />
