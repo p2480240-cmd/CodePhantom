@@ -89,7 +89,9 @@ export const PhantomLogo: React.FC<PhantomLogoProps> = ({
       {/* Brand Wordmark */}
       {showText && (
         <div className={`font-bold tracking-tight ${textSizes[size]} flex items-center`}>
-          <span className="text-white drop-shadow-sm font-sans">Code</span>
+          <span className="text-slate-900 dark:text-white drop-shadow-sm font-sans transition-colors">
+            Code
+          </span>
           <span className="bg-gradient-to-r from-phantom-purple via-phantom-violet to-phantom-cyan bg-clip-text text-transparent font-sans ml-0.5">
             Phantom
           </span>
