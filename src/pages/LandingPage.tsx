@@ -1,0 +1,549 @@
+import React, { useState } from 'react';
+import {
+  Sparkles,
+  ArrowRight,
+  Compass,
+  CheckCircle2,
+  Cpu,
+  Lightbulb,
+  Trophy,
+  Flame,
+  Play,
+  RotateCcw,
+  Check,
+  XCircle,
+  ExternalLink,
+} from 'lucide-react';
+import { PhantomMascot } from '../components/PhantomMascot';
+import { HeatmapGrid } from '../components/HeatmapGrid';
+import { UserProfile } from '../types';
+import { CodeExecutionService } from '../services/codeExecutionService';
+import { CURATED_CHALLENGES } from '../services/challengeService';
+
+interface LandingPageProps {
+  onEnterArena: (challengeId?: string) => void;
+  onExploreMissions: () => void;
+  onExploreLearn: () => void;
+  onOpenLeaderboard: () => void;
+  onOpenReports: () => void;
+  profile: UserProfile;
+  activityHistory: Record<string, any>;
+}
+
+export const LandingPage: React.FC<LandingPageProps> = ({
+  onEnterArena,
+  onExploreMissions,
+  onExploreLearn,
+  onOpenLeaderboard,
+  onOpenReports,
+  profile,
+  activityHistory,
+}) => {
+  // Hero interactive preview state
+  const heroChallenge = CURATED_CHALLENGES[0]; // calculate_average
+  const [heroCode, setHeroCode] = useState(heroChallenge.brokenCode);
+  const [hintStep, setHintStep] = useState(1);
+  const [activeTab, setActiveTab] = useState<'hints' | 'explanation'>('hints');
+  const [running, setRunning] = useState(false);
+  const [testResult, setTestResult] = useState<{
+    passed: boolean;
+    passedCount: number;
+    total: number;
+    expected: any;
+    got: any;
+  }>({
+    passed: false,
+    passedCount: 1,
+    total: 3,
+    expected: 20.0,
+    got: 10.0,
+  });
+
+  const handleHeroRun = async () => {
+    setRunning(true);
+    const exec = await CodeExecutionService.execute(
+      heroCode,
+      heroChallenge.language,
+      heroChallenge.entryFunction,
+      heroChallenge.testCases
+    );
+    setRunning(false);
+    setTestResult({
+      passed: exec.success,
+      passedCount: exec.passedCount,
+      total: exec.totalCount,
+      expected: exec.results[0]?.expected ?? 20.0,
+      got: exec.results[0]?.actual ?? 10.0,
+    });
+  };
+
+  const handleHeroReset = () => {
+    setHeroCode(heroChallenge.brokenCode);
+    setTestResult({
+      passed: false,
+      passedCount: 1,
+      total: 3,
+      expected: 20.0,
+      got: 10.0,
+    });
+    setHintStep(1);
+  };
+
+  return (
+    <div className="w-full space-y-16 pb-16">
+      {/* =========================================================================
+          HERO SECTION (Matching Mockup Layout)
+          ========================================================================= */}
+      <section className="relative pt-8 sm:pt-14 pb-8 overflow-hidden">
+        {/* Subtle cyan and violet atmospheric background glows */}
+        <div className="absolute top-10 left-1/4 w-96 h-96 bg-phantom-purple/15 rounded-full filter blur-3xl pointer-events-none" />
+        <div className="absolute top-20 right-10 w-96 h-96 bg-phantom-cyan/15 rounded-full filter blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left Column: Headlines & Call to Actions */}
+            <div className="lg:col-span-5 space-y-6">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-phantom-purple/15 border border-phantom-purple/40 text-phantom-violet text-xs font-semibold tracking-wide shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-phantom-cyan animate-pulse" />
+                <span>AI-Powered Debugging Arena</span>
+              </div>
+
+              {/* Main Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+                Every bug leaves <br />
+                <span className="bg-gradient-to-r from-phantom-cyan via-phantom-violet to-phantom-purple bg-clip-text text-transparent">
+                  a shadow.
+                </span>
+              </h1>
+
+              {/* Subheading */}
+              <p className="text-base sm:text-lg text-white/70 leading-relaxed max-w-xl">
+                CodePhantom is an AI-powered, gamified platform where you hunt down broken code, solve real problems, and level up your programming skills.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <button
+                  onClick={() => onEnterArena()}
+                  className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-phantom-purple via-phantom-violet to-phantom-cyan text-white font-bold text-sm shadow-glow-purple hover:brightness-110 active:scale-95 transition-all"
+                >
+                  <span>Enter the Arena</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <button
+                  onClick={onExploreMissions}
+                  className="flex items-center gap-2 px-5 py-3.5 rounded-xl bg-phantom-deep hover:bg-phantom-hover border border-phantom-border text-white font-semibold text-sm transition-all"
+                >
+                  <Compass className="w-4 h-4 text-phantom-cyan" />
+                  <span>Explore Missions</span>
+                </button>
+              </div>
+
+              {/* Small Feature Indicators */}
+              <div className="flex flex-wrap items-center gap-5 pt-3 text-xs text-white/80 font-medium">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
+                  <span>AI-Generated Challenges</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
+                  <span>Gamified Learning</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
+                  <span>Build Real Skills</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Phantom Mascot + Live Interactive Hero Code Panel */}
+            <div className="lg:col-span-7 relative flex flex-col md:flex-row items-center gap-4">
+              {/* Mascot Detective SVG */}
+              <div className="w-full md:w-5/12 flex justify-center">
+                <PhantomMascot size="hero" />
+              </div>
+
+              {/* Interactive Coding Sandbox Preview (Matching Mockup Screen) */}
+              <div className="w-full md:w-7/12 rounded-2xl bg-[#090e1f] border border-phantom-border/80 shadow-2xl overflow-hidden flex flex-col font-sans">
+                {/* Header bar */}
+                <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#050813] border-b border-white/10 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-phantom-purple/20 text-phantom-violet font-mono text-[11px] font-semibold border border-phantom-purple/30">
+                      python
+                    </span>
+                    <span className="text-white/60 font-medium">Level 2</span>
+                    <span className="text-white/30">•</span>
+                    <span className="text-phantom-amber font-medium">Medium</span>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-[11px] font-mono text-phantom-cyan font-bold">
+                    <span>XP 100</span>
+                  </div>
+                </div>
+
+                {/* Editor Content Area */}
+                <div className="p-3 bg-[#080d1e] font-mono text-xs leading-5 relative">
+                  <textarea
+                    value={heroCode}
+                    onChange={(e) => setHeroCode(e.target.value)}
+                    spellCheck={false}
+                    className="w-full h-32 bg-transparent text-phantom-white resize-none outline-none font-mono text-xs whitespace-pre selection:bg-phantom-purple/40"
+                  />
+                  <div className="flex items-center justify-between pt-1 border-t border-white/5">
+                    <button
+                      onClick={handleHeroReset}
+                      className="text-[11px] text-white/50 hover:text-white flex items-center gap-1"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Reset</span>
+                    </button>
+                    <button
+                      onClick={handleHeroRun}
+                      disabled={running}
+                      className="px-3 py-1 rounded bg-phantom-purple hover:bg-phantom-violet text-white text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                    >
+                      <Play className="w-3 h-3 fill-current" />
+                      <span>{running ? 'Running...' : 'Run Fix'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tests Failed / Passed Box (Matching Mockup) */}
+                <div
+                  className={`mx-3 my-2 p-2.5 rounded-xl border flex items-center justify-between text-xs font-mono ${
+                    testResult.passed
+                      ? 'bg-phantom-teal/15 border-phantom-teal/40 text-phantom-teal'
+                      : 'bg-phantom-crimson/15 border-phantom-crimson/40 text-phantom-crimson'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    {testResult.passed ? (
+                      <Check className="w-4 h-4 text-phantom-teal" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-phantom-crimson" />
+                    )}
+                    <span className="font-bold">
+                      {testResult.passed ? 'Tests Passed!' : 'Tests Failed'}
+                    </span>
+                  </div>
+
+                  <div className="text-[11px] opacity-90">
+                    <span>Expected: {testResult.expected}</span>
+                    <span className="mx-1.5 opacity-40">|</span>
+                    <span>Got: {testResult.got}</span>
+                  </div>
+                </div>
+
+                {/* Hints / Clues Interactive Card */}
+                <div className="mx-3 mb-3 p-3 rounded-xl bg-black/40 border border-white/10 text-xs">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-1.5 mb-2">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setActiveTab('hints')}
+                        className={`text-[11px] font-semibold ${
+                          activeTab === 'hints' ? 'text-phantom-cyan' : 'text-white/40'
+                        }`}
+                      >
+                        Hints
+                      </button>
+                      <span className="text-white/20">|</span>
+                      <button
+                        onClick={() => setActiveTab('explanation')}
+                        className={`text-[11px] font-semibold ${
+                          activeTab === 'explanation' ? 'text-phantom-cyan' : 'text-white/40'
+                        }`}
+                      >
+                        Explanation
+                      </button>
+                    </div>
+                    <span className="text-[10px] text-white/40 font-mono">Clue #{hintStep} of 3</span>
+                  </div>
+
+                  {activeTab === 'hints' ? (
+                    <div className="space-y-1.5 text-[11px]">
+                      <div className="flex items-start gap-2 text-white/90">
+                        <span className="w-4 h-4 rounded-full bg-phantom-cyan text-black font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                          1
+                        </span>
+                        <span>Look at how the average is calculated in the denominator.</span>
+                      </div>
+                      {hintStep >= 2 && (
+                        <div className="flex items-start gap-2 text-white/90">
+                          <span className="w-4 h-4 rounded-full bg-phantom-cyan text-black font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                            2
+                          </span>
+                          <span>Check if total is being divided by length multiplied by 2.</span>
+                        </div>
+                      )}
+                      {hintStep >= 3 && (
+                        <div className="flex items-start gap-2 text-white/90">
+                          <span className="w-4 h-4 rounded-full bg-phantom-cyan text-black font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                            3
+                          </span>
+                          <span>Remove the `* 2` multiplier to divide strictly by `len(numbers)`.</span>
+                        </div>
+                      )}
+
+                      <div className="pt-2">
+                        {hintStep < 3 ? (
+                          <button
+                            onClick={() => setHintStep(hintStep + 1)}
+                            className="w-full py-1.5 rounded-lg bg-phantom-teal/90 text-black font-bold text-[11px] flex items-center justify-center gap-1.5 hover:brightness-110"
+                          >
+                            <Lightbulb className="w-3.5 h-3.5" />
+                            <span>Get Next Hint</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setHeroCode(heroChallenge.hints.solution);
+                              handleHeroRun();
+                            }}
+                            className="w-full py-1.5 rounded-lg bg-phantom-purple text-white font-bold text-[11px] flex items-center justify-center gap-1.5 hover:brightness-110"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Apply Fix Automatically</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-white/80 leading-relaxed">
+                      Dividing total by `(len(numbers) * 2)` inadvertently halved every average.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          FOUR INTERACTIVE FEATURE CARDS (Matching Mockup Feature Section)
+          ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Feature 1 */}
+          <div
+            onClick={() => onEnterArena()}
+            className="group cursor-pointer p-6 rounded-2xl bg-phantom-deep hover:bg-[#0f1730] border border-phantom-border hover:border-phantom-purple transition-all duration-300 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-phantom-purple/20 border border-phantom-purple/40 text-phantom-violet flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <Cpu className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">AI-Generated Cases</h3>
+              <p className="text-xs text-white/60 leading-relaxed">
+                Fresh, creative challenges generated by AI — or hand-picked missions when AI isn't available.
+              </p>
+            </div>
+            <div className="pt-4 flex items-center gap-1 text-xs text-phantom-violet font-semibold group-hover:text-phantom-cyan transition-colors">
+              <span>Enter Arena</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Feature 2 */}
+          <div
+            onClick={onExploreLearn}
+            className="group cursor-pointer p-6 rounded-2xl bg-phantom-deep hover:bg-[#0f1730] border border-phantom-border hover:border-phantom-cyan transition-all duration-300 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-phantom-cyan/20 border border-phantom-cyan/40 text-phantom-cyan flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <Lightbulb className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Progressive Clues</h3>
+              <p className="text-xs text-white/60 leading-relaxed">
+                Get helpful hints that guide your thinking without giving away the answer.
+              </p>
+            </div>
+            <div className="pt-4 flex items-center gap-1 text-xs text-phantom-cyan font-semibold group-hover:text-white transition-colors">
+              <span>Learn More</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Feature 3 */}
+          <div
+            onClick={onOpenReports}
+            className="group cursor-pointer p-6 rounded-2xl bg-phantom-deep hover:bg-[#0f1730] border border-phantom-border hover:border-phantom-amber transition-all duration-300 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-phantom-amber/20 border border-phantom-amber/40 text-phantom-amber flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <Trophy className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Earn XP & Badges</h3>
+              <p className="text-xs text-white/60 leading-relaxed">
+                Solve challenges, unlock achievements, level up and show off your progress.
+              </p>
+            </div>
+            <div className="pt-4 flex items-center gap-1 text-xs text-phantom-amber font-semibold group-hover:text-white transition-colors">
+              <span>View Badges</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Feature 4 */}
+          <div
+            onClick={onOpenReports}
+            className="group cursor-pointer p-6 rounded-2xl bg-phantom-deep hover:bg-[#0f1730] border border-phantom-border hover:border-phantom-crimson transition-all duration-300 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-phantom-crimson/20 border border-phantom-crimson/40 text-phantom-crimson flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <Flame className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">Track Your Streak</h3>
+              <p className="text-xs text-white/60 leading-relaxed">
+                Build your daily streak, view your activity heatmap and watch your growth over time.
+              </p>
+            </div>
+            <div className="pt-4 flex items-center gap-1 text-xs text-phantom-crimson font-semibold group-hover:text-white transition-colors">
+              <span>Inspect Streak</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          BOTTOM SHOWCASE ROW (Matching Mockup: Leaderboard, Heatmap, Concepts, Quote)
+          ========================================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* 1. Top Learners This Week */}
+          <div className="p-5 rounded-2xl bg-phantom-deep border border-phantom-border shadow-xl flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-sm font-bold text-white">Top Learners This Week</h4>
+                <button
+                  onClick={onOpenLeaderboard}
+                  className="text-[11px] text-phantom-cyan hover:underline"
+                >
+                  View Leaderboard &rarr;
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                {[
+                  { rank: 1, name: 'NovaCoder', level: 12, xp: '12,450 XP', avatar: '⚡' },
+                  { rank: 2, name: 'ByteDreamer', level: 11, xp: '10,320 XP', avatar: '🌙' },
+                  { rank: 3, name: 'CodePhantom (You)', level: profile.level, xp: `${profile.xp.toLocaleString()} XP`, avatar: '👁️', active: true },
+                  { rank: 4, name: 'LogicLover', level: 7, xp: '6,910 XP', avatar: '🔮' },
+                  { rank: 5, name: 'PixelPioneer', level: 6, xp: '5,420 XP', avatar: '🎮' },
+                ].map((u) => (
+                  <div
+                    key={u.rank}
+                    className={`flex items-center justify-between p-2 rounded-lg ${
+                      u.active ? 'bg-phantom-purple/20 border border-phantom-purple/40 text-white font-bold' : 'text-white/80'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="font-mono text-white/40 text-[11px] w-3">{u.rank}</span>
+                      <span className="text-sm">{u.avatar}</span>
+                      <span className="truncate max-w-[90px]">{u.name}</span>
+                    </div>
+                    <div className="text-right text-[11px] font-mono">
+                      <span className="text-white/40 mr-2">Lv. {u.level}</span>
+                      <span className="text-phantom-amber">{u.xp}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Activity Heatmap */}
+          <div className="p-5 rounded-2xl bg-phantom-deep border border-phantom-border shadow-xl flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-bold text-white">Activity Heatmap</h4>
+                <span className="text-[11px] text-white/40 font-mono">Last 12 months</span>
+              </div>
+              <HeatmapGrid activityHistory={activityHistory} compact={true} />
+            </div>
+          </div>
+
+          {/* 3. Popular Concepts */}
+          <div className="p-5 rounded-2xl bg-phantom-deep border border-phantom-border shadow-xl flex flex-col justify-between">
+            <div>
+              <h4 className="text-sm font-bold text-white mb-4">Popular Concepts</h4>
+              <div className="space-y-3.5 text-xs">
+                {[
+                  { name: 'Loops', pct: 82, color: 'bg-phantom-purple' },
+                  { name: 'Functions', pct: 68, color: 'bg-phantom-violet' },
+                  { name: 'Lists & Arrays', pct: 55, color: 'bg-phantom-cyan' },
+                  { name: 'Conditions', pct: 47, color: 'bg-phantom-teal' },
+                  { name: 'Strings', pct: 38, color: 'bg-phantom-amber' },
+                ].map((c) => (
+                  <div key={c.name} className="space-y-1">
+                    <div className="flex justify-between text-white/80 font-medium">
+                      <span>{c.name}</span>
+                      <span className="font-mono text-white/40">{c.pct}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${c.color} rounded-full`}
+                        style={{ width: `${c.pct}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Atmospheric Quote Card */}
+          <div className="relative p-6 rounded-2xl bg-gradient-to-br from-[#120a2e] to-[#071329] border border-phantom-border shadow-xl flex flex-col justify-between overflow-hidden">
+            {/* Subtle floating glow in card */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-phantom-cyan/20 rounded-full filter blur-xl" />
+
+            <div className="relative z-10 space-y-3">
+              <span className="text-2xl text-phantom-violet font-serif">“</span>
+              <p className="text-base font-semibold text-white/90 leading-snug">
+                Not just coding, but a journey of discovery.
+              </p>
+              <div className="text-xs text-phantom-cyan font-mono">— CodePhantom</div>
+            </div>
+
+            <div className="relative z-10 pt-4 mt-6 border-t border-white/10 flex items-center justify-between">
+              <span className="text-[11px] text-white/40">Ready to investigate?</span>
+              <button
+                onClick={() => onEnterArena()}
+                className="px-3 py-1.5 rounded-lg bg-phantom-purple hover:bg-phantom-violet text-white text-xs font-semibold shadow-glow-purple transition-all"
+              >
+                Join Hunt
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          FINAL CALL TO ACTION
+          ========================================================================= */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-phantom-deep via-[#111936] to-phantom-deep border border-phantom-border/80 shadow-2xl space-y-5">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+            The next bug won't find itself.
+          </h2>
+          <p className="text-sm sm:text-base text-white/70 max-w-lg mx-auto">
+            Choose your language, accept your first case file, and uncover the flaw hidden in the logic.
+          </p>
+          <div className="pt-2">
+            <button
+              onClick={() => onEnterArena()}
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-phantom-purple via-phantom-violet to-phantom-cyan text-black font-extrabold text-sm shadow-glow-cyan hover:brightness-110 active:scale-95 transition-all"
+            >
+              <Sparkles className="w-4 h-4 fill-current" />
+              <span>Start Your Investigation</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
