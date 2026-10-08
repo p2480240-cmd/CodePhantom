@@ -1,5 +1,35 @@
 import { TestCase, ExecutionResult, TestResult, Language } from '../types';
 
+// Safe sandbox polyfills for C++ STL and Java Collection APIs on Arrays and Strings
+if (typeof Array.prototype !== 'undefined') {
+  const safeDefine = (proto: any, prop: string, fn: any) => {
+    if (!proto[prop]) {
+      Object.defineProperty(proto, prop, {
+        value: fn,
+        configurable: true,
+        writable: true,
+        enumerable: false,
+      });
+    }
+  };
+
+  safeDefine(Array.prototype, 'empty', function (this: any[]) { return this.length === 0; });
+  safeDefine(Array.prototype, 'isEmpty', function (this: any[]) { return this.length === 0; });
+  safeDefine(Array.prototype, 'size', function (this: any[]) { return this.length; });
+  safeDefine(Array.prototype, 'push_back', function (this: any[], x: any) { return this.push(x); });
+  safeDefine(Array.prototype, 'pop_back', function (this: any[]) { return this.pop(); });
+  safeDefine(Array.prototype, 'add', function (this: any[], x: any) { return this.push(x); });
+  safeDefine(Array.prototype, 'get', function (this: any[], i: number) { return this[i]; });
+  safeDefine(Array.prototype, 'set', function (this: any[], i: number, val: any) { this[i] = val; return val; });
+  safeDefine(Array.prototype, 'contains', function (this: any[], x: any) { return this.includes(x); });
+  safeDefine(Array.prototype, 'clear', function (this: any[]) { this.length = 0; });
+
+  if (typeof String.prototype !== 'undefined') {
+    safeDefine(String.prototype, 'size', function (this: string) { return this.length; });
+    safeDefine(String.prototype, 'isEmpty', function (this: string) { return this.length === 0; });
+  }
+}
+
 export class CodeExecutionService {
   /**
    * Safe execution adapter that evaluates code against test cases with timeouts,
@@ -201,6 +231,9 @@ export class CodeExecutionService {
           error: (...args) => capturedLogs.push('[ERROR] ' + args.join(' ')),
           warn: (...args) => capturedLogs.push('[WARN] ' + args.join(' ')),
         };
+        const System = { out: { println: (...args) => console.log(...args), print: (...args) => console.log(...args) } };
+        const max = Math.max, min = Math.min, abs = Math.abs, floor = Math.floor, ceil = Math.ceil, round = Math.round, sqrt = Math.sqrt, pow = Math.pow;
+        const INT_MAX = Number.MAX_SAFE_INTEGER, INT_MIN = Number.MIN_SAFE_INTEGER;
 
         ${code};
 
@@ -315,6 +348,10 @@ export class CodeExecutionService {
         const max = (...args) => Math.max(...(Array.isArray(args[0]) ? args[0] : args));
         const abs = Math.abs;
         const round = Math.round;
+        const math = Math;
+        const None = null;
+        const True = true;
+        const False = false;
 
         ${jsCode}
 
@@ -393,20 +430,92 @@ export class CodeExecutionService {
     code: string,
     entryFunction: string,
     testCases: TestCase[],
-    lang: 'cpp' | 'java'
+    _lang: 'cpp' | 'java'
   ): ExecutionResult {
-    // Strip common C++ and Java boilerplate to evaluate core function logic
-    let sanitized = code
-      .replace(/#include\s*<[^>]+>/g, '')
-      .replace(/using namespace std;/g, '')
-      .replace(/public\s+class\s+\w+\s*\{/g, '')
-      .replace(/public\s+static\s+/g, '')
-      .replace(/\bint\b|\bdouble\b|\bfloat\b|\bboolean\b|\bbool\b|\bvoid\b|\bString\b|\bauto\b/g, '')
-      .replace(/vector<\w+>/g, '')
-      .replace(/\.size\(\)/g, '.length')
-      .replace(/\.push_back\(/g, '.push(');
+    const transpiled = this.transpileCompiledToJS(code, entryFunction);
+    return this.executeJavaScript(transpiled, entryFunction, testCases);
+  }
 
-    return this.executeJavaScript(sanitized, entryFunction, testCases);
+  private static transpileCompiledToJS(rawCode: string, entryFn: string): string {
+    let code = rawCode;
+
+    // 1. Strip includes, imports, package, and using namespace
+    code = code
+      .replace(/#include\s*<[^>]+>/g, '')
+      .replace(/#include\s*"[^"]+"/g, '')
+      .replace(/using\s+namespace\s+\w+;/g, '')
+      .replace(/package\s+[\w.]+;/g, '')
+      .replace(/import\s+[\w.*]+;/g, '');
+
+    // 2. Unpack class definitions (e.g. public class Solution { ... })
+    code = code.replace(/public\s+class\s+\w+\s*\{/, '');
+    code = code.replace(/class\s+\w+\s*\{/, '');
+    code = code.replace(/public\s+static\s+/g, '');
+    code = code.replace(/public\s+/g, '');
+    code = code.replace(/static\s+/g, '');
+
+    // 3. Strip std:: and convert NULL/nullptr
+    code = code.replace(/std::/g, '');
+    code = code.replace(/\b(?:NULL|nullptr)\b/g, 'null');
+
+    // 4. Handle System.out.println and cout
+    code = code.replace(/System\.out\.println\s*\(/g, 'console.log(');
+    code = code.replace(/System\.out\.print\s*\(/g, 'console.log(');
+
+    // 5. Transform method / function definitions:
+    // e.g. double calculateAverage(const std::vector<double>& numbers) {
+    const reservedWords = new Set(['if', 'for', 'while', 'catch', 'switch', 'return', 'else']);
+    const funcRegex = /\b(?:(?:public|private|protected|static|inline|virtual|const|unsigned)\s+)*(?:int|double|float|bool|boolean|void|size_t|long|char|string|String|auto|vector<[^>]+>|ArrayList<[^>]+>|List<[^>]+>|[\w<>\[\]]+)\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*\{/g;
+    code = code.replace(funcRegex, (match, fnName, params) => {
+      if (reservedWords.has(fnName)) return match;
+      const cleanedParams = params.split(',').map((p: string) => {
+        const parts = p.trim().replace(/[&*]/g, '').split(/\s+/);
+        return parts[parts.length - 1];
+      }).filter(Boolean).join(', ');
+      return `function ${fnName}(${cleanedParams}) {`;
+    });
+
+    // Fallback for entryFunction if not converted
+    if (entryFn && !new RegExp('\\bfunction\\s+' + entryFn + '\\b').test(code)) {
+      code = code.replace(new RegExp('(?:\\b[\\w<>\\[\\]]+\\s+)?' + entryFn + '\\s*\\(([^)]*)\\)\\s*\\{'), (_match, params) => {
+        const cleanedParams = params.split(',').map((p: string) => {
+          const parts = p.trim().replace(/[&*]/g, '').split(/\s+/);
+          return parts[parts.length - 1];
+        }).filter(Boolean).join(', ');
+        return `function ${entryFn}(${cleanedParams}) {`;
+      });
+    }
+
+    // 6. Range-based loops: for (auto x : vec) or for (String s : list)
+    code = code.replace(/for\s*\(\s*(?:[\w<>\[\]]+)\s+(\w+)\s*:\s*([^)]+)\)/g, 'for (const $1 of $2)');
+
+    // 7. Standard loops: for (size_t i = 0; ...) or for (int i = 0; ...)
+    code = code.replace(/for\s*\(\s*(?:size_t|int|long|auto|var)\s+(\w+)\s*=/g, 'for (let $1 =');
+
+    // 8. Vector / ArrayList declarations
+    code = code.replace(/vector<[^>]+>\s+(\w+)\s*;/g, 'let $1 = [];');
+    code = code.replace(/ArrayList<[^>]*>\s+(\w+)\s*=\s*new\s+ArrayList<[^>]*>\(\)\s*;/g, 'let $1 = [];');
+
+    // 9. Primitive variable declarations
+    code = code.replace(/\b(?:int|double|float|bool|boolean|size_t|long|char|string|String|auto)\s+([a-zA-Z_]\w*)\s*=/g, 'let $1 =');
+    code = code.replace(/\b(?:int|double|float|bool|boolean|size_t|long|char|string|String|auto)\s+([a-zA-Z_]\w*)\s*;/g, 'let $1;');
+
+    // 10. Common method calls
+    code = code.replace(/(\w+)\.length\(\)/g, '$1.length');
+    code = code.replace(/\.size\(\)/g, '.length');
+    code = code.replace(/\.push_back\(/g, '.push(');
+
+    // 11. Balance class closure braces
+    let openCount = (code.match(/\{/g) || []).length;
+    let closeCount = (code.match(/\}/g) || []).length;
+    while (closeCount > openCount) {
+      const lastBrace = code.lastIndexOf('}');
+      if (lastBrace === -1) break;
+      code = code.substring(0, lastBrace) + code.substring(lastBrace + 1);
+      closeCount--;
+    }
+
+    return code;
   }
 
   private static transpilePythonToJS(pyCode: string, entryFn: string): string {
@@ -434,6 +543,7 @@ export class CodeExecutionService {
         .replace(/\band\b/g, '&&')
         .replace(/\bor\b/g, '||')
         .replace(/\bnot\b/g, '!')
+        .replace(/\[\s*-(\d+)\s*\]/g, '.at(-$1)')
         .replace(/\.append\(/g, '.push(');
 
       if (trimmed.startsWith('def ')) {

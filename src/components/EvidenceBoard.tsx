@@ -44,7 +44,7 @@ export const EvidenceBoard: React.FC<EvidenceBoardProps> = ({
             )}
             <span
               className={`text-[11.5px] leading-tight ${
-                item.completed ? 'text-slate-800 dark:text-white/90 font-medium' : 'line-through text-slate-500 dark:text-white/40 opacity-75'
+                item.completed ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-white/60'
               }`}
             >
               {item.label}

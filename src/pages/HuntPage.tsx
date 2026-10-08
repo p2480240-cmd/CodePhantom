@@ -290,17 +290,21 @@ export const HuntPage: React.FC<HuntPageProps> = ({
       // Record activity and update streak + XP
       StorageService.recordActivity(currentChallenge.id, totalXP, currentChallenge.concept, 5, revealedHintLevel > 0);
 
-      // If challenge has a counterpart in another language, also mark it solved
+      // If challenge has counterparts in other languages, mark all solved
       if (currentChallenge.slug) {
-        const counterpart = CURATED_CHALLENGES.find(
-          (c) => c.slug === currentChallenge.slug && c.id !== currentChallenge.id
+        const counterparts = CURATED_CHALLENGES.filter(
+          (c) => c.slug === currentChallenge.slug
         );
-        if (counterpart) {
-          const prof = StorageService.getProfile();
-          if (!prof.solvedChallengeIds.includes(counterpart.id)) {
-            prof.solvedChallengeIds.push(counterpart.id);
-            StorageService.saveProfile(prof);
+        const prof = StorageService.getProfile();
+        let updatedProf = false;
+        for (const cp of counterparts) {
+          if (!prof.solvedChallengeIds.includes(cp.id)) {
+            prof.solvedChallengeIds.push(cp.id);
+            updatedProf = true;
           }
+        }
+        if (updatedProf) {
+          StorageService.saveProfile(prof);
         }
       }
 
@@ -366,17 +370,45 @@ export const HuntPage: React.FC<HuntPageProps> = ({
 
   const isCurrentSolved = profile.solvedChallengeIds.includes(currentChallenge.id);
 
-  // Edge case definition
-  const currentEdgeCase: EdgeCaseTest = {
-    id: `ec_${currentChallenge.id}`,
-    name: 'Zero / Empty Array Extreme Boundary',
-    description: 'Verifies whether the corrected logic gracefully handles zero, empty structures, or negative inputs.',
-    inputDescription: 'Boundary Test Input ([])',
-    inputs: [[]],
-    expectedOutput: 0,
-    explanation: 'Boundary verification tests edge case behavior against empty inputs.',
-    trapExplanation: 'Flawed implementations frequently crash with ZeroDivisionError or IndexError when inputs are empty.',
+  // Dynamic edge case generator based on challenge type
+  const getEdgeCaseForChallenge = (ch: Challenge): EdgeCaseTest => {
+    if (ch.slug === 'verify_vault_access') {
+      return {
+        id: `ec_${ch.id}`,
+        name: 'Unauthorized Impersonation Boundary',
+        description: 'Verifies that unauthorized non-admin requests without tokens are strictly rejected.',
+        inputDescription: 'verifyVaultAccess("Intruder", false, false)',
+        inputs: ['Intruder', false, false],
+        expectedOutput: false,
+        explanation: 'Ensures security bounds cannot be bypassed by unknown credentials.',
+        trapExplanation: 'Permissive logic conditions may inadvertently leak elevated access.',
+      };
+    }
+    if (ch.slug === 'compute_temporal_drift') {
+      return {
+        id: `ec_${ch.id}`,
+        name: 'Single Reading Minimum Boundary',
+        description: 'Verifies behavior when only a single temporal timestamp is recorded.',
+        inputDescription: 'Single reading ([42])',
+        inputs: [[42]],
+        expectedOutput: 0,
+        explanation: 'A single element series has zero drift.',
+        trapExplanation: 'Loop bounds expecting at least two elements crash or compute NaN.',
+      };
+    }
+    return {
+      id: `ec_${ch.id}`,
+      name: 'Zero / Empty Array Extreme Boundary',
+      description: 'Verifies whether the corrected logic gracefully handles zero or empty input structures.',
+      inputDescription: 'Empty input ([])',
+      inputs: [[]],
+      expectedOutput: 0,
+      explanation: 'Boundary verification tests edge case behavior against empty inputs.',
+      trapExplanation: 'Flawed implementations frequently crash with ZeroDivisionError or IndexError when inputs are empty.',
+    };
   };
+
+  const currentEdgeCase = getEdgeCaseForChallenge(currentChallenge);
 
   const handleVerifyEdgeCase = async (currentCode: string): Promise<boolean> => {
     const res = await CodeExecutionService.execute(
@@ -386,9 +418,9 @@ export const HuntPage: React.FC<HuntPageProps> = ({
       [
         {
           id: 'tc_edge_live',
-          inputDescription: 'Edge Case Verification',
-          inputs: [[]],
-          expectedOutput: 0,
+          inputDescription: currentEdgeCase.inputDescription || 'Edge Case Verification',
+          inputs: currentEdgeCase.inputs,
+          expectedOutput: currentEdgeCase.expectedOutput,
         },
       ]
     );

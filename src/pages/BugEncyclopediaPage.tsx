@@ -113,7 +113,7 @@ return total; // Remains 100!`,
       'Forgetting to parse before math operations',
     ],
     miniChallenge: {
-      broken: 'def parse_add(a_str, b): return int(a_str) + b',
+      broken: 'def parse_add(a_str, b): return a_str + b',
       fixed: 'def parse_add(a_str, b): return int(a_str) + b',
       language: 'python',
       task: 'Cast string to integer before adding.',

@@ -64,30 +64,61 @@ export const AICaseGeneratorModal: React.FC<AICaseGeneratorModalProps> = ({
             <label className="text-xs font-semibold text-slate-700 dark:text-white/80 block mb-1">
               Programming Language
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setLang('python')}
-                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-2 transition-all ${
+                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-1.5 transition-all ${
                   lang === 'python'
                     ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan text-purple-950 dark:text-white font-bold'
                     : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-black/40'
                 }`}
               >
-                <Terminal className="w-3.5 h-3.5" />
-                <span>Python</span>
+                <span>🐍 Python</span>
               </button>
               <button
                 type="button"
                 onClick={() => setLang('javascript')}
-                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-2 transition-all ${
+                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-1.5 transition-all ${
                   lang === 'javascript'
                     ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan text-purple-950 dark:text-white font-bold'
                     : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-black/40'
                 }`}
               >
-                <Code className="w-3.5 h-3.5" />
-                <span>JavaScript</span>
+                <span>⚡ JS</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang('typescript')}
+                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-1.5 transition-all ${
+                  lang === 'typescript'
+                    ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan text-purple-950 dark:text-white font-bold'
+                    : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-black/40'
+                }`}
+              >
+                <span>🔷 TS</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang('cpp')}
+                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-1.5 transition-all ${
+                  lang === 'cpp'
+                    ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan text-purple-950 dark:text-white font-bold'
+                    : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-black/40'
+                }`}
+              >
+                <span>⚙️ C++</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang('java')}
+                className={`py-2 px-3 text-xs font-medium rounded-lg border flex items-center justify-center gap-1.5 transition-all ${
+                  lang === 'java'
+                    ? 'bg-purple-100 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan text-purple-950 dark:text-white font-bold'
+                    : 'bg-slate-50 dark:bg-black/30 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-black/40'
+                }`}
+              >
+                <span>☕ Java</span>
               </button>
             </div>
           </div>
