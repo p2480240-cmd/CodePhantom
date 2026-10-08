@@ -75,7 +75,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
   // Build the list of 3-4 consecutive months ending at anchorMonth/anchorYear
   const displayedMonths = useMemo(() => {
     const list = [];
-    const count = compact ? 2 : monthsCount;
+    const count = compact ? 1 : monthsCount;
     for (let i = count - 1; i >= 0; i--) {
       let m = anchorMonth - i;
       let y = anchorYear;
@@ -341,7 +341,9 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           <div className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5 font-mono px-1">
             <CalendarIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 dark:text-phantom-cyan" />
             <span>
-              {firstMonth?.name} {firstMonth?.year !== lastMonth?.year ? firstMonth?.year : ''} – {lastMonth?.name} {lastMonth?.year}
+              {displayedMonths.length === 1
+                ? `${lastMonth?.name} ${lastMonth?.year}`
+                : `${firstMonth?.name} ${firstMonth?.year !== lastMonth?.year ? firstMonth?.year : ''} – ${lastMonth?.name} ${lastMonth?.year}`}
             </span>
           </div>
 

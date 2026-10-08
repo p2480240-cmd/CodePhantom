@@ -13,20 +13,20 @@ export const PhantomLogo: React.FC<PhantomLogoProps> = ({
 }) => {
   const iconSizes = {
     sm: 'w-6 h-6',
-    md: 'w-8 h-8',
-    lg: 'w-10 h-10',
-    xl: 'w-14 h-14',
+    md: 'w-7 h-7 sm:w-8 sm:h-8',
+    lg: 'w-9 h-9 sm:w-10 sm:h-10',
+    xl: 'w-12 h-12 sm:w-14 sm:h-14',
   };
 
   const textSizes = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl',
-    xl: 'text-4xl',
+    sm: 'text-sm sm:text-base',
+    md: 'text-base sm:text-xl',
+    lg: 'text-xl sm:text-2xl',
+    xl: 'text-2xl sm:text-4xl',
   };
 
   return (
-    <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
+    <div className={`inline-flex items-center gap-1.5 sm:gap-2.5 select-none ${className}`}>
       {/* Custom Vector Icon: Curly Braces framing Glowing Phantom Magnifier */}
       <div className={`relative ${iconSizes[size]} flex items-center justify-center shrink-0`}>
         <svg

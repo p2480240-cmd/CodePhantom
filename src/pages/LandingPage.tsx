@@ -138,15 +138,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* =========================================================================
           HERO SECTION (Matching Mockup Layout)
           ========================================================================= */}
-      <section className="relative pt-8 sm:pt-14 pb-8 overflow-hidden">
+      <section className="relative pt-6 sm:pt-14 pb-8 overflow-hidden w-full max-w-full">
         {/* Subtle cyan and violet atmospheric background glows */}
-        <div className="absolute top-10 left-1/4 w-96 h-96 bg-phantom-purple/15 rounded-full filter blur-3xl pointer-events-none" />
-        <div className="absolute top-20 right-10 w-96 h-96 bg-phantom-cyan/15 rounded-full filter blur-3xl pointer-events-none" />
+        <div className="absolute top-10 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-phantom-purple/15 rounded-full filter blur-3xl pointer-events-none" />
+        <div className="absolute top-20 right-0 sm:right-10 w-72 sm:w-96 h-72 sm:h-96 bg-phantom-cyan/15 rounded-full filter blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center w-full">
             {/* Left Column: Headlines & Call to Actions */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="lg:col-span-5 space-y-5 sm:space-y-6 w-full">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-phantom-purple/15 border border-phantom-purple/40 text-phantom-violet text-xs font-semibold tracking-wide shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-phantom-cyan animate-pulse" />
@@ -154,7 +154,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.1]">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.1]">
                 Every bug leaves <br />
                 <span className="bg-gradient-to-r from-phantom-cyan via-phantom-violet to-phantom-purple bg-clip-text text-transparent">
                   a shadow.
@@ -162,15 +162,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </h1>
 
               {/* Subheading */}
-              <p className="text-base sm:text-lg text-slate-600 dark:text-white/70 leading-relaxed max-w-xl">
+              <p className="text-sm sm:text-lg text-slate-600 dark:text-white/70 leading-relaxed max-w-xl">
                 CodePhantom is an AI-powered, gamified platform where you hunt down broken code, solve real problems, and level up your programming skills.
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2">
                 <button
                   onClick={() => onEnterArena(heroChallenge.id)}
-                  className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-phantom-purple via-phantom-violet to-phantom-cyan text-white font-bold text-sm shadow-glow-purple hover:brightness-110 active:scale-95 transition-all"
+                  className="flex items-center gap-2.5 px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-phantom-purple via-phantom-violet to-phantom-cyan text-white font-bold text-xs sm:text-sm shadow-glow-purple hover:brightness-110 active:scale-95 transition-all"
                 >
                   <span>Enter the Arena</span>
                   <ArrowRight className="w-4 h-4" />
@@ -178,7 +178,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
                 <button
                   onClick={onExploreMissions}
-                  className="flex items-center gap-2 px-5 py-3.5 rounded-xl bg-white dark:bg-phantom-deep hover:bg-slate-100 dark:hover:bg-phantom-hover border border-slate-200 dark:border-phantom-border text-slate-800 dark:text-white font-semibold text-sm transition-all shadow-sm dark:shadow-none"
+                  className="flex items-center gap-2 px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl bg-white dark:bg-phantom-deep hover:bg-slate-100 dark:hover:bg-phantom-hover border border-slate-200 dark:border-phantom-border text-slate-800 dark:text-white font-semibold text-xs sm:text-sm transition-all shadow-sm dark:shadow-none"
                 >
                   <Compass className="w-4 h-4 text-phantom-cyan" />
                   <span>Explore Missions</span>
@@ -186,31 +186,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               {/* Small Feature Indicators */}
-              <div className="flex flex-wrap items-center gap-5 pt-3 text-xs text-slate-700 dark:text-white/80 font-medium">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-5 pt-2 sm:pt-3 text-xs text-slate-700 dark:text-white/80 font-medium">
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
+                  <CheckCircle2 className="w-4 h-4 text-phantom-teal shrink-0" />
                   <span>AI-Generated Challenges</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
+                  <CheckCircle2 className="w-4 h-4 text-phantom-teal shrink-0" />
                   <span>Gamified Learning</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-phantom-teal" />
+                  <CheckCircle2 className="w-4 h-4 text-phantom-teal shrink-0" />
                   <span>Build Real Skills</span>
                 </div>
               </div>
             </div>
 
             {/* Right Column: Phantom Mascot + Live Interactive Hero Code Panel */}
-            <div className="lg:col-span-7 relative flex flex-col md:flex-row items-center gap-4">
+            <div className="lg:col-span-7 relative flex flex-col md:flex-row items-center gap-6 md:gap-4 w-full max-w-full">
               {/* Mascot Detective SVG */}
-              <div className="w-full md:w-5/12 flex justify-center">
+              <div className="w-full md:w-5/12 flex justify-center max-w-[260px] sm:max-w-[320px] md:max-w-none mx-auto">
                 <PhantomMascot size="hero" />
               </div>
 
               {/* Interactive Coding Sandbox Preview (Matching Mockup Screen) */}
-              <div className="w-full md:w-7/12 rounded-2xl bg-white dark:bg-[#090e1f] border border-slate-200 dark:border-phantom-border/80 shadow-2xl overflow-hidden flex flex-col font-sans transition-colors">
+              <div className="w-full md:w-7/12 rounded-2xl bg-white dark:bg-[#090e1f] border border-slate-200 dark:border-phantom-border/80 shadow-2xl overflow-hidden flex flex-col font-sans transition-colors w-full max-w-full">
                 {/* Header bar */}
                 <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-100/90 dark:bg-[#050813] border-b border-slate-200 dark:border-white/10 text-xs">
                   <div className="flex items-center gap-2">
@@ -461,7 +461,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* =========================================================================
           FOUR INTERACTIVE FEATURE CARDS (Matching Mockup Feature Section)
           ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Feature 1 */}
           <div
@@ -548,7 +548,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* =========================================================================
           BOTTOM SHOWCASE ROW (Matching Mockup: Leaderboard, Heatmap, Concepts, Quote)
           ========================================================================= */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* 1. Top Learners This Week */}
           <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col justify-between h-full">
@@ -720,7 +720,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* =========================================================================
           FINAL CALL TO ACTION
           ========================================================================= */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
+      <section className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
         <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-purple-50 via-slate-50 to-cyan-50 dark:from-phantom-deep dark:via-[#111936] dark:to-phantom-deep border border-purple-200 dark:border-phantom-border/80 shadow-md dark:shadow-2xl space-y-5">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
             The next bug won't find itself.
