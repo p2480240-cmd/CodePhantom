@@ -15,15 +15,14 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  ChevronUp,
   Layers,
   Filter,
   Search,
   Terminal,
   Award,
   Circle,
-  FolderOpen,
-  Folder,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { LearnLesson, UserProfile, Language } from '../types';
 import { LEARN_LESSONS, LEARN_CHAPTERS } from '../services/learnService';
@@ -53,8 +52,9 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   const [selectedChapter, setSelectedChapter] = useState<number | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [isTopicsSidebarOpen, setIsTopicsSidebarOpen] = useState<boolean>(true);
 
-  // Accordion open/close state for chapters (default: open the active chapter)
+  // Accordion open/close state for chapters (default: all expanded for quick navigation)
   const [expandedChapters, setExpandedChapters] = useState<Record<number, boolean>>({
     1: true,
     2: true,
@@ -79,7 +79,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
     setExpandedChapters({ 1: false, 2: false, 3: false, 4: false, 5: false, 6: false });
   };
 
-  // Filter lessons based on language, chapter, and search
+  // Filter lessons based on language, chapter, and search query
   const filteredLessons = useMemo(() => {
     return LEARN_LESSONS.filter((l) => {
       const matchLang = selectedLang === 'all' || l.language === selectedLang;
@@ -215,11 +215,11 @@ export const LearnPage: React.FC<LearnPageProps> = ({
   const masteryPercent = Math.min(100, Math.round((totalMasteredCount / totalLessonsCount) * 100));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 animate-fadeIn">
+    <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 space-y-5 animate-fadeIn">
       {/* =========================================================================
           1. HEADER & PROGRESS BANNER
           ========================================================================= */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1.5 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 dark:bg-phantom-purple/20 border border-purple-300 dark:border-phantom-purple/40 text-purple-800 dark:text-phantom-violet text-xs font-mono font-semibold">
             <BookOpen className="w-3.5 h-3.5" />
@@ -234,7 +234,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
         </div>
 
         {/* Global Progress Card */}
-        <div className="w-full md:w-auto shrink-0 p-4 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 min-w-[240px]">
+        <div className="w-full md:w-auto shrink-0 p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 min-w-[220px]">
           <div className="flex items-center justify-between gap-3 text-xs font-mono mb-2">
             <span className="text-slate-600 dark:text-white/60 font-semibold flex items-center gap-1.5">
               <Award className="w-4 h-4 text-purple-600 dark:text-phantom-cyan" />
@@ -250,7 +250,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               style={{ width: `${masteryPercent}%` }}
             />
           </div>
-          <div className="flex items-center justify-between mt-2.5 text-[11px] font-mono text-slate-500 dark:text-white/40">
+          <div className="flex items-center justify-between mt-2 text-[11px] font-mono text-slate-500 dark:text-white/40">
             <span>{LEARN_CHAPTERS.length} Chapters Available</span>
             <span className="text-teal-600 dark:text-phantom-teal font-semibold">
               {totalMasteredCount * 60} XP Earned
@@ -260,104 +260,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
       </div>
 
       {/* =========================================================================
-          2. UNIFIED TOOLBAR: LANGUAGE TABS + CHAPTER SELECTOR + SEARCH
-          ========================================================================= */}
-      <div className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-        {/* Language Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
-          <span className="text-xs font-mono text-slate-500 dark:text-white/40 font-semibold shrink-0 mr-1 hidden sm:inline flex items-center gap-1">
-            <Filter className="w-3.5 h-3.5" /> Language:
-          </span>
-          {(['all', 'python', 'javascript', 'typescript', 'cpp', 'java'] as const).map((lang) => {
-            const count = lang === 'all'
-              ? LEARN_LESSONS.length
-              : LEARN_LESSONS.filter((l) => l.language === lang).length;
-            const active = selectedLang === lang;
-            return (
-              <button
-                key={lang}
-                onClick={() => {
-                  setSelectedLang(lang);
-                  const matching = LEARN_LESSONS.filter(
-                    (l) => (lang === 'all' || l.language === lang) && (selectedChapter === 'all' || l.chapterNumber === selectedChapter)
-                  );
-                  if (matching.length > 0 && !matching.some((m) => m.id === selectedLesson.id)) {
-                    handleSelectLesson(matching[0]);
-                  }
-                }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                  active
-                    ? 'bg-purple-600 dark:bg-phantom-purple text-white shadow-sm'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:text-white/70 dark:hover:text-white border border-slate-200 dark:border-white/10'
-                }`}
-              >
-                <span className="uppercase">{lang}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  active
-                    ? 'bg-white/20 text-white'
-                    : 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-white/50'
-                }`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Right Section: Chapter Dropdown & Search Bar */}
-        <div className="flex items-center gap-2.5">
-          {/* Chapter Quick Filter */}
-          <div className="relative shrink-0 flex-1 sm:flex-none">
-            <select
-              value={selectedChapter}
-              onChange={(e) => {
-                const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
-                setSelectedChapter(val);
-                if (val !== 'all') {
-                  setExpandedChapters((prev) => ({ ...prev, [val]: true }));
-                }
-              }}
-              className="w-full sm:w-auto pl-3 pr-8 py-1.5 text-xs font-mono font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 outline-none focus:border-purple-500 cursor-pointer transition-colors"
-            >
-              <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-                All Chapters (6)
-              </option>
-              {LEARN_CHAPTERS.map((ch) => (
-                <option
-                  key={ch.id}
-                  value={ch.chapterNumber}
-                  className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                >
-                  Ch. {ch.chapterNumber}: {ch.title.replace(/^Chapter \d+:\s*/, '')}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Search Input */}
-          <div className="relative flex-1 sm:w-60">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search concepts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-7 py-1.5 text-xs font-sans rounded-xl bg-slate-100 dark:bg-white/5 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 placeholder-slate-400 outline-none focus:border-purple-500 transition-colors"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs px-1"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* =========================================================================
-          3. MOBILE COMPACT DRAWER SELECTOR (< lg)
+          2. MOBILE COMPACT QUICK SELECTOR (< lg screens)
           ========================================================================= */}
       <div className="lg:hidden space-y-2">
         <div className="p-3.5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-sm flex items-center justify-between gap-2 transition-colors">
@@ -393,7 +296,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="px-2.5 py-1.5 rounded-lg bg-purple-100 dark:bg-phantom-purple/20 text-purple-700 dark:text-phantom-violet border border-purple-200 dark:border-phantom-purple/30 text-xs font-semibold flex items-center gap-1 active:scale-95 transition-all"
             >
-              <span>{mobileMenuOpen ? 'Close' : 'Browse All'}</span>
+              <span>{mobileMenuOpen ? 'Close' : 'Browse Topics'}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
             </button>
             <button
@@ -407,238 +310,418 @@ export const LearnPage: React.FC<LearnPageProps> = ({
           </div>
         </div>
 
-        {/* Expandable Mobile Lessons Drawer */}
+        {/* Mobile Slide-down Drawer */}
         {mobileMenuOpen && (
-          <div className="p-3.5 rounded-2xl bg-white dark:bg-[#070c1d] border border-purple-200 dark:border-phantom-purple/30 shadow-xl space-y-3 max-h-96 overflow-y-auto animate-fadeIn">
-            <div className="flex items-center justify-between text-xs font-mono font-semibold text-slate-600 dark:text-white/60 pb-1 border-b border-slate-100 dark:border-white/5">
-              <span>Curriculum ({filteredLessons.length} available)</span>
-              <span className="text-[11px] text-purple-600 dark:text-phantom-violet">
-                {selectedChapter === 'all' ? 'All Chapters' : `Chapter ${selectedChapter}`}
-              </span>
-            </div>
-            {filteredLessons.map((lesson) => {
-              const active = selectedLesson.id === lesson.id;
-              const done = profile.completedLessons.includes(lesson.id);
-
-              return (
-                <div
-                  key={lesson.id}
-                  onClick={() => handleSelectLesson(lesson)}
-                  className={`p-3 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2.5 ${
-                    active
-                      ? 'bg-purple-50 dark:bg-phantom-purple/25 border-purple-400 dark:border-phantom-cyan font-bold text-slate-900 dark:text-white shadow-sm'
-                      : 'bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 text-slate-700 dark:text-white/80 hover:bg-slate-100 dark:hover:bg-white/5'
-                  }`}
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-[#070c1d] border border-purple-200 dark:border-phantom-purple/30 shadow-xl space-y-3 max-h-[460px] overflow-y-auto animate-fadeIn">
+            {/* Mobile Search */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search concepts or topics..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 pr-7 py-2 text-xs font-sans rounded-xl bg-slate-100 dark:bg-white/5 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 placeholder-slate-400 outline-none focus:border-purple-500"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs px-1"
                 >
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[10px] font-mono text-purple-700 dark:text-phantom-violet font-semibold">
-                      Ch. {lesson.chapterNumber} • {lesson.concept}
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Language Selector Dropdown */}
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <label className="text-[10px] font-mono font-semibold text-slate-500 dark:text-white/50 block mb-1">
+                  Language:
+                </label>
+                <select
+                  value={selectedLang}
+                  onChange={(e) => setSelectedLang(e.target.value as Language | 'all')}
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-mono font-semibold text-slate-800 dark:text-white outline-none"
+                >
+                  <option value="all">All ({LEARN_LESSONS.length})</option>
+                  <option value="python">🐍 Python ({LEARN_LESSONS.filter(l => l.language === 'python').length})</option>
+                  <option value="javascript">⚡ JS ({LEARN_LESSONS.filter(l => l.language === 'javascript').length})</option>
+                  <option value="typescript">🔷 TS ({LEARN_LESSONS.filter(l => l.language === 'typescript').length})</option>
+                  <option value="cpp">⚙️ C++ ({LEARN_LESSONS.filter(l => l.language === 'cpp').length})</option>
+                  <option value="java">☕ Java ({LEARN_LESSONS.filter(l => l.language === 'java').length})</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-mono font-semibold text-slate-500 dark:text-white/50 block mb-1">
+                  Chapter:
+                </label>
+                <select
+                  value={selectedChapter}
+                  onChange={(e) => {
+                    const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
+                    setSelectedChapter(val);
+                  }}
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-mono font-semibold text-slate-800 dark:text-white outline-none"
+                >
+                  <option value="all">All Chapters (6)</option>
+                  {LEARN_CHAPTERS.map((ch) => (
+                    <option key={ch.id} value={ch.chapterNumber}>
+                      Ch. {ch.chapterNumber}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Mobile Lessons List */}
+            <div className="space-y-1.5 pt-1 border-t border-slate-100 dark:border-white/5">
+              <div className="text-[11px] font-mono text-slate-500 dark:text-white/40 font-semibold px-1">
+                Lessons ({filteredLessons.length}):
+              </div>
+              {filteredLessons.map((lesson) => {
+                const active = selectedLesson.id === lesson.id;
+                const done = profile.completedLessons.includes(lesson.id);
+
+                return (
+                  <div
+                    key={lesson.id}
+                    onClick={() => handleSelectLesson(lesson)}
+                    className={`p-2.5 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2 ${
+                      active
+                        ? 'bg-purple-50 dark:bg-phantom-purple/25 border-purple-400 dark:border-phantom-cyan font-bold text-slate-900 dark:text-white shadow-sm'
+                        : 'bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/5 text-slate-700 dark:text-white/80 hover:bg-slate-100 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[10px] font-mono text-purple-700 dark:text-phantom-violet font-semibold">
+                        Ch. {lesson.chapterNumber} • {lesson.concept}
+                      </div>
+                      <div className="truncate font-bold text-xs mt-0.5">{lesson.title}</div>
                     </div>
-                    <div className="truncate font-bold text-xs mt-0.5">{lesson.title}</div>
-                  </div>
-                  <div className="shrink-0 flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-slate-200 dark:bg-black/50 text-slate-600 dark:text-white/60">
-                      {lesson.language}
-                    </span>
-                    {done ? (
-                      <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-phantom-teal" />
-                    ) : (
-                      <span className="text-[10px] text-amber-600 dark:text-phantom-amber font-mono font-bold">
-                        +{lesson.xp} XP
+                    <div className="shrink-0 flex items-center gap-1.5">
+                      <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-slate-200 dark:bg-black/50 text-slate-600 dark:text-white/60">
+                        {lesson.language}
                       </span>
-                    )}
+                      {done ? (
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-phantom-teal" />
+                      ) : (
+                        <span className="text-[10px] text-amber-600 dark:text-phantom-amber font-mono font-bold">
+                          +{lesson.xp} XP
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
 
       {/* =========================================================================
-          4. MAIN GRID: LEFT STRUCTURED CHAPTER ACCORDIONS (4 cols) / RIGHT WORKSPACE (8 cols)
+          3. MAIN LAYOUT: DEDICATED TOPICS SIDEBAR + EXPANDED LEARNING CANVAS
           ========================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="flex flex-col lg:flex-row items-start gap-5 w-full">
         {/* =====================================================================
-            LEFT: STRUCTURED CHAPTER MODULES (Desktop Only)
+            LEFT: DEDICATED LEARN-MODE TOPICS SIDEBAR (Search on Left, Language Dropdown Below)
             ===================================================================== */}
-        <div className="hidden lg:block lg:col-span-4 space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-slate-600 dark:text-white/60 font-bold">
-              <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-phantom-violet" />
-              <span>Curriculum Modules</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={expandAllChapters}
-                className="text-[11px] font-mono text-slate-500 hover:text-purple-600 dark:text-white/40 dark:hover:text-phantom-violet transition-colors"
-                title="Expand all chapters"
-              >
-                Expand
-              </button>
-              <span className="text-slate-300 dark:text-white/20">•</span>
-              <button
-                onClick={collapseAllChapters}
-                className="text-[11px] font-mono text-slate-500 hover:text-purple-600 dark:text-white/40 dark:hover:text-phantom-violet transition-colors"
-                title="Collapse all chapters"
-              >
-                Collapse
-              </button>
-            </div>
-          </div>
+        {isTopicsSidebarOpen && (
+          <aside className="hidden lg:flex flex-col w-80 shrink-0 p-4 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl space-y-4 animate-fadeIn transition-all">
+            {/* Sidebar Top Header & Collapse Control */}
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-2.5">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-purple-600 dark:text-phantom-violet" />
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-800 dark:text-white">
+                  Curriculum Topics
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/60 font-semibold">
+                  {filteredLessons.length}
+                </span>
+              </div>
 
-          {/* Grouped Chapter Accordions Container */}
-          <div className="space-y-3 max-h-[720px] overflow-y-auto pr-1">
-            {LEARN_CHAPTERS.map((ch) => {
-              // Lessons matching the current chapter & active filters
-              const chapterLessons = filteredLessons.filter((l) => l.chapterNumber === ch.chapterNumber);
-              const allLessonsInCh = LEARN_LESSONS.filter((l) => l.chapterNumber === ch.chapterNumber);
-              const completedInCh = allLessonsInCh.filter((l) => profile.completedLessons.includes(l.id)).length;
-              const isAllDone = completedInCh === allLessonsInCh.length && allLessonsInCh.length > 0;
-              const isExpanded = !!expandedChapters[ch.chapterNumber];
-              const isCurrentChapter = selectedLesson.chapterNumber === ch.chapterNumber;
-
-              // Hide chapter if filters active and has 0 matching lessons
-              if (chapterLessons.length === 0 && (selectedLang !== 'all' || selectedChapter !== 'all' || searchQuery)) {
-                return null;
-              }
-
-              return (
-                <div
-                  key={ch.id}
-                  className={`rounded-2xl border transition-all overflow-hidden ${
-                    isCurrentChapter
-                      ? 'border-purple-300 dark:border-phantom-purple/50 bg-white dark:bg-phantom-deep shadow-sm'
-                      : 'border-slate-200 dark:border-white/10 bg-white dark:bg-phantom-deep hover:border-slate-300 dark:hover:border-white/20'
-                  }`}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setIsTopicsSidebarOpen(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                  title="Collapse Topics Sidebar (Expand Learning Width)"
+                  aria-label="Collapse Topics Sidebar"
                 >
-                  {/* Chapter Accordion Header */}
+                  <PanelLeftClose className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* 1. SEARCH BAR: Moved to the left at the top of the sidebar! */}
+            <div className="space-y-1">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search concepts or topics..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-7 py-2 text-xs font-sans rounded-xl bg-slate-100 dark:bg-white/5 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 placeholder-slate-400 outline-none focus:border-purple-500 transition-colors"
+                />
+                {searchQuery && (
                   <button
-                    onClick={() => toggleChapter(ch.chapterNumber)}
-                    className="w-full text-left p-3.5 flex items-center justify-between gap-2.5 hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition-colors"
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs px-1"
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold shrink-0 ${
-                        isAllDone
-                          ? 'bg-teal-100 text-teal-800 dark:bg-phantom-teal/20 dark:text-phantom-teal'
-                          : isCurrentChapter
-                          ? 'bg-purple-600 text-white dark:bg-phantom-purple'
-                          : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-white/70'
-                      }`}>
-                        {ch.chapterNumber}
-                      </span>
-                      <div className="min-w-0">
-                        <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                          {ch.title.replace(/^Chapter \d+:\s*/, '')}
-                        </div>
-                        <div className="text-[10px] font-mono text-slate-500 dark:text-white/40 truncate">
-                          {ch.description}
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 2. LANGUAGE SELECTION DROPDOWN: Moved downwards below the search bar! */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-mono font-semibold text-slate-600 dark:text-white/60 flex items-center gap-1.5 px-0.5">
+                <Filter className="w-3.5 h-3.5 text-purple-600 dark:text-phantom-violet" />
+                <span>Language Filter:</span>
+              </label>
+              <select
+                value={selectedLang}
+                onChange={(e) => {
+                  const lang = e.target.value as Language | 'all';
+                  setSelectedLang(lang);
+                  const matching = LEARN_LESSONS.filter(
+                    (l) => (lang === 'all' || l.language === lang) && (selectedChapter === 'all' || l.chapterNumber === selectedChapter)
+                  );
+                  if (matching.length > 0 && !matching.some((m) => m.id === selectedLesson.id)) {
+                    handleSelectLesson(matching[0]);
+                  }
+                }}
+                className="w-full px-3 py-2 text-xs font-mono font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 outline-none focus:border-purple-500 cursor-pointer transition-colors"
+              >
+                <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  🌐 All Languages ({LEARN_LESSONS.length} Lessons)
+                </option>
+                <option value="python" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  🐍 Python ({LEARN_LESSONS.filter((l) => l.language === 'python').length} Lessons)
+                </option>
+                <option value="javascript" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  ⚡ JavaScript ({LEARN_LESSONS.filter((l) => l.language === 'javascript').length} Lessons)
+                </option>
+                <option value="typescript" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  🔷 TypeScript ({LEARN_LESSONS.filter((l) => l.language === 'typescript').length} Lessons)
+                </option>
+                <option value="cpp" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  ⚙️ C++ ({LEARN_LESSONS.filter((l) => l.language === 'cpp').length} Lessons)
+                </option>
+                <option value="java" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  ☕ Java ({LEARN_LESSONS.filter((l) => l.language === 'java').length} Lessons)
+                </option>
+              </select>
+            </div>
+
+            {/* 3. CHAPTER FILTER DROPDOWN: Compact chapter selector */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-mono font-semibold text-slate-600 dark:text-white/60 flex items-center gap-1.5 px-0.5">
+                <Layers className="w-3.5 h-3.5 text-cyan-600 dark:text-phantom-cyan" />
+                <span>Chapter Focus:</span>
+              </label>
+              <select
+                value={selectedChapter}
+                onChange={(e) => {
+                  const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
+                  setSelectedChapter(val);
+                  if (val !== 'all') {
+                    setExpandedChapters((prev) => ({ ...prev, [val]: true }));
+                  }
+                }}
+                className="w-full px-3 py-2 text-xs font-mono font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 outline-none focus:border-purple-500 cursor-pointer transition-colors"
+              >
+                <option value="all" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  All Chapters ({LEARN_CHAPTERS.length})
+                </option>
+                {LEARN_CHAPTERS.map((ch) => (
+                  <option
+                    key={ch.id}
+                    value={ch.chapterNumber}
+                    className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                  >
+                    Ch. {ch.chapterNumber}: {ch.title.replace(/^Chapter \d+:\s*/, '')}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* 4. EXPAND/COLLAPSE ALL TOPICS QUICK BUTTONS */}
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-white/40 px-1 pt-1 border-t border-slate-100 dark:border-white/5">
+              <span>Chapter Modules:</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={expandAllChapters}
+                  className="hover:text-purple-600 dark:hover:text-phantom-cyan transition-colors"
+                >
+                  Expand All
+                </button>
+                <span>•</span>
+                <button
+                  onClick={collapseAllChapters}
+                  className="hover:text-purple-600 dark:hover:text-phantom-cyan transition-colors"
+                >
+                  Collapse
+                </button>
+              </div>
+            </div>
+
+            {/* 5. TOPICS CHAPTER ACCORDIONS LIST */}
+            <div className="space-y-2.5 max-h-[580px] overflow-y-auto pr-1">
+              {LEARN_CHAPTERS.map((ch) => {
+                const chapterLessons = filteredLessons.filter((l) => l.chapterNumber === ch.chapterNumber);
+                const allLessonsInCh = LEARN_LESSONS.filter((l) => l.chapterNumber === ch.chapterNumber);
+                const completedInCh = allLessonsInCh.filter((l) => profile.completedLessons.includes(l.id)).length;
+                const isAllDone = completedInCh === allLessonsInCh.length && allLessonsInCh.length > 0;
+                const isExpanded = !!expandedChapters[ch.chapterNumber];
+                const isCurrentChapter = selectedLesson.chapterNumber === ch.chapterNumber;
+
+                // Hide chapter if filters active and has 0 matching lessons
+                if (chapterLessons.length === 0 && (selectedLang !== 'all' || selectedChapter !== 'all' || searchQuery)) {
+                  return null;
+                }
+
+                return (
+                  <div
+                    key={ch.id}
+                    className={`rounded-xl border transition-all overflow-hidden ${
+                      isCurrentChapter
+                        ? 'border-purple-300 dark:border-phantom-purple/50 bg-slate-50/50 dark:bg-phantom-deep'
+                        : 'border-slate-200 dark:border-white/10 bg-white dark:bg-phantom-deep'
+                    }`}
+                  >
+                    {/* Chapter Accordion Header */}
+                    <button
+                      onClick={() => toggleChapter(ch.chapterNumber)}
+                      className="w-full text-left p-3 flex items-center justify-between gap-2 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-mono font-bold shrink-0 ${
+                            isAllDone
+                              ? 'bg-teal-100 text-teal-800 dark:bg-phantom-teal/20 dark:text-phantom-teal'
+                              : isCurrentChapter
+                              ? 'bg-purple-600 text-white dark:bg-phantom-purple'
+                              : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-white/70'
+                          }`}
+                        >
+                          {ch.chapterNumber}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {ch.title.replace(/^Chapter \d+:\s*/, '')}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold ${
-                        isAllDone
-                          ? 'bg-teal-100 text-teal-700 dark:bg-phantom-teal/20 dark:text-phantom-teal'
-                          : completedInCh > 0
-                          ? 'bg-purple-100 text-purple-700 dark:bg-phantom-purple/20 dark:text-phantom-violet'
-                          : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-white/40'
-                      }`}>
-                        {completedInCh}/{allLessonsInCh.length} {isAllDone ? '✓' : ''}
-                      </span>
-                      <ChevronDown
-                        className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
-                          isExpanded ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </div>
-                  </button>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span
+                          className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-semibold ${
+                            isAllDone
+                              ? 'bg-teal-100 text-teal-700 dark:bg-phantom-teal/20 dark:text-phantom-teal'
+                              : completedInCh > 0
+                              ? 'bg-purple-100 text-purple-700 dark:bg-phantom-purple/20 dark:text-phantom-violet'
+                              : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-white/40'
+                          }`}
+                        >
+                          {completedInCh}/{allLessonsInCh.length}
+                        </span>
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </div>
+                    </button>
 
-                  {/* Chapter Lessons List (Expanded View) */}
-                  {isExpanded && (
-                    <div className="p-2 pt-0 space-y-1.5 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-black/20">
-                      {chapterLessons.map((lesson) => {
-                        const active = selectedLesson.id === lesson.id;
-                        const done = profile.completedLessons.includes(lesson.id);
-                        const badge = LANGUAGE_BADGES[lesson.language];
+                    {/* Chapter Lessons List */}
+                    {isExpanded && (
+                      <div className="p-1.5 pt-0 space-y-1 border-t border-slate-100 dark:border-white/5 bg-slate-50/70 dark:bg-black/25">
+                        {chapterLessons.map((lesson) => {
+                          const active = selectedLesson.id === lesson.id;
+                          const done = profile.completedLessons.includes(lesson.id);
+                          const badge = LANGUAGE_BADGES[lesson.language];
 
-                        return (
-                          <div
-                            key={lesson.id}
-                            onClick={() => handleSelectLesson(lesson)}
-                            className={`p-2.5 rounded-xl border text-xs cursor-pointer transition-all flex items-center justify-between gap-2.5 ${
-                              active
-                                ? 'bg-purple-100/90 dark:bg-phantom-purple/25 border-purple-400 dark:border-phantom-cyan font-bold text-slate-900 dark:text-white shadow-sm'
-                                : 'bg-white dark:bg-phantom-deep/60 hover:bg-slate-100/90 dark:hover:bg-white/5 border-slate-200 dark:border-white/5 text-slate-700 dark:text-white/80'
-                            }`}
-                          >
-                            {/* Left: Status Icon */}
-                            <div className="shrink-0">
-                              {done ? (
-                                <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-phantom-teal" />
-                              ) : active ? (
-                                <div className="w-4 h-4 rounded-full bg-purple-600 dark:bg-phantom-cyan flex items-center justify-center text-white">
-                                  <Play className="w-2.5 h-2.5 fill-current ml-0.5" />
+                          return (
+                            <div
+                              key={lesson.id}
+                              onClick={() => handleSelectLesson(lesson)}
+                              className={`p-2 rounded-lg border text-xs cursor-pointer transition-all flex items-center justify-between gap-2 ${
+                                active
+                                  ? 'bg-purple-100/90 dark:bg-phantom-purple/30 border-purple-400 dark:border-phantom-cyan font-bold text-slate-900 dark:text-white shadow-sm'
+                                  : 'bg-white dark:bg-phantom-deep/60 hover:bg-slate-100 dark:hover:bg-white/5 border-slate-200 dark:border-white/5 text-slate-700 dark:text-white/80'
+                              }`}
+                            >
+                              <div className="shrink-0">
+                                {done ? (
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 dark:text-phantom-teal" />
+                                ) : active ? (
+                                  <div className="w-3.5 h-3.5 rounded-full bg-purple-600 dark:bg-phantom-cyan flex items-center justify-center text-white">
+                                    <Play className="w-2 h-2 fill-current ml-0.5" />
+                                  </div>
+                                ) : (
+                                  <Circle className="w-3.5 h-3.5 text-slate-300 dark:text-white/20" />
+                                )}
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[11px] font-semibold text-slate-900 dark:text-white truncate">
+                                  {lesson.title}
                                 </div>
-                              ) : (
-                                <Circle className="w-4 h-4 text-slate-300 dark:text-white/20" />
-                              )}
-                            </div>
-
-                            {/* Middle: Lesson Details */}
-                            <div className="min-w-0 flex-1">
-                              <div className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
-                                {lesson.title}
+                                <div className="flex items-center gap-1.5 text-[9px] font-mono text-slate-500 dark:text-white/40 mt-0.5">
+                                  <span className={`font-bold px-1 rounded ${badge.bg} ${badge.text}`}>
+                                    {badge.label}
+                                  </span>
+                                  <span className="truncate">{lesson.concept}</span>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-1.5 mt-0.5 text-[10px] font-mono text-slate-500 dark:text-white/40">
-                                <span>{lesson.concept}</span>
-                                <span>•</span>
-                                <span className={`font-bold px-1 rounded ${badge.bg} ${badge.text}`}>
-                                  {badge.label}
-                                </span>
+
+                              <div className="shrink-0 text-right">
+                                {done ? (
+                                  <span className="text-[9px] font-mono text-teal-600 dark:text-phantom-teal font-semibold">
+                                    ✓
+                                  </span>
+                                ) : (
+                                  <span className="text-[9px] font-mono text-amber-600 dark:text-phantom-amber font-bold">
+                                    +{lesson.xp}
+                                  </span>
+                                )}
                               </div>
                             </div>
-
-                            {/* Right: XP / Mastered */}
-                            <div className="shrink-0 text-right">
-                              {done ? (
-                                <span className="text-[10px] font-mono text-teal-600 dark:text-phantom-teal font-semibold">
-                                  Mastered
-                                </span>
-                              ) : (
-                                <span className="text-[10px] font-mono text-amber-600 dark:text-phantom-amber font-bold">
-                                  +{lesson.xp} XP
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                      {chapterLessons.length === 0 && (
-                        <div className="p-3 text-center text-xs font-mono text-slate-400 dark:text-white/40">
-                          No matching lessons for active filters.
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </aside>
+        )}
 
         {/* =====================================================================
-            RIGHT: INTERACTIVE FORENSIC WORKSPACE (8 cols)
+            RIGHT: EXPANDED LEARNING CANVAS (Takes Full Remaining Width or 100% when Sidebar Closed)
             ===================================================================== */}
-        <div className="lg:col-span-8 space-y-5">
-          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl space-y-6 transition-colors">
-            {/* Top Workspace Header */}
+        <main className={`space-y-5 transition-all duration-300 ${isTopicsSidebarOpen ? 'flex-1 min-w-0' : 'w-full'}`}>
+          <div className="p-5 sm:p-7 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl space-y-6 transition-colors">
+            {/* Top Workspace Header Bar */}
             <div>
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono mb-2.5 pb-2.5 border-b border-slate-100 dark:border-white/5">
-                {/* Breadcrumbs */}
-                <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono mb-3 pb-3 border-b border-slate-100 dark:border-white/5">
+                {/* Left Side: Sidebar Re-open Button + Breadcrumb */}
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  {!isTopicsSidebarOpen && (
+                    <button
+                      onClick={() => setIsTopicsSidebarOpen(true)}
+                      className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-100 dark:bg-phantom-purple/20 text-purple-700 dark:text-phantom-violet border border-purple-200 dark:border-phantom-purple/40 hover:brightness-110 text-xs font-semibold shadow-sm transition-all"
+                      title="Show Topics Sidebar"
+                    >
+                      <PanelLeftOpen className="w-3.5 h-3.5" />
+                      <span>Show Topics ({filteredLessons.length})</span>
+                    </button>
+                  )}
+
                   <span className="px-2 py-0.5 rounded bg-purple-100 dark:bg-phantom-purple/20 text-purple-700 dark:text-phantom-violet font-semibold text-[11px] border border-purple-200 dark:border-phantom-purple/30">
                     Chapter {selectedLesson.chapterNumber || 1}
                   </span>
@@ -652,30 +735,30 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                   </span>
                 </div>
 
-                {/* Stepper info & Mastered status */}
+                {/* Right Side: Status Badge & Stepper Navigation */}
                 <div className="flex items-center gap-3">
                   {isCompleted && (
                     <span className="text-teal-600 dark:text-phantom-teal flex items-center gap-1 font-bold text-xs">
                       <Check className="w-3.5 h-3.5" /> Mastered
                     </span>
                   )}
-                  <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-white/40 font-mono">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-white/50 font-mono">
                     <button
                       onClick={handlePrevLesson}
                       disabled={!hasPrev}
-                      className="p-1 rounded hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
-                      title="Previous"
+                      className="p-1 rounded-md border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="Previous Lesson"
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
                     </button>
-                    <span>
+                    <span className="font-medium">
                       {currentIndex !== -1 ? `${currentIndex + 1} of ${filteredLessons.length}` : ''}
                     </span>
                     <button
                       onClick={handleNextLesson}
                       disabled={!hasNext}
-                      className="p-1 rounded hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
-                      title="Next"
+                      className="p-1 rounded-md border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="Next Lesson"
                     >
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
@@ -683,13 +766,13 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                 </div>
               </div>
 
-              {/* Title */}
-              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight mb-2.5">
+              {/* Lesson Main Title */}
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
                 {selectedLesson.title}
               </h2>
 
               {/* Incident Scenario Box */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 flex items-start gap-3">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 flex items-start gap-3">
                 <Terminal className="w-4 h-4 text-purple-600 dark:text-phantom-cyan mt-0.5 shrink-0" />
                 <div className="text-xs sm:text-sm text-slate-700 dark:text-white/80 leading-relaxed font-sans">
                   <strong className="text-slate-900 dark:text-white font-semibold">Incident Scenario: </strong>
@@ -702,7 +785,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
             <div className="space-y-3">
               {/* Code preview banner */}
               <div className="rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-slate-50 dark:bg-[#060a18] shadow-sm">
-                <div className="flex items-center justify-between px-3.5 py-2 bg-slate-100 dark:bg-[#040711] border-b border-slate-200 dark:border-white/10 text-xs">
+                <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-100 dark:bg-[#040711] border-b border-slate-200 dark:border-white/10 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-purple-700 dark:text-phantom-violet font-semibold text-[11px]">
                       {selectedLesson.language === 'python'
@@ -728,7 +811,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
 
               {/* Step 1: Hypothesis Quiz */}
               {selectedLesson.predictions && selectedLesson.predictions.length > 0 && (
-                <div className="p-4 rounded-xl bg-purple-50/70 dark:bg-[#090e24] border border-purple-200 dark:border-phantom-purple/40 space-y-3">
+                <div className="p-4 sm:p-5 rounded-xl bg-purple-50/70 dark:bg-[#090e24] border border-purple-200 dark:border-phantom-purple/40 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-purple-800 dark:text-phantom-violet">
                     <Brain className="w-4 h-4 shrink-0" />
                     <span>STEP 1: PREDICT THE BEHAVIOR BEFORE EDITING</span>
@@ -737,7 +820,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                     What will happen if we execute this broken function with external inputs right now?
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {selectedLesson.predictions.map((p, idx) => {
                       const isSelected = selectedPrediction === p.id;
                       const letter = String.fromCharCode(65 + idx);
@@ -747,7 +830,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                           type="button"
                           onClick={() => handlePredictionAnswer(p.id, p.isCorrect)}
                           disabled={showPredictionResult}
-                          className={`text-left p-2.5 sm:p-3 rounded-lg border text-xs font-mono transition-all flex items-start gap-2 ${
+                          className={`text-left p-3 rounded-lg border text-xs font-mono transition-all flex items-start gap-2.5 ${
                             showPredictionResult
                               ? p.isCorrect
                                 ? 'bg-teal-100 dark:bg-phantom-teal/20 border-teal-300 dark:border-phantom-teal text-teal-900 dark:text-phantom-teal font-semibold'
@@ -758,14 +841,14 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                           }`}
                         >
                           <span className="font-bold opacity-70 shrink-0">{letter}.</span>
-                          <span className="flex-1">{p.text}</span>
+                          <span className="flex-1 leading-relaxed">{p.text}</span>
                         </button>
                       );
                     })}
                   </div>
 
                   {showPredictionResult && (
-                    <div className="p-3 rounded-lg bg-white/95 dark:bg-black/50 border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-white/80 space-y-1 animate-fadeIn">
+                    <div className="p-3.5 rounded-lg bg-white/95 dark:bg-black/50 border border-slate-200 dark:border-white/10 text-xs text-slate-800 dark:text-white/80 space-y-1 animate-fadeIn">
                       <span className="font-mono text-purple-700 dark:text-phantom-cyan font-bold block">
                         Forensic Hypothesis Verdict:
                       </span>
@@ -796,14 +879,14 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               </div>
 
               {showStepHint && selectedLesson.stepByStepHint && (
-                <div className="p-3 rounded-xl bg-amber-50 dark:bg-phantom-amber/10 border border-amber-300 dark:border-phantom-amber/40 text-xs text-amber-800 dark:text-phantom-amber font-mono animate-fadeIn">
+                <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-phantom-amber/10 border border-amber-300 dark:border-phantom-amber/40 text-xs text-amber-800 dark:text-phantom-amber font-mono animate-fadeIn">
                   💡 <strong>Clue:</strong> {selectedLesson.stepByStepHint}
                 </div>
               )}
 
               {/* Code Editor Surface */}
               <div className="rounded-xl border border-slate-200 dark:border-phantom-border/80 overflow-hidden bg-white dark:bg-[#070c1d] shadow-sm">
-                <div className="flex items-center justify-between px-3.5 py-2 bg-slate-100 dark:bg-[#050813] border-b border-slate-200 dark:border-white/10 text-xs">
+                <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-100 dark:bg-[#050813] border-b border-slate-200 dark:border-white/10 text-xs">
                   <span className="font-mono text-purple-700 dark:text-phantom-violet font-semibold text-[11px]">
                     {selectedLesson.language === 'python'
                       ? 'lesson.py'
@@ -825,7 +908,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   spellCheck={false}
-                  className="w-full h-44 sm:h-48 p-3.5 sm:p-4 bg-white dark:bg-[#070c1d] text-slate-900 dark:text-phantom-white font-mono text-xs leading-5 resize-none outline-none whitespace-pre selection:bg-purple-200 dark:selection:bg-phantom-purple/40"
+                  className="w-full h-48 sm:h-52 p-3.5 sm:p-4 bg-white dark:bg-[#070c1d] text-slate-900 dark:text-phantom-white font-mono text-xs leading-5 resize-none outline-none whitespace-pre selection:bg-purple-200 dark:selection:bg-phantom-purple/40"
                 />
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-3.5 py-2.5 bg-slate-100 dark:bg-[#050813] border-t border-slate-200 dark:border-white/10">
@@ -836,7 +919,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
                   <button
                     onClick={handleTestLessonCode}
                     disabled={evaluating}
-                    className="w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-cyan text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:brightness-110 active:scale-95 transition-all shrink-0"
+                    className="w-full sm:w-auto px-5 py-2 sm:py-1.5 rounded-lg bg-gradient-to-r from-phantom-purple to-phantom-cyan text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:brightness-110 active:scale-95 transition-all shrink-0"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
                     <span>{evaluating ? 'Testing Fix...' : 'Verify Fix'}</span>
@@ -923,7 +1006,7 @@ export const LearnPage: React.FC<LearnPageProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );
