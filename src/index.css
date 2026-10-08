@@ -13,6 +13,7 @@
     background-color: #080D1B;
     color: #F1F5F9;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   /* Custom scrollbar */
@@ -30,6 +31,111 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #8B5CF6;
   }
+}
+
+/* =========================================================================
+   LIGHT MODE ADAPTATION LAYER
+   ========================================================================= */
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+html.light .bg-phantom-midnight {
+  background-color: #f8fafc !important;
+}
+html.light .bg-phantom-deep {
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+}
+html.light .bg-phantom-card {
+  background-color: #f1f5f9 !important;
+}
+html.light .bg-phantom-hover:hover {
+  background-color: #e2e8f0 !important;
+}
+
+/* Container & Dark code blocks in light mode */
+html.light .bg-\[\#070b18\],
+html.light .bg-\[\#080d1e\],
+html.light .bg-\[\#090e1f\],
+html.light .bg-\[\#050813\],
+html.light .bg-\[\#070c1d\],
+html.light .bg-\[\#090e24\],
+html.light .bg-\[\#060914\],
+html.light .bg-\[\#060814\],
+html.light .bg-\[\#060a1a\],
+html.light .bg-\[\#090f23\] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light .bg-black\/30,
+html.light .bg-black\/40,
+html.light .bg-black\/50,
+html.light .bg-black\/60 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+html.light .bg-white\/5,
+html.light .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Light mode borders */
+html.light .border-phantom-border,
+html.light .border-phantom-border\/60,
+html.light .border-phantom-border\/70,
+html.light .border-phantom-border\/80,
+html.light .border-white\/5,
+html.light .border-white\/10 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Light mode text hierarchy (preserving styled action buttons) */
+html.light div:not(.bg-phantom-purple):not(.bg-phantom-teal):not(.bg-gradient-to-r) > .text-white,
+html.light h1.text-white,
+html.light h2.text-white,
+html.light h3.text-white,
+html.light h4.text-white,
+html.light span.text-white:not(button *),
+html.light p.text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-white\/90,
+html.light .text-white\/80 {
+  color: #1e293b !important;
+}
+
+html.light .text-white\/70,
+html.light .text-white\/60 {
+  color: #334155 !important;
+}
+
+html.light .text-white\/50,
+html.light .text-white\/40,
+html.light .text-white\/30 {
+  color: #64748b !important;
+}
+
+html.light .text-white\/20,
+html.light .text-white\/10 {
+  color: #94a3b8 !important;
+}
+
+html.light textarea {
+  color: #0f172a !important;
 }
 
 @layer utilities {

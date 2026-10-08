@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   CUSTOM_CHALLENGES: 'codephantom_custom_challenges',
   SAVED_CODE_PREFIX: 'codephantom_code_',
   ERROR_REVISIONS: 'codephantom_error_revisions',
+  THEME: 'codephantom_theme',
 };
 
 export const INITIAL_ACHIEVEMENTS: Achievement[] = [
@@ -515,6 +516,31 @@ export class StorageService {
 
     StorageService.saveProfile(profile);
     return { streakUpdated, newStreak: profile.streak };
+  }
+
+  static getTheme(): 'dark' | 'light' {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.THEME);
+      if (stored === 'light' || stored === 'dark') {
+        return stored;
+      }
+    } catch (e) {}
+    return 'dark'; // Default to cyberpunk detective dark mode
+  }
+
+  static setTheme(theme: 'dark' | 'light'): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.THEME, theme);
+      if (typeof document !== 'undefined') {
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
+        }
+      }
+    } catch (e) {}
   }
 
   static resetAllData(): void {

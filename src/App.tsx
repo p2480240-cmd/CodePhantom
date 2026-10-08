@@ -3,6 +3,7 @@ import { UserProfile, Language, ActivityDay, Challenge } from './types';
 import { StorageService } from './services/storageService';
 import { ChallengeService } from './services/challengeService';
 import { Navbar } from './components/Navbar';
+import { Sidebar } from './components/Sidebar';
 import { Footer } from './components/Footer';
 import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -27,11 +28,18 @@ export function App() {
 
   const [currentTab, setCurrentTab] = useState<string>('home');
   const [activeChallengeId, setActiveChallengeId] = useState<string | undefined>(undefined);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => StorageService.getTheme());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+
+  // Sync theme with document class on mount & changes
+  useEffect(() => {
+    StorageService.setTheme(theme);
+  }, [theme]);
 
   // Refresh data on mount
   useEffect(() => {
@@ -39,6 +47,12 @@ export function App() {
     setProfile(p);
     setActivityHistory(StorageService.getActivityHistory());
   }, []);
+
+  const handleToggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    StorageService.setTheme(nextTheme);
+  };
 
   const handleChangeLanguage = (lang: Language) => {
     const updated = { ...profile, selectedLanguage: lang };
@@ -99,18 +113,37 @@ export function App() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-phantom-midnight text-phantom-white selection:bg-phantom-purple selection:text-white">
-      {/* Top Navigation Bar */}
+    <div className="min-h-screen flex flex-col bg-phantom-midnight text-phantom-white selection:bg-phantom-purple selection:text-white transition-colors duration-300">
+      {/* Top Streamlined Navigation Bar */}
       <Navbar
+        onToggleSidebar={() => setIsSidebarOpen(true)}
         currentTab={currentTab}
         onSelectTab={(tab) => {
           setCurrentTab(tab);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         profile={profile}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
         onChangeLanguage={handleChangeLanguage}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
+      />
+
+      {/* Collapsible Navigation Sidebar Drawer */}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        currentTab={currentTab}
+        onSelectTab={(tab) => {
+          setCurrentTab(tab);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        profile={profile}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+        onChangeLanguage={handleChangeLanguage}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {/* Main Page Body */}
