@@ -225,6 +225,8 @@ export interface LearnLesson {
   xp: number;
   predictions?: PredictionOption[];
   stepByStepHint?: string;
+  chapter?: string;
+  chapterNumber?: number;
 }
 
 export interface BugEncyclopediaEntry {
