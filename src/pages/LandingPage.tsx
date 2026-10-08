@@ -453,9 +453,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* 1. Top Learners This Week */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col justify-between">
+          <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col justify-between h-full">
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3.5">
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">Top Learners This Week</h4>
                 <button
                   onClick={onOpenLeaderboard}
@@ -465,7 +465,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </button>
               </div>
 
-              <div className="space-y-3 text-xs">
+              <div className="space-y-2 text-xs">
                 {[
                   { rank: 1, name: 'NovaCoder', level: 12, xp: '12,450 XP', avatar: '⚡' },
                   { rank: 2, name: 'ByteDreamer', level: 11, xp: '10,320 XP', avatar: '🌙' },
@@ -475,43 +475,61 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 ].map((u) => (
                   <div
                     key={u.rank}
-                    className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
+                    className={`flex items-center justify-between p-1.5 rounded-lg transition-colors ${
                       u.active
                         ? 'bg-purple-100/80 dark:bg-phantom-purple/20 border border-purple-300 dark:border-phantom-purple/40 text-purple-950 dark:text-white font-bold'
                         : 'text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2">
                       <span className="font-mono text-slate-400 dark:text-white/40 text-[11px] w-3">{u.rank}</span>
                       <span className="text-sm">{u.avatar}</span>
-                      <span className="truncate max-w-[90px] text-slate-900 dark:text-white/90">{u.name}</span>
+                      <span className="truncate max-w-[85px] text-slate-900 dark:text-white/90">{u.name}</span>
                     </div>
                     <div className="text-right text-[11px] font-mono">
-                      <span className="text-slate-500 dark:text-white/40 mr-2">Lv. {u.level}</span>
+                      <span className="text-slate-500 dark:text-white/40 mr-1.5">Lv. {u.level}</span>
                       <span className="text-amber-600 dark:text-phantom-amber font-semibold">{u.xp}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+
+            <div className="pt-3 mt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-xs font-mono">
+              <span className="text-slate-500 dark:text-white/40">Your Standing</span>
+              <span className="text-amber-600 dark:text-phantom-amber font-bold">Rank #3</span>
+            </div>
           </div>
 
           {/* 2. Activity Heatmap */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col justify-between">
+          <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col justify-between h-full">
             <div>
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-3.5">
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">Activity Heatmap</h4>
-                <span className="text-[11px] text-slate-500 dark:text-white/40 font-mono">Last 12 months</span>
+                <button
+                  onClick={onOpenReports}
+                  className="text-[11px] text-purple-600 dark:text-phantom-cyan hover:underline font-medium"
+                >
+                  Full Report &rarr;
+                </button>
               </div>
               <HeatmapGrid activityHistory={activityHistory} compact={true} />
+            </div>
+
+            <div className="pt-3 mt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-xs font-mono">
+              <span className="text-slate-500 dark:text-white/40">Total Solved</span>
+              <span className="text-purple-700 dark:text-phantom-cyan font-bold">{profile.solvedChallengeIds.length} Cases</span>
             </div>
           </div>
 
           {/* 3. Popular Concepts */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col justify-between">
+          <div className="p-5 rounded-2xl bg-white dark:bg-phantom-deep border border-slate-200 dark:border-phantom-border shadow-md dark:shadow-xl flex flex-col justify-between h-full">
             <div>
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Popular Concepts</h4>
-              <div className="space-y-3.5 text-xs">
+              <div className="flex items-center justify-between mb-3.5">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Popular Concepts</h4>
+                <span className="text-[11px] text-slate-400 dark:text-white/40 font-mono">Mastery</span>
+              </div>
+              <div className="space-y-3 text-xs">
                 {[
                   { name: 'Loops', pct: 82, color: 'bg-phantom-purple' },
                   { name: 'Functions', pct: 68, color: 'bg-phantom-violet' },
@@ -533,6 +551,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="pt-3 mt-4 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-xs font-mono">
+              <span className="text-slate-500 dark:text-white/40">Top Focus</span>
+              <span className="text-cyan-700 dark:text-phantom-cyan font-bold">Loops (82%)</span>
             </div>
           </div>
 

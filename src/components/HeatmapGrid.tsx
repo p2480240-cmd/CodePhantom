@@ -207,6 +207,78 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     }
   }
 
+  // If compact mode is requested (e.g. in Dashboard or Landing Page cards), render the clean horizontal week strip
+  if (compact) {
+    const compactTotalDays = 119; // 17 weeks
+    const compactWeeks: { dateStr: string; day: ActivityDay }[][] = [];
+    let curW: { dateStr: string; day: ActivityDay }[] = [];
+    for (let i = compactTotalDays - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const dayData = activityHistory[dateStr] || {
+        date: dateStr,
+        count: 0,
+        xp: 0,
+        minutes: 0,
+        challengesSolved: [],
+        conceptsPracticed: [],
+      };
+      curW.push({ dateStr, day: dayData });
+      if (curW.length === 7 || i === 0) {
+        compactWeeks.push(curW);
+        curW = [];
+      }
+    }
+
+    return (
+      <div className="relative w-full space-y-3 font-sans">
+        {/* Floating Tooltip */}
+        {tooltip.visible && (
+          <div
+            className="fixed z-50 pointer-events-none transform -translate-x-1/2 px-2.5 py-1 text-[11px] font-mono text-white bg-slate-900/95 dark:bg-black/95 border border-purple-500/60 dark:border-phantom-cyan/60 rounded-lg shadow-xl whitespace-nowrap"
+            style={{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }}
+          >
+            {tooltip.text}
+          </div>
+        )}
+
+        {/* Heatmap Grid */}
+        <div className="overflow-x-auto pb-1 scrollbar-none">
+          <div className="inline-flex gap-1.5 min-w-full justify-between">
+            {compactWeeks.map((week, wIdx) => (
+              <div key={wIdx} className="flex flex-col gap-1.5">
+                {week.map((cell) => (
+                  <div
+                    key={cell.dateStr}
+                    onMouseEnter={(e) => handleMouseEnter(e, cell.day)}
+                    onMouseLeave={() => setTooltip((prev) => ({ ...prev, visible: false }))}
+                    className={`w-3.5 h-3.5 rounded-[3px] transition-all cursor-pointer ${getCellColor(
+                      cell.day.count
+                    )}`}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-white/40 pt-2 border-t border-slate-200 dark:border-white/5 select-none font-mono">
+          <div className="flex items-center gap-1.5">
+            <span>Less</span>
+            <div className="w-2.5 h-2.5 rounded-sm bg-slate-100 dark:bg-[#121a2f] border border-slate-200 dark:border-white/10" />
+            <div className="w-2.5 h-2.5 rounded-sm bg-[#7c3aed] dark:bg-[#4c1d95]" />
+            <div className="w-2.5 h-2.5 rounded-sm bg-[#9333ea] dark:bg-[#7c3aed]" />
+            <div className="w-2.5 h-2.5 rounded-sm bg-[#06b6d4]" />
+            <span>More</span>
+          </div>
+          <span>Past 4 Months</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full space-y-3.5 font-sans">
       {/* Floating Tooltip */}
